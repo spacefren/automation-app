@@ -1,19 +1,23 @@
 package com.jxd20072.automationapp.ui.home
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.Automation
 import com.jxd20072.automationapp.ui.shared.SearchBar
+import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.LocalDateTime
 
 @Composable
@@ -56,6 +62,7 @@ fun TopBar(
 				Icon(
 					painter = painterResource(R.drawable.settings),
 					contentDescription = "settings",
+					tint = MaterialTheme.colorScheme.onBackground,
 					modifier = Modifier
 						.size(28.dp)
 				)
@@ -75,37 +82,41 @@ private fun SearchBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AutomationsList(modifier: Modifier = Modifier) {
-	Column(
+private fun AutomationsList(
+	automations: List<Automation>,
+	currentTime: LocalDateTime,
+	modifier: Modifier = Modifier
+) {
+	LazyColumn(
 		modifier = modifier
-        .fillMaxHeight()
-        .verticalScroll(state = ScrollState(0))
-        .padding(bottom = 300.dp),
+			.fillMaxHeight(),
 
 		verticalArrangement = Arrangement.spacedBy(10.dp)
 	) {
-		for (i in 1..100) {
+		items(automations) { automation ->
 			AutomationCard(
-				name = "Automation $i",
-				icon = R.drawable.function,
-				lastUsed = LocalDateTime.now(),
+				name = automation.name,
+				icon = automation.icon,
+				lastUsed = getRelativeTime(automation.lastUsed, currentTime)
 			)
 		}
+
+		item { Spacer(modifier = Modifier.height(300.dp)) }
 	}
 }
 
 @Composable
 fun HomeScreen(
 	viewModel: HomeViewModel = viewModel(),
-	modifier: Modifier
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by viewModel.state.collectAsState()
 
 	Box(
-		modifier = modifier
-        .background(MaterialTheme.colorScheme.background)
-        .fillMaxSize()
+		modifier = Modifier
+			.background(MaterialTheme.colorScheme.background)
+			.windowInsetsPadding(WindowInsets.statusBars)
+			.fillMaxSize()
 	) {
 		Column(
 			verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -122,10 +133,18 @@ fun HomeScreen(
 					viewModel.onFilterChanged(filter, enabled)
 				}
 			)
-
-			AutomationsList(modifier = Modifier.padding(sidePadding))
+			AutomationsList(
+				automations = homeUiState.automations,
+				currentTime = homeUiState.currentTime,
+				modifier = Modifier.padding(sidePadding)
+			)
 		}
 
-		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd))
+		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
+			viewModel.addAutomation(
+				"MyAutomation ${homeUiState.automations.size}",
+				icon = R.drawable.function
+			)
+		}
 	}
 }

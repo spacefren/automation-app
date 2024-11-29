@@ -21,15 +21,15 @@ import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 
 @Composable
-fun FloatingNewButton(modifier: Modifier = Modifier) {
+fun FloatingNewButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 	Row(
 		modifier = modifier
-        .height(60.dp)
-        .offset(-(20).dp, -(30).dp)
-        .shadow(26.dp, RoundedCornerShape(11.dp))
-        .clickable { }
-        .background(MaterialTheme.colorScheme.primary)
-        .padding(15.dp),
+			.height(60.dp)
+			.offset(-(20).dp, -(30).dp)
+			.shadow(26.dp, RoundedCornerShape(11.dp))
+			.clickable { onClick() }
+			.background(MaterialTheme.colorScheme.primary)
+			.padding(15.dp),
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.spacedBy(10.dp)
 	) {

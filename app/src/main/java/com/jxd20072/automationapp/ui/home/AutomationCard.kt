@@ -24,14 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.utils.getRelativeTime
-import java.time.LocalDateTime
 
 @Composable
 fun AutomationCard(
 	name: String,
 	icon: Int,
-	lastUsed: LocalDateTime,
+	lastUsed: String,
 	modifier: Modifier = Modifier
 ) {
 	Row(
@@ -73,7 +71,7 @@ fun AutomationCard(
 				)
 			}
 			Text(
-				text = "Last used: ${getRelativeTime(lastUsed)}",
+				text = "Last ran: $lastUsed",
 				color = MaterialTheme.colorScheme.onSurface,
 				fontSize = 13.sp,
 				lineHeight = 13.sp,

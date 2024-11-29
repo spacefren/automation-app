@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -35,12 +37,17 @@ private fun FilterChip(
 	modifier: Modifier = Modifier,
 	onActiveChanged: (active: Boolean) -> Unit
 ) {
+	val interactionSource = remember { MutableInteractionSource() }
+
 	Box(
 		modifier = modifier
 			.fillMaxHeight()
 			.shadow(6.dp, RoundedCornerShape(11.dp))
 			.background(if (enabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface)
-			.clickable {
+			.clickable(
+				interactionSource = interactionSource,
+				indication = null
+			) {
 				onActiveChanged(!enabled)
 			}
 			.padding(horizontal = 6.dp)

@@ -8,15 +8,22 @@ fun dateTimeToMillis(dateTime: LocalDateTime): Long {
 	return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
-fun getRelativeTime(startDateTime: LocalDateTime): String {
+fun formatElapsedTime(startTimeMillis: Long, endTimeMillis: Long): String {
+	val elapsedTime = endTimeMillis - startTimeMillis
+	return when {
+		elapsedTime < 30_000L -> "Just now"
+		elapsedTime < 60_000 -> "30 seconds ago"
+		else -> DateUtils.getRelativeTimeSpanString(
+			startTimeMillis,
+			endTimeMillis,
+			DateUtils.MINUTE_IN_MILLIS
+		).toString()
+	}
+}
+
+fun getRelativeTime(startDateTime: LocalDateTime, endTime: LocalDateTime?): String {
 	val startTimeMillis = dateTimeToMillis(startDateTime)
-	val currentTimeMillis = System.currentTimeMillis()
+	val endTimeMillis = if (endTime != null) dateTimeToMillis(endTime) else System.currentTimeMillis()
 
-	if (currentTimeMillis - startTimeMillis < DateUtils.SECOND_IN_MILLIS) return "Just now"
-
-	return DateUtils.getRelativeTimeSpanString(
-		startTimeMillis,
-		currentTimeMillis,
-		DateUtils.SECOND_IN_MILLIS
-	).toString()
+	return formatElapsedTime(startTimeMillis, endTimeMillis)
 }
