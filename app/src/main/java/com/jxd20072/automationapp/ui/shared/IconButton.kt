@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun Button(
@@ -45,6 +44,7 @@ fun IconButton(
 	icon: Int,
 	cornerRadius: Dp,
 	elevation: Dp,
+	padding: Dp,
 	modifier: Modifier = Modifier,
 	onClick: () -> Unit,
 ) {
@@ -62,7 +62,7 @@ fun IconButton(
 			tint = iconColor,
 			modifier = modifier
 				.fillMaxSize()
-				.padding(6.dp)
+				.padding(padding)
 		)
 	}
 }

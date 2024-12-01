@@ -89,6 +89,7 @@ fun AutomationCard(
 			icon = R.drawable.edit,
 			cornerRadius = 5.dp,
 			elevation = 6.dp,
+			padding = 6.dp,
 		) {}
 
 		Spacer(modifier = Modifier.width(10.dp))
@@ -100,6 +101,7 @@ fun AutomationCard(
 			icon = R.drawable.play_arrow,
 			cornerRadius = 5.dp,
 			elevation = 6.dp,
+			padding = 6.dp,
 		) {}
 	}
 }

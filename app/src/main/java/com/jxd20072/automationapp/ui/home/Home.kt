@@ -18,12 +18,17 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -72,16 +77,6 @@ fun TopBar(
 }
 
 @Composable
-private fun SearchBar(modifier: Modifier = Modifier) {
-	SearchBar(
-		searchText = "Search for automations",
-		modifier = modifier
-			.fillMaxWidth()
-			.height(45.dp)
-	)
-}
-
-@Composable
 private fun AutomationsList(
 	automations: List<Automation>,
 	currentTime: LocalDateTime,
@@ -105,12 +100,15 @@ private fun AutomationsList(
 	}
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
 	viewModel: HomeViewModel = viewModel(),
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by viewModel.state.collectAsState()
+	val bottomSheetState = rememberModalBottomSheetState()
+	var showBottomSheet by remember { mutableStateOf(false) }
 
 	Box(
 		modifier = Modifier
@@ -123,11 +121,16 @@ fun HomeScreen(
 		) {
 			TopBar(modifier = Modifier.padding(sidePadding))
 
-			SearchBar(modifier = Modifier.padding(sidePadding))
+			SearchBar(
+				searchText = "Search for automations",
+				modifier = Modifier
+					.fillMaxWidth()
+					.height(45.dp)
+					.padding(sidePadding)
+			)
 
 			FilterChips(
 				filters = homeUiState.filters,
-				canEdit = true,
 				sidePadding = sidePadding,
 				onFilterChange = { filter, enabled ->
 					viewModel.onFilterChanged(filter, enabled)
@@ -140,11 +143,22 @@ fun HomeScreen(
 			)
 		}
 
-		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
+		AddAutomationSheet(
+			show = showBottomSheet,
+			sheetState = bottomSheetState,
+			modifier = Modifier.padding(sidePadding),
+			onDismissRequest = {
+				showBottomSheet = false
+			}
+		) { name ->
 			viewModel.addAutomation(
-				"MyAutomation ${homeUiState.automations.size}",
+				name = name,
 				icon = R.drawable.function
 			)
+		}
+
+		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
+			showBottomSheet = true
 		}
 	}
 }

@@ -13,3 +13,5 @@ val dark_secondary = Color(0xFF51728D)
 val dark_onSecondary = dark_onBackground
 val dark_tertiary = Color(0xFF2D3943)
 val dark_onTertiary = dark_onSurface
+
+val dark_error = Color(0xFFCF6161)
