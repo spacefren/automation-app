@@ -35,7 +35,7 @@ fun AutomationCard(
 	Row(
 		modifier = modifier
 			.fillMaxWidth()
-			.shadow(6.dp, RoundedCornerShape(11.dp))
+			.shadow(5.dp, RoundedCornerShape(8.dp))
 			.background(MaterialTheme.colorScheme.surface)
 			.height(65.dp)
 			.padding(10.dp),
@@ -88,7 +88,6 @@ fun AutomationCard(
 			size = 45.dp,
 			icon = R.drawable.edit,
 			cornerRadius = 5.dp,
-			elevation = 6.dp,
 			padding = 6.dp,
 		) {}
 
@@ -100,7 +99,6 @@ fun AutomationCard(
 			size = 45.dp,
 			icon = R.drawable.play_arrow,
 			cornerRadius = 5.dp,
-			elevation = 6.dp,
 			padding = 6.dp,
 		) {}
 	}

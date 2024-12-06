@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -52,35 +51,28 @@ sealed class ValidationResult {
 @Composable
 fun BaseTextInput(
 	placeholderText: String,
+	text: String,
 	imeAction: ImeAction,
 	icon: Int? = null,
-	autoFocus: Boolean = false,
+	focused: Boolean = false,
 	modifier: Modifier = Modifier,
 	validateInput: ((text: String) -> ValidationResult)? = null,
-	onTextChanged: ((text: String) -> Unit)? = null,
-	onConfirm: ((text: String) -> Unit)? = null,
+	onTextChanged: ((text: String) -> Unit),
 ) {
 	val focusRequester = remember { FocusRequester() }
-	var focused by remember { mutableStateOf(false) }
-	var text by remember { mutableStateOf("") }
 	var errorText by remember { mutableStateOf("") }
 	val focusManager = LocalFocusManager.current
 	val closeInteractionSource = remember { MutableInteractionSource() }
 
 	fun evaluateInput(text: String) {
-		var success = true
 		if (validateInput != null) {
 			val validationResult = validateInput(text)
 
 			if (validationResult is ValidationResult.Error) {
 				errorText = validationResult.message
-				success = false
 			} else {
 				errorText = ""
 			}
-		}
-		if (success && onTextChanged != null) {
-			onTextChanged(text)
 		}
 	}
 
@@ -90,7 +82,7 @@ fun BaseTextInput(
 		Box(
 			modifier = Modifier
 				.height(45.dp)
-				.shadow(10.dp, RoundedCornerShape(11.dp))
+				.shadow(5.dp, RoundedCornerShape(8.dp))
 				.background(MaterialTheme.colorScheme.surface)
 				.clickable() {
 					focusRequester.requestFocus()
@@ -118,7 +110,7 @@ fun BaseTextInput(
 					BasicTextField(
 						value = text,
 						onValueChange = { t ->
-							text = t
+							onTextChanged(t)
 							evaluateInput(t)
 						},
 						singleLine = true,
@@ -131,15 +123,11 @@ fun BaseTextInput(
 						keyboardOptions = KeyboardOptions(imeAction = imeAction),
 						keyboardActions = KeyboardActions(onAny = {
 							focusManager.clearFocus()
-							if (onConfirm != null) onConfirm(text)
 						}),
 						modifier = Modifier
 							.fillMaxSize()
 							.wrapContentHeight(align = Alignment.CenterVertically)
 							.focusRequester(focusRequester)
-							.onFocusChanged {
-								focused = it.hasFocus
-							}
 					)
 
 					if (text == "") {
@@ -164,7 +152,7 @@ fun BaseTextInput(
 							.size(35.dp)
 							.padding(5.dp)
 							.clickable(interactionSource = closeInteractionSource, indication = null) {
-								text = ""
+								onTextChanged("")
 								focusManager.clearFocus()
 								evaluateInput("")
 							}
@@ -184,9 +172,11 @@ fun BaseTextInput(
 		}
 	}
 
-	if (autoFocus) {
-		LaunchedEffect(Unit) {
+	LaunchedEffect(focused) {
+		if (focused) {
 			focusRequester.requestFocus()
+		} else {
+			focusManager.clearFocus()
 		}
 	}
 }

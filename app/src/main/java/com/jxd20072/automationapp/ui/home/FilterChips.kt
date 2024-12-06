@@ -40,7 +40,7 @@ private fun FilterChip(
 	Box(
 		modifier = modifier
 			.fillMaxHeight()
-			.shadow(6.dp, RoundedCornerShape(7.dp))
+			.shadow(5.dp, RoundedCornerShape(6.dp))
 			.background(if (enabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface)
 			.clickable(
 				interactionSource = interactionSource,

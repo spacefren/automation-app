@@ -26,7 +26,7 @@ fun FloatingNewButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 		modifier = modifier
 			.height(60.dp)
 			.offset(-(20).dp, -(30).dp)
-			.shadow(26.dp, RoundedCornerShape(11.dp))
+			.shadow(26.dp, RoundedCornerShape(8.dp))
 			.clickable { onClick() }
 			.background(MaterialTheme.colorScheme.primary)
 			.padding(15.dp),
