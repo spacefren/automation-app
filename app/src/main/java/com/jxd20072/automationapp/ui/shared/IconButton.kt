@@ -15,12 +15,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun Button(
 	color: Color,
 	size: Dp,
-	elevation: Dp,
 	cornerRadius: Dp,
 	onClick: () -> Unit,
 	modifier: Modifier = Modifier,
@@ -28,7 +28,7 @@ fun Button(
 ) {
 	Box(
 		modifier = modifier
-			.shadow(elevation, RoundedCornerShape(cornerRadius))
+			.shadow(5.dp, RoundedCornerShape(cornerRadius))
 			.size(size)
 			.clickable(enabled = true, onClick = onClick)
 			.background(color),
@@ -43,7 +43,6 @@ fun IconButton(
 	size: Dp,
 	icon: Int,
 	cornerRadius: Dp,
-	elevation: Dp,
 	padding: Dp,
 	modifier: Modifier = Modifier,
 	onClick: () -> Unit,
@@ -51,8 +50,7 @@ fun IconButton(
 	Button(
 		color = color,
 		size = size,
-		elevation = cornerRadius,
-		cornerRadius = elevation,
+		cornerRadius = cornerRadius,
 		onClick = onClick,
 		modifier = modifier
 	) {

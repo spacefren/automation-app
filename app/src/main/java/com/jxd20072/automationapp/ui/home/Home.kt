@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.Automation
+import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.LocalDateTime
@@ -107,17 +107,16 @@ fun HomeScreen(
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by viewModel.state.collectAsState()
-	val bottomSheetState = rememberModalBottomSheetState()
 	var showBottomSheet by remember { mutableStateOf(false) }
 
-	Box(
+	Layer(
 		modifier = Modifier
 			.background(MaterialTheme.colorScheme.background)
-			.windowInsetsPadding(WindowInsets.statusBars)
 			.fillMaxSize()
 	) {
 		Column(
-			verticalArrangement = Arrangement.spacedBy(15.dp)
+			verticalArrangement = Arrangement.spacedBy(15.dp),
+			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			TopBar(modifier = Modifier.padding(sidePadding))
 
@@ -145,16 +144,16 @@ fun HomeScreen(
 
 		AddAutomationSheet(
 			show = showBottomSheet,
-			sheetState = bottomSheetState,
-			modifier = Modifier.padding(sidePadding),
 			onDismissRequest = {
 				showBottomSheet = false
-			}
-		) { name ->
+			},
+			modifier = Modifier.padding(sidePadding),
+		) { name, icon ->
 			viewModel.addAutomation(
 				name = name,
-				icon = R.drawable.function
+				icon = icon
 			)
+			showBottomSheet = false
 		}
 
 		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
