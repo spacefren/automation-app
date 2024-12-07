@@ -3,16 +3,18 @@ package com.jxd20072.automationapp.ui.home
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -103,64 +105,65 @@ fun AddAutomationScreen(
 	}
 }
 
-val icons = listOf(
-	// Numbers and Mathematical Symbols
-	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-	"hashtag", "percent", "not-equal", "plus", "minus",
-	"square-root-variable", "superscript", "subscript",
-
-	// User and Identity Icons
-	"user", "user-group", "user-nurse", "user-secret",
-	"user-shield", "users-rectangle", "user-tag",
-	"id-card", "address-card", "fingerprint",
-
-	// Communication and Technology
-	"phone", "wifi", "microphone", "headphones",
-	"tablet-screen-button", "desktop", "network-wired",
-	"microchip", "tower-broadcast", "walkie-talkie",
-
-	// Transportation and Vehicles
-	"plane", "train", "van-shuttle", "truck-medical",
-	"sailboat", "rocket",
-
-	// Nature and Environment
-	"sun", "moon", "cloud-arrow-up", "cloud-arrow-down",
-	"wind", "hurricane", "tornado", "volcano", "water",
-	"snowflake", "tree", "mountain-sun",
-
-	// Sports and Recreation
-	"volleyball", "person-skiing-nordic", "person-swimming",
-	"dumbbell", "trophy", "chess-knight",
-
-	// Household and Personal Items
-	"wallet", "shirt", "shoe-prints", "couch", "tv",
-	"umbrella", "umbrella-beach", "wine-bottle", "wine-glass",
-	"mug-hot", "suitcase", "credit-card", "key",
-
-	// Tools and Utilities
-	"wrench", "toolbox", "gears", "charging-station",
-	"battery-half", "ruler", "trowel", "vr-cardboard",
-	"wand-magic-sparkles", "eye-dropper",
-
-	// Medical and Health
-	"wheelchair", "universal-access", "syringe",
-	"star-of-life", "virus-covid", "health-related icons",
-
-	// Clothing and Accessories
-	"crown", "heart", "shield", "star", "star-and-crescent",
-	"star-of-david", "paw", "dog", "worm",
-
-	// Electronics and Connectivity
-	"paperclip", "link", "share", "inbox", "paper-plane",
-	"rss", "at", "web-awesome",
-
-	// Miscellaneous
-	"functions", "lightbulb", "music", "guitar",
-	"book-bookmark", "scroll", "note-sticky", "timeline",
-	"ticket", "bell", "bullhorn", "power-off", "print",
-	"robot", "layers"
+val iconCategories = mapOf(
+	"People and Identity" to listOf(
+		"user", "user-group", "user-secret", "user-shield", "user-graduate",
+		"address-card", "fingerprint", "street-view", "universal-access"
+	),
+	"Technology and Communication" to listOf(
+		"phone-flip", "mobile-screen-button", "microphone", "video", "headphones",
+		"headset", "envelope", "envelope-open", "comment", "message", "bullhorn",
+		"desktop", "laptop", "server", "microchip", "robot", "sd-card",
+		"cloud-arrow-up", "cloud-arrow-down", "wifi", "terminal", "radio"
+	),
+	"Navigation and Travel" to listOf(
+		"location-arrow", "location-dot", "compass", "compass-drafting",
+		"map", "globe", "earth-africa", "earth-americas", "earth-asia",
+		"plane", "plane-up", "train-subway", "train-tram", "truck",
+		"truck-pickup", "motorcycle", "sailboat"
+	),
+	"Health and Wellness" to listOf(
+		"wheelchair", "medical", "pills", "capsules", "virus-covid",
+		"staff-snake", "heart", "heart-pulse", "dumbbell", "stethoscope"
+	),
+	"Time and Organization" to listOf(
+		"clock", "clock-rotate-left", "calendar-day", "hourglass-end",
+		"stopwatch", "timeline", "file", "file-arrow-up", "file-arrow-down",
+		"folder-open", "folder-tree", "clipboard", "paperclip", "clone"
+	),
+	"Food and Dining" to listOf(
+		"utensils", "pizza-slice", "mug-hot", "cake-candles",
+		"glass-water", "coffee"
+	),
+	"Weather and Nature" to listOf(
+		"sun", "moon", "snowflake", "cloud-sun", "cloud-showers-heavy",
+		"hurricane", "wind", "tree", "mountain", "seedling", "water", "wave-square"
+	),
+	"Security and Protection" to listOf(
+		"lock", "unlock", "key", "shield-halved", "user-shield"
+	),
+	"Tools and Utilities" to listOf(
+		"wrench", "hammer", "toolbox", "ruler", "paint-roller", "trowel",
+		"wand-magic-sparkles", "screwdriver"
+	),
+	"Arts and Entertainment" to listOf(
+		"palette", "camera", "film", "clapperboard", "masks-theater",
+		"music", "guitar", "gamepad"
+	),
+	"Personal Accessories" to listOf(
+		"wallet", "suitcase", "umbrella", "umbrella-beach"
+	),
+	"Numbers" to listOf(
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+	),
+	"Miscellaneous" to listOf(
+		"vr-cardboard", "voicemail", "ticket", "qrcode", "language",
+		"toggle-off", "yin-yang", "meteor", "trophy", "power-off",
+		"volume-high", "volume-xmark"
+	),
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IconSelectScreen(
 	onIconSelected: (icon: String) -> Unit
@@ -174,22 +177,33 @@ fun IconSelectScreen(
 
 		SearchBar("Search icons")
 
-		LazyVerticalGrid(
-			columns = GridCells.Adaptive(43.dp),
-			verticalArrangement = Arrangement.spacedBy(8.dp),
-			horizontalArrangement = Arrangement.spacedBy(8.dp),
+		LazyColumn(
+			verticalArrangement = Arrangement.spacedBy(20.dp),
 		) {
-			items(icons) { icon ->
-				IconButton(
-					color = MaterialTheme.colorScheme.surface,
-					iconColor = MaterialTheme.colorScheme.onSurface,
-					iconName = icon,
-					cornerRadius = 8.dp,
-					padding = 8.dp,
-				) { onIconSelected(icon) }
+			items(iconCategories.keys.toList()) { category ->
+				Column {
+					Text(text = category, fontSize = 17.sp)
+					Spacer(modifier = Modifier.height(8.dp))
+					FlowRow(
+						verticalArrangement = Arrangement.spacedBy(8.dp),
+						horizontalArrangement = Arrangement.spacedBy(8.dp),
+						modifier = Modifier
+							.fillMaxWidth()
+					) {
+						iconCategories[category]!!.forEach() { icon ->
+							IconButton(
+								color = MaterialTheme.colorScheme.surface,
+								iconColor = MaterialTheme.colorScheme.onSurface,
+								iconName = icon,
+								cornerRadius = 8.dp,
+								padding = 8.dp,
+								modifier = Modifier.size(43.dp)
+							) { onIconSelected(icon) }
+						}
+					}
+				}
 			}
 		}
-		Spacer(modifier = Modifier.height(10.dp))
 	}
 }
 
@@ -221,7 +235,9 @@ fun AddAutomationSheet(
 			containerColor = MaterialTheme.colorScheme.background,
 			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
-			Layer(modifier = modifier) {
+			Layer(
+				modifier = modifier
+			) {
 				AnimatedContent(
 					targetState = screen, label = "",
 				) { targetState ->
