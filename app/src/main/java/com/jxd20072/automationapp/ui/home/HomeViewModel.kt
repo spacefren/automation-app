@@ -80,7 +80,7 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	fun addAutomation(name: String, icon: Int) {
+	fun addAutomation(name: String, icon: String) {
 		//automationsRepository.addAutomation(name = name, icon = icon)
 		_state.update { currentState ->
 			currentState.copy(

@@ -32,7 +32,6 @@ fun UserPreferencesScreen(
 			.fillMaxWidth()
 			.background(Color.Blue)
 			.clickable {
-				println("yea")
 				userPreferencesViewModel.setAutoSaveEnabled(!(userPreferencesUiState as UserPreferencesUiState.Success).settings.autoSave)
 			}
 	)

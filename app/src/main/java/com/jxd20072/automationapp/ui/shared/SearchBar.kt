@@ -20,7 +20,7 @@ fun SearchBar(
 		placeholderText = searchText,
 		text = text,
 		imeAction = ImeAction.Search,
-		icon = R.drawable.search,
+		icon = R.drawable.round_search_24,
 		modifier = modifier
 	) { newText ->
 		text = newText

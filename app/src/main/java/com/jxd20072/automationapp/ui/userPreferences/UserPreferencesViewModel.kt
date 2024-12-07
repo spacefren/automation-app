@@ -33,7 +33,6 @@ class UserPreferencesViewModel @Inject constructor(
 			)
 
 	fun setAutoSaveEnabled(enabled: Boolean) {
-		println("ENABLED? $enabled")
 		viewModelScope.launch {
 			userPreferencesRepository.setAutoSaveEnabled(enabled)
 		}

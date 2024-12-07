@@ -145,7 +145,7 @@ fun BaseTextInput(
 
 				if (text != "") {
 					Icon(
-						painter = painterResource(R.drawable.close),
+						painter = painterResource(R.drawable.round_close_24),
 						contentDescription = "search",
 						tint = MaterialTheme.colorScheme.onSurface,
 						modifier = Modifier

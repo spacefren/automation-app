@@ -65,7 +65,7 @@ fun TopBar(
 
 			Box {
 				Icon(
-					painter = painterResource(R.drawable.settings),
+					painter = painterResource(R.drawable.round_settings_24),
 					contentDescription = "settings",
 					tint = MaterialTheme.colorScheme.onBackground,
 					modifier = Modifier

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,12 +32,13 @@ fun FloatingNewButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 			.background(MaterialTheme.colorScheme.primary)
 			.padding(15.dp),
 		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.spacedBy(10.dp)
+		horizontalArrangement = Arrangement.spacedBy(5.dp)
 	) {
 		Icon(
-			painter = painterResource(R.drawable.add),
+			painter = painterResource(R.drawable.round_add_24),
 			contentDescription = "new automation",
-			tint = MaterialTheme.colorScheme.onPrimary
+			tint = MaterialTheme.colorScheme.onPrimary,
+			modifier = Modifier.size(30.dp)
 		)
 
 		Text(

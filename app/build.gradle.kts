@@ -94,6 +94,10 @@ dependencies {
 	implementation(libs.androidx.datastore.core)
 	implementation(libs.protobuf.javalite)
 	implementation(libs.protobuf.kotlin.lite)
+
+	// Coil
+	implementation(libs.coil.compose)
+	implementation(libs.coil.svg.v304)
 }
 
 androidComponents {

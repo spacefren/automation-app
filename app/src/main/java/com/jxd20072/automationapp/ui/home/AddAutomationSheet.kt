@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -16,10 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,16 +32,17 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.ValidationResult
 
 @Composable
 fun AddAutomationScreen(
-	selectedIcon: Int,
+	selectedIcon: String,
+	name: String,
 	onNameChanged: (name: String) -> Unit,
 	onIconChangeRequest: () -> Unit,
 	onCreateAutomation: (name: String) -> Unit,
 ) {
-	var chosenName by rememberSaveable { mutableStateOf("") }
 
 	fun validateText(text: String): ValidationResult {
 		return if (text == "" || text == "invalid") {
@@ -63,13 +66,13 @@ fun AddAutomationScreen(
 			IconButton(
 				color = MaterialTheme.colorScheme.secondary,
 				iconColor = MaterialTheme.colorScheme.onSecondary,
-				icon = R.drawable.check,
-				size = 45.dp,
+				drawableRes = R.drawable.round_check_24,
 				cornerRadius = 8.dp,
-				padding = 5.dp
+				padding = 5.dp,
+				modifier = Modifier.size(45.dp)
 			) {
-				if (validateText(chosenName) is ValidationResult.Success) {
-					onCreateAutomation(chosenName)
+				if (validateText(name) is ValidationResult.Success) {
+					onCreateAutomation(name)
 				}
 			}
 		}
@@ -79,10 +82,10 @@ fun AddAutomationScreen(
 			IconButton(
 				color = MaterialTheme.colorScheme.surface,
 				iconColor = MaterialTheme.colorScheme.onSurface,
-				size = 45.dp,
-				icon = selectedIcon,
-				cornerRadius = 11.dp,
-				padding = 8.dp
+				iconName = selectedIcon,
+				cornerRadius = 8.dp,
+				padding = 8.dp,
+				modifier = Modifier.size(45.dp)
 			) {
 				onIconChangeRequest()
 			}
@@ -90,20 +93,77 @@ fun AddAutomationScreen(
 				placeholderText = "Name",
 				imeAction = ImeAction.Done,
 				focused = false,
-				text = chosenName,
+				text = name,
 				validateInput = { text -> validateText(text) }
 			) { text ->
-				chosenName = text
-				onNameChanged(chosenName)
+				onNameChanged(text)
 			}
 		}
 		Spacer(modifier = Modifier.height(100.dp))
 	}
 }
 
+val icons = listOf(
+	// Numbers and Mathematical Symbols
+	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+	"hashtag", "percent", "not-equal", "plus", "minus",
+	"square-root-variable", "superscript", "subscript",
+
+	// User and Identity Icons
+	"user", "user-group", "user-nurse", "user-secret",
+	"user-shield", "users-rectangle", "user-tag",
+	"id-card", "address-card", "fingerprint",
+
+	// Communication and Technology
+	"phone", "wifi", "microphone", "headphones",
+	"tablet-screen-button", "desktop", "network-wired",
+	"microchip", "tower-broadcast", "walkie-talkie",
+
+	// Transportation and Vehicles
+	"plane", "train", "van-shuttle", "truck-medical",
+	"sailboat", "rocket",
+
+	// Nature and Environment
+	"sun", "moon", "cloud-arrow-up", "cloud-arrow-down",
+	"wind", "hurricane", "tornado", "volcano", "water",
+	"snowflake", "tree", "mountain-sun",
+
+	// Sports and Recreation
+	"volleyball", "person-skiing-nordic", "person-swimming",
+	"dumbbell", "trophy", "chess-knight",
+
+	// Household and Personal Items
+	"wallet", "shirt", "shoe-prints", "couch", "tv",
+	"umbrella", "umbrella-beach", "wine-bottle", "wine-glass",
+	"mug-hot", "suitcase", "credit-card", "key",
+
+	// Tools and Utilities
+	"wrench", "toolbox", "gears", "charging-station",
+	"battery-half", "ruler", "trowel", "vr-cardboard",
+	"wand-magic-sparkles", "eye-dropper",
+
+	// Medical and Health
+	"wheelchair", "universal-access", "syringe",
+	"star-of-life", "virus-covid", "health-related icons",
+
+	// Clothing and Accessories
+	"crown", "heart", "shield", "star", "star-and-crescent",
+	"star-of-david", "paw", "dog", "worm",
+
+	// Electronics and Connectivity
+	"paperclip", "link", "share", "inbox", "paper-plane",
+	"rss", "at", "web-awesome",
+
+	// Miscellaneous
+	"functions", "lightbulb", "music", "guitar",
+	"book-bookmark", "scroll", "note-sticky", "timeline",
+	"ticket", "bell", "bullhorn", "power-off", "print",
+	"robot", "layers"
+)
+
 @Composable
 fun IconSelectScreen(
-	onIconSelected: (icon: Int) -> Unit
+	onIconSelected: (icon: String) -> Unit
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
 		Text(
@@ -112,23 +172,21 @@ fun IconSelectScreen(
 			fontSize = 27.sp,
 		)
 
+		SearchBar("Search icons")
+
 		LazyVerticalGrid(
 			columns = GridCells.Adaptive(43.dp),
 			verticalArrangement = Arrangement.spacedBy(8.dp),
-			horizontalArrangement = Arrangement.spacedBy(8.dp)
+			horizontalArrangement = Arrangement.spacedBy(8.dp),
 		) {
-			items(10) {
+			items(icons) { icon ->
 				IconButton(
 					color = MaterialTheme.colorScheme.surface,
 					iconColor = MaterialTheme.colorScheme.onSurface,
-					icon = R.drawable.function,
+					iconName = icon,
 					cornerRadius = 8.dp,
 					padding = 8.dp,
-					size = 40.dp,
-					modifier = Modifier.aspectRatio(1f)
-				) {
-					onIconSelected(R.drawable.check)
-				}
+				) { onIconSelected(icon) }
 			}
 		}
 		Spacer(modifier = Modifier.height(10.dp))
@@ -145,23 +203,27 @@ fun AddAutomationSheet(
 	show: Boolean,
 	onDismissRequest: () -> Unit,
 	modifier: Modifier = Modifier,
-	onCreateAutomation: (name: String, icon: Int) -> Unit,
+	onCreateAutomation: (name: String, icon: String) -> Unit,
 ) {
 	var screen by remember { mutableStateOf(AddAutomationSheetScreen.AUTOMATION_ADD) }
-	val sheetState = rememberModalBottomSheetState()
-	var selectedIcon by remember { mutableIntStateOf(R.drawable.function) }
+	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+	var selectedIcon by remember { mutableStateOf("functions") }
 	var name by remember { mutableStateOf("") }
 
 	if (show) {
-		selectedIcon = R.drawable.function
+		selectedIcon = "functions"
+		screen = AddAutomationSheetScreen.AUTOMATION_ADD
+		name = ""
+
 		ModalBottomSheet(
 			sheetState = sheetState,
 			onDismissRequest = onDismissRequest,
 			containerColor = MaterialTheme.colorScheme.background,
+			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			Layer(modifier = modifier) {
 				AnimatedContent(
-					targetState = screen, label = ""
+					targetState = screen, label = "",
 				) { targetState ->
 					when (targetState) {
 						AddAutomationSheetScreen.AUTOMATION_ADD -> {
@@ -170,6 +232,7 @@ fun AddAutomationSheet(
 								onIconChangeRequest = {
 									screen = AddAutomationSheetScreen.ICON_SELECT
 								},
+								name = name,
 								onNameChanged = { newName -> name = newName },
 								onCreateAutomation = { name ->
 									onCreateAutomation(name, selectedIcon)

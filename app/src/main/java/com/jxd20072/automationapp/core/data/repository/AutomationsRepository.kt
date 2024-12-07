@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.data.repository
 
-import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.local.AutomationsDataSource
 import com.jxd20072.automationapp.core.data.model.Automation
 import kotlinx.coroutines.flow.flowOf
@@ -15,7 +14,7 @@ class AutomationsRepository @Inject constructor(
 			Automation(
 				name = "name",
 				id = "",
-				icon = R.drawable.function,
+				icon = "functions",
 				created = LocalDateTime.now(),
 				lastUsed = LocalDateTime.now(),
 				tags = setOf("hi", "this is awesome")
@@ -23,7 +22,7 @@ class AutomationsRepository @Inject constructor(
 		)
 	)
 
-	suspend fun addAutomation(name: String, icon: Int) {
+	suspend fun addAutomation(name: String, icon: String) {
 
 		automations.collect { value ->
 			value + listOf(
@@ -37,7 +36,6 @@ class AutomationsRepository @Inject constructor(
 				)
 			)
 		}
-		println("Automation added! $name")
 	}
 
 	fun getAutomations(): List<Automation> {
