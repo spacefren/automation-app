@@ -1,5 +1,7 @@
 package com.jxd20072.automationapp.ui.home
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +20,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -88,11 +89,15 @@ private fun AutomationsList(
 
 		verticalArrangement = Arrangement.spacedBy(10.dp)
 	) {
-		items(automations) { automation ->
+		items(automations, { it.id }) { automation ->
 			AutomationCard(
 				name = automation.name,
 				icon = automation.icon,
-				lastUsed = getRelativeTime(automation.lastUsed, currentTime)
+				lastUsed = getRelativeTime(automation.lastUsed, currentTime),
+				modifier = Modifier.animateItem(
+					fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
+					fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
+				)
 			)
 		}
 
@@ -100,7 +105,6 @@ private fun AutomationsList(
 	}
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
 	viewModel: HomeViewModel = viewModel(),
@@ -122,10 +126,12 @@ fun HomeScreen(
 
 			SearchBar(
 				searchText = "Search for automations",
+				queryText = homeUiState.searchQuery,
+				onSearch = { query -> viewModel.onSearch(query) },
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
-					.padding(sidePadding)
+					.padding(sidePadding),
 			)
 
 			FilterChips(
@@ -136,7 +142,7 @@ fun HomeScreen(
 				}
 			)
 			AutomationsList(
-				automations = homeUiState.automations,
+				automations = homeUiState.filteredAutomations,
 				currentTime = homeUiState.currentTime,
 				modifier = Modifier.padding(sidePadding)
 			)

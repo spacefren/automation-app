@@ -47,10 +47,10 @@ fun AddAutomationScreen(
 ) {
 
 	fun validateText(text: String): ValidationResult {
-		return if (text == "" || text == "invalid") {
-			ValidationResult.Error("Invalid name: idk bro")
-		} else {
-			ValidationResult.Success
+		return when {
+			text == "" -> ValidationResult.Error("Name cannot be empty.")
+			text.length > 25 -> ValidationResult.Error("Name is too long.")
+			else -> ValidationResult.Success
 		}
 	}
 
@@ -123,17 +123,17 @@ val iconCategories = mapOf(
 		"truck-pickup", "motorcycle", "sailboat"
 	),
 	"Health and Wellness" to listOf(
-		"wheelchair", "medical", "pills", "capsules", "virus-covid",
-		"staff-snake", "heart", "heart-pulse", "dumbbell", "stethoscope"
+		"wheelchair", "pills", "capsules", "virus-covid",
+		"staff-snake", "heart", "heart-pulse", "dumbbell"
 	),
 	"Time and Organization" to listOf(
 		"clock", "clock-rotate-left", "calendar-day", "hourglass-end",
 		"stopwatch", "timeline", "file", "file-arrow-up", "file-arrow-down",
-		"folder-open", "folder-tree", "clipboard", "paperclip", "clone"
+		"folder-open", "folder-tree", "paperclip", "paste", "clone"
 	),
 	"Food and Dining" to listOf(
 		"utensils", "pizza-slice", "mug-hot", "cake-candles",
-		"glass-water", "coffee"
+		"glass-water"
 	),
 	"Weather and Nature" to listOf(
 		"sun", "moon", "snowflake", "cloud-sun", "cloud-showers-heavy",
@@ -144,7 +144,7 @@ val iconCategories = mapOf(
 	),
 	"Tools and Utilities" to listOf(
 		"wrench", "hammer", "toolbox", "ruler", "paint-roller", "trowel",
-		"wand-magic-sparkles", "screwdriver"
+		"wand-magic-sparkles"
 	),
 	"Arts and Entertainment" to listOf(
 		"palette", "camera", "film", "clapperboard", "masks-theater",
@@ -175,7 +175,7 @@ fun IconSelectScreen(
 			fontSize = 27.sp,
 		)
 
-		SearchBar("Search icons")
+		SearchBar(searchText = "Search icons", queryText = "") { }
 
 		LazyColumn(
 			verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -202,6 +202,7 @@ fun IconSelectScreen(
 						}
 					}
 				}
+				Spacer(modifier = Modifier.height(15.dp))
 			}
 		}
 	}
@@ -221,11 +222,11 @@ fun AddAutomationSheet(
 ) {
 	var screen by remember { mutableStateOf(AddAutomationSheetScreen.AUTOMATION_ADD) }
 	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-	var selectedIcon by remember { mutableStateOf("functions") }
+	var selectedIcon by remember { mutableStateOf("") }
 	var name by remember { mutableStateOf("") }
 
 	if (show) {
-		selectedIcon = "functions"
+		selectedIcon = "wave-square"
 		screen = AddAutomationSheetScreen.AUTOMATION_ADD
 		name = ""
 

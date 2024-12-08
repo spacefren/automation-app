@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.core.data.local.AutomationsDataSource
 import com.jxd20072.automationapp.core.data.model.Automation
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.inject.Inject
 
 class AutomationsRepository @Inject constructor(
@@ -13,7 +14,7 @@ class AutomationsRepository @Inject constructor(
 		listOf(
 			Automation(
 				name = "name",
-				id = "",
+				id = UUID.randomUUID(),
 				icon = "functions",
 				created = LocalDateTime.now(),
 				lastUsed = LocalDateTime.now(),
@@ -28,7 +29,7 @@ class AutomationsRepository @Inject constructor(
 			value + listOf(
 				Automation(
 					name = name,
-					id = "",
+					id = UUID.randomUUID(),
 					icon = icon,
 					created = LocalDateTime.now(),
 					lastUsed = LocalDateTime.now(),

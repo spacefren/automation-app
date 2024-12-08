@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.inject.Inject
-
-// TODO: Filters and search :)
 
 @Immutable
 data class HomeScreenUiState(
 	val automations: List<Automation> = listOf(),
+	val filteredAutomations: List<Automation> = listOf(),
 	val filters: Map<String, Boolean> = mapOf(
 		"Users" to true,
 		"will" to false,
@@ -33,7 +33,8 @@ data class HomeScreenUiState(
 		"filters" to false,
 		"Extra one for scrolling" to false
 	),
-	val currentTime: LocalDateTime = LocalDateTime.now()
+	val currentTime: LocalDateTime = LocalDateTime.now(),
+	val searchQuery: String = "",
 )
 
 @HiltViewModel
@@ -52,7 +53,7 @@ class HomeViewModel @Inject constructor(
 	}
 
 	init {
-		updateFilters()
+		updateAllFilters()
 
 		viewModelScope.launch {
 			currentTimeFlow.collect { currentTime ->
@@ -63,21 +64,49 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
+	private fun filterAutomations() {
+		_state.update { currentState ->
+			currentState.copy(
+				filteredAutomations = currentState.automations.filter { automation ->
+					(
+									currentState.filters.all { filter -> !filter.value }
+													|| automation.tags.any { tag -> currentState.filters[tag] == true }
+									) && (
+									currentState.searchQuery == ""
+													|| automation.name.contains(currentState.searchQuery)
+									)
+				}
+			)
+		}
+		println(_state.value.filteredAutomations)
+	}
+
 	fun onFilterChanged(filter: String, enabled: Boolean) {
 		_state.update { currentState ->
 			currentState.copy(
 				filters = currentState.filters + mapOf(filter to enabled)
 			)
 		}
+		filterAutomations()
 	}
 
-	fun updateFilters() {
+	private fun updateAllFilters() {
 		_state.update { currentState ->
 			currentState.copy(
 				filters = currentState.filters +
 								currentState.automations.flatMap { it.tags }.distinct().associateWith { false }
 			)
 		}
+		filterAutomations()
+	}
+
+	fun onSearch(query: String) {
+		_state.update { currentState ->
+			currentState.copy(
+				searchQuery = query
+			)
+		}
+		filterAutomations()
 	}
 
 	fun addAutomation(name: String, icon: String) {
@@ -86,7 +115,7 @@ class HomeViewModel @Inject constructor(
 			currentState.copy(
 				automations = currentState.automations + Automation(
 					name = name,
-					id = "",
+					id = UUID.randomUUID(),
 					icon = icon,
 					created = LocalDateTime.now(),
 					lastUsed = LocalDateTime.now(),
@@ -94,8 +123,6 @@ class HomeViewModel @Inject constructor(
 				)
 			)
 		}
-
-		updateFilters()
+		filterAutomations()
 	}
 }
-
