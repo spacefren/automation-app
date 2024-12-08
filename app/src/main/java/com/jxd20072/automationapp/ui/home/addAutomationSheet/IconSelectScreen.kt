@@ -1,5 +1,7 @@
 package com.jxd20072.automationapp.ui.home.addAutomationSheet
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,6 +24,9 @@ import com.jxd20072.automationapp.ui.shared.SearchBar
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IconSelectScreen(
+	filteredIcons: Map<String, List<String>>,
+	iconSearchQuery: String,
+	onIconSearch: (query: String) -> Unit,
 	onIconSelected: (icon: String) -> Unit
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
@@ -31,13 +36,20 @@ fun IconSelectScreen(
 			fontSize = 27.sp,
 		)
 
-		SearchBar(searchText = "Search icons", queryText = "") { }
+		SearchBar(searchText = "Search icons", queryText = iconSearchQuery) { query ->
+			onIconSearch(query)
+		}
 
 		LazyColumn(
 			verticalArrangement = Arrangement.spacedBy(20.dp),
 		) {
-			items(iconCategories.keys.toList()) { category ->
-				Column {
+			items(filteredIcons.keys.toList(), key = { it }) { category ->
+				Column(
+					modifier = Modifier.animateItem(
+						fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
+						fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
+					)
+				) {
 					Text(text = category, fontSize = 17.sp)
 					Spacer(modifier = Modifier.height(8.dp))
 					FlowRow(
@@ -45,7 +57,7 @@ fun IconSelectScreen(
 						horizontalArrangement = Arrangement.spacedBy(8.dp),
 						modifier = Modifier.fillMaxWidth()
 					) {
-						iconCategories[category]!!.forEach() { icon ->
+						filteredIcons[category]!!.forEach() { icon ->
 							IconButton(
 								color = MaterialTheme.colorScheme.surface,
 								iconColor = MaterialTheme.colorScheme.onSurface,

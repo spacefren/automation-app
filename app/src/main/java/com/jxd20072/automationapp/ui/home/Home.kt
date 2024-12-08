@@ -41,7 +41,6 @@ import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.LocalDateTime
 
 /* TODO
-	* Icon filtering
 	* Swipe-to-archive
 	* Toasts
 */
@@ -165,6 +164,9 @@ fun HomeScreen(
 			},
 			onNameChanged = { name ->
 				viewModel.changeAddAutomationDrawerName(name)
+			},
+			onIconSearch = { searchQuery ->
+				viewModel.changeIconSelectorSearchQuery(searchQuery)
 			}
 		) {
 			viewModel.addAutomation(

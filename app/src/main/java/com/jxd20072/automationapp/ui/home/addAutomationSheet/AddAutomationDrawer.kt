@@ -23,6 +23,7 @@ fun AddAutomationDrawer(
 	onScreenChanged: (screen: AddAutomationDrawerScreen) -> Unit,
 	onNameChanged: (name: String) -> Unit,
 	onIconChanged: (icon: String) -> Unit,
+	onIconSearch: (query: String) -> Unit,
 	onCreateAutomation: () -> Unit,
 ) {
 	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -56,10 +57,14 @@ fun AddAutomationDrawer(
 						}
 
 						AddAutomationDrawerScreen.ICON_SELECT -> {
-							IconSelectScreen(onIconSelected = { icon ->
+							IconSelectScreen(
+								filteredIcons = drawerUiState.filteredIcons,
+								iconSearchQuery = drawerUiState.iconSearchQuery,
+								onIconSearch = onIconSearch
+							) { icon ->
 								onIconChanged(icon)
 								onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
-							})
+							}
 						}
 					}
 				}

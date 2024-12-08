@@ -10,7 +10,7 @@ val iconCategories = mapOf(
 		"address-card",
 		"fingerprint",
 		"street-view",
-		"universal-access"
+		"universal-access",
 	),
 	"Technology and Communication" to listOf(
 		"phone-flip",
@@ -34,7 +34,7 @@ val iconCategories = mapOf(
 		"cloud-arrow-down",
 		"wifi",
 		"terminal",
-		"radio"
+		"radio",
 	),
 	"Navigation and Travel" to listOf(
 		"location-arrow",
@@ -53,7 +53,7 @@ val iconCategories = mapOf(
 		"truck",
 		"truck-pickup",
 		"motorcycle",
-		"sailboat"
+		"sailboat",
 	),
 	"Health and Wellness" to listOf(
 		"wheelchair",
@@ -63,7 +63,7 @@ val iconCategories = mapOf(
 		"staff-snake",
 		"heart",
 		"heart-pulse",
-		"dumbbell"
+		"dumbbell",
 	),
 	"Time and Organization" to listOf(
 		"clock",
@@ -82,7 +82,7 @@ val iconCategories = mapOf(
 		"clone"
 	),
 	"Food and Dining" to listOf(
-		"utensils", "pizza-slice", "mug-hot", "cake-candles", "glass-water"
+		"utensils", "pizza-slice", "mug-hot", "cake-candles", "glass-water",
 	),
 	"Weather and Nature" to listOf(
 		"sun",
@@ -96,10 +96,9 @@ val iconCategories = mapOf(
 		"mountain",
 		"seedling",
 		"water",
-		"wave-square"
 	),
 	"Security and Protection" to listOf(
-		"lock", "unlock", "key", "shield-halved", "user-shield"
+		"lock", "unlock", "key", "shield-halved", "user-shield",
 	),
 	"Tools and Utilities" to listOf(
 		"wrench",
@@ -108,7 +107,7 @@ val iconCategories = mapOf(
 		"ruler",
 		"paint-roller",
 		"trowel",
-		"wand-magic-sparkles"
+		"wand-magic-sparkles",
 	),
 	"Arts and Entertainment" to listOf(
 		"palette",
@@ -118,13 +117,13 @@ val iconCategories = mapOf(
 		"masks-theater",
 		"music",
 		"guitar",
-		"gamepad"
+		"gamepad",
 	),
 	"Personal Accessories" to listOf(
-		"wallet", "suitcase", "umbrella", "umbrella-beach"
+		"wallet", "suitcase", "umbrella", "umbrella-beach",
 	),
 	"Numbers" to listOf(
-		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	),
 	"Miscellaneous" to listOf(
 		"vr-cardboard",
@@ -138,6 +137,7 @@ val iconCategories = mapOf(
 		"trophy",
 		"power-off",
 		"volume-high",
-		"volume-xmark"
+		"volume-xmark",
+		"wave-square",
 	),
 )

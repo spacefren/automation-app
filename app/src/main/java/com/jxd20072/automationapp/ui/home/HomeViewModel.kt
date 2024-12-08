@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.Automation
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
+import com.jxd20072.automationapp.ui.home.addAutomationSheet.iconCategories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,8 @@ data class AddAutomationDrawerUiState(
 	val selectedName: String = "",
 	val selectedIcon: String = "wave-square",
 
+	val icons: Map<String, List<String>> = iconCategories,
+	val filteredIcons: Map<String, List<String>> = icons,
 	val iconSearchQuery: String = "",
 )
 
@@ -177,6 +180,31 @@ class HomeViewModel @Inject constructor(
 			currentState.copy(
 				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
 					selectedIcon = icon
+				)
+			)
+		}
+	}
+
+	fun changeIconSelectorSearchQuery(query: String) {
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					iconSearchQuery = query
+				)
+			)
+		}
+		filterIcons()
+	}
+
+	private fun filterIcons() {
+		_state.update { currentState ->
+			val searchQuery =
+				currentState.addAutomationDrawerState.iconSearchQuery.lowercase()
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					filteredIcons = currentState.addAutomationDrawerState.icons.mapValues { entry ->
+						entry.value.filter { icon -> icon.lowercase().contains(searchQuery) }
+					}.filter { entry -> entry.value.isNotEmpty() }
 				)
 			)
 		}
