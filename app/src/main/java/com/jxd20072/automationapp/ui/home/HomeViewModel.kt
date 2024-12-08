@@ -18,6 +18,21 @@ import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
 
+enum class AddAutomationDrawerScreen {
+	AUTOMATION_ADD, ICON_SELECT
+}
+
+@Immutable
+data class AddAutomationDrawerUiState(
+	val isDrawerOpen: Boolean = false,
+	val screen: AddAutomationDrawerScreen = AddAutomationDrawerScreen.AUTOMATION_ADD,
+
+	val selectedName: String = "",
+	val selectedIcon: String = "wave-square",
+
+	val iconSearchQuery: String = "",
+)
+
 @Immutable
 data class HomeScreenUiState(
 	val automations: List<Automation> = listOf(),
@@ -35,6 +50,9 @@ data class HomeScreenUiState(
 	),
 	val currentTime: LocalDateTime = LocalDateTime.now(),
 	val searchQuery: String = "",
+
+	val addAutomationDrawerState: AddAutomationDrawerUiState =
+		AddAutomationDrawerUiState()
 )
 
 @HiltViewModel
@@ -69,19 +87,21 @@ class HomeViewModel @Inject constructor(
 			currentState.copy(
 				filteredAutomations = currentState.automations.filter { automation ->
 					(
-									currentState.filters.all { filter -> !filter.value }
-													|| automation.tags.any { tag -> currentState.filters[tag] == true }
-									) && (
-									currentState.searchQuery == ""
-													|| automation.name.contains(currentState.searchQuery)
-									)
+						currentState.filters.all { filter -> !filter.value }
+							|| automation.tags
+							.any { tag -> currentState.filters[tag] == true }
+						) && (
+						currentState.searchQuery == ""
+							|| automation.name.lowercase()
+							.contains(currentState.searchQuery.lowercase())
+						)
 				}
 			)
 		}
 		println(_state.value.filteredAutomations)
 	}
 
-	fun onFilterChanged(filter: String, enabled: Boolean) {
+	fun changeFilter(filter: String, enabled: Boolean) {
 		_state.update { currentState ->
 			currentState.copy(
 				filters = currentState.filters + mapOf(filter to enabled)
@@ -94,19 +114,72 @@ class HomeViewModel @Inject constructor(
 		_state.update { currentState ->
 			currentState.copy(
 				filters = currentState.filters +
-								currentState.automations.flatMap { it.tags }.distinct().associateWith { false }
+					currentState.automations.flatMap { it.tags }.distinct()
+						.associateWith { false }
 			)
 		}
 		filterAutomations()
 	}
 
-	fun onSearch(query: String) {
+	fun changeSearchQuery(query: String) {
 		_state.update { currentState ->
 			currentState.copy(
 				searchQuery = query
 			)
 		}
 		filterAutomations()
+	}
+
+	private fun resetAddAutomationDrawerState() {
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = AddAutomationDrawerUiState()
+			)
+		}
+	}
+
+	fun changeAddAutomationDrawerVisibility(open: Boolean) {
+		if (open) {
+			resetAddAutomationDrawerState()
+		}
+
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					isDrawerOpen = open
+				)
+			)
+		}
+	}
+
+	fun changeAddAutomationDrawerScreen(screen: AddAutomationDrawerScreen) {
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					screen = screen
+				)
+			)
+		}
+	}
+
+	fun changeAddAutomationDrawerName(name: String) {
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					selectedName = name
+				)
+			)
+		}
+	}
+
+	fun changeAddAutomationDrawerIcon(icon: String) {
+		_state.update { currentState ->
+			currentState.copy(
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					selectedIcon = icon
+				)
+			)
+		}
 	}
 
 	fun addAutomation(name: String, icon: String) {

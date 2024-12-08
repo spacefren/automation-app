@@ -1,0 +1,143 @@
+package com.jxd20072.automationapp.ui.home.addAutomationSheet
+
+val iconCategories = mapOf(
+	"People and Identity" to listOf(
+		"user",
+		"user-group",
+		"user-secret",
+		"user-shield",
+		"user-graduate",
+		"address-card",
+		"fingerprint",
+		"street-view",
+		"universal-access"
+	),
+	"Technology and Communication" to listOf(
+		"phone-flip",
+		"mobile-screen-button",
+		"microphone",
+		"video",
+		"headphones",
+		"headset",
+		"envelope",
+		"envelope-open",
+		"comment",
+		"message",
+		"bullhorn",
+		"desktop",
+		"laptop",
+		"server",
+		"microchip",
+		"robot",
+		"sd-card",
+		"cloud-arrow-up",
+		"cloud-arrow-down",
+		"wifi",
+		"terminal",
+		"radio"
+	),
+	"Navigation and Travel" to listOf(
+		"location-arrow",
+		"location-dot",
+		"compass",
+		"compass-drafting",
+		"map",
+		"globe",
+		"earth-africa",
+		"earth-americas",
+		"earth-asia",
+		"plane",
+		"plane-up",
+		"train-subway",
+		"train-tram",
+		"truck",
+		"truck-pickup",
+		"motorcycle",
+		"sailboat"
+	),
+	"Health and Wellness" to listOf(
+		"wheelchair",
+		"pills",
+		"capsules",
+		"virus-covid",
+		"staff-snake",
+		"heart",
+		"heart-pulse",
+		"dumbbell"
+	),
+	"Time and Organization" to listOf(
+		"clock",
+		"clock-rotate-left",
+		"calendar-day",
+		"hourglass-end",
+		"stopwatch",
+		"timeline",
+		"file",
+		"file-arrow-up",
+		"file-arrow-down",
+		"folder-open",
+		"folder-tree",
+		"paperclip",
+		"paste",
+		"clone"
+	),
+	"Food and Dining" to listOf(
+		"utensils", "pizza-slice", "mug-hot", "cake-candles", "glass-water"
+	),
+	"Weather and Nature" to listOf(
+		"sun",
+		"moon",
+		"snowflake",
+		"cloud-sun",
+		"cloud-showers-heavy",
+		"hurricane",
+		"wind",
+		"tree",
+		"mountain",
+		"seedling",
+		"water",
+		"wave-square"
+	),
+	"Security and Protection" to listOf(
+		"lock", "unlock", "key", "shield-halved", "user-shield"
+	),
+	"Tools and Utilities" to listOf(
+		"wrench",
+		"hammer",
+		"toolbox",
+		"ruler",
+		"paint-roller",
+		"trowel",
+		"wand-magic-sparkles"
+	),
+	"Arts and Entertainment" to listOf(
+		"palette",
+		"camera",
+		"film",
+		"clapperboard",
+		"masks-theater",
+		"music",
+		"guitar",
+		"gamepad"
+	),
+	"Personal Accessories" to listOf(
+		"wallet", "suitcase", "umbrella", "umbrella-beach"
+	),
+	"Numbers" to listOf(
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+	),
+	"Miscellaneous" to listOf(
+		"vr-cardboard",
+		"voicemail",
+		"ticket",
+		"qrcode",
+		"language",
+		"toggle-off",
+		"yin-yang",
+		"meteor",
+		"trophy",
+		"power-off",
+		"volume-high",
+		"volume-xmark"
+	),
+)

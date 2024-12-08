@@ -26,9 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,10 +34,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.Automation
+import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.LocalDateTime
+
+/* TODO
+	* Icon filtering
+	* Swipe-to-archive
+	* Toasts
+*/
 
 @Composable
 fun TopBar(
@@ -111,7 +115,6 @@ fun HomeScreen(
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by viewModel.state.collectAsState()
-	var showBottomSheet by remember { mutableStateOf(false) }
 
 	Layer(
 		modifier = Modifier
@@ -127,7 +130,7 @@ fun HomeScreen(
 			SearchBar(
 				searchText = "Search for automations",
 				queryText = homeUiState.searchQuery,
-				onSearch = { query -> viewModel.onSearch(query) },
+				onSearch = { query -> viewModel.changeSearchQuery(query) },
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
@@ -138,7 +141,7 @@ fun HomeScreen(
 				filters = homeUiState.filters,
 				sidePadding = sidePadding,
 				onFilterChange = { filter, enabled ->
-					viewModel.onFilterChanged(filter, enabled)
+					viewModel.changeFilter(filter, enabled)
 				}
 			)
 			AutomationsList(
@@ -148,22 +151,31 @@ fun HomeScreen(
 			)
 		}
 
-		AddAutomationSheet(
-			show = showBottomSheet,
+		AddAutomationDrawer(
+			drawerUiState = homeUiState.addAutomationDrawerState,
 			onDismissRequest = {
-				showBottomSheet = false
+				viewModel.changeAddAutomationDrawerVisibility(false)
 			},
 			modifier = Modifier.padding(sidePadding),
-		) { name, icon ->
+			onScreenChanged = { screen ->
+				viewModel.changeAddAutomationDrawerScreen(screen)
+			},
+			onIconChanged = { icon ->
+				viewModel.changeAddAutomationDrawerIcon(icon)
+			},
+			onNameChanged = { name ->
+				viewModel.changeAddAutomationDrawerName(name)
+			}
+		) {
 			viewModel.addAutomation(
-				name = name,
-				icon = icon
+				name = homeUiState.addAutomationDrawerState.selectedName,
+				icon = homeUiState.addAutomationDrawerState.selectedIcon
 			)
-			showBottomSheet = false
+			viewModel.changeAddAutomationDrawerVisibility(false)
 		}
 
 		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
-			showBottomSheet = true
+			viewModel.changeAddAutomationDrawerVisibility(true)
 		}
 	}
 }
