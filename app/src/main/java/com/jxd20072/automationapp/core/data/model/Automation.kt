@@ -1,13 +1,22 @@
 package com.jxd20072.automationapp.core.data.model
 
-import java.time.LocalDateTime
+import com.jxd20072.automationapp.core.data.serializer.InstantSerializer
+import com.jxd20072.automationapp.core.data.serializer.UUIDSerializer
+import kotlinx.serialization.Serializable
+import java.time.Instant
 import java.util.UUID
 
-data class Automation(
-	val name: String,
-	val id: UUID,
+@Serializable
+data class AutomationMetadata(
 	val icon: String,
-	val created: LocalDateTime,
-	val lastUsed: LocalDateTime,
-	val tags: Set<String>,
+	@Serializable(with = InstantSerializer::class)
+	val lastRan: Instant?,
+	val tags: List<String>,
+	@Serializable(with = UUIDSerializer::class)
+	val id: UUID
+)
+
+@Serializable
+data class Automation(
+	val metadata: AutomationMetadata,
 )

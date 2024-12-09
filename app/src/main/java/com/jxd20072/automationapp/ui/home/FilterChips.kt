@@ -71,20 +71,22 @@ fun FilterChips(
 ) {
 	val scrollState = rememberScrollState(0)
 
-	Row(
-		horizontalArrangement = Arrangement.spacedBy(10.dp),
-		modifier = modifier
-			.horizontalScroll(scrollState)
-			.height(25.dp)
-	) {
-		Spacer(modifier = Modifier.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp))
+	if (filters.isNotEmpty()) {
+		Row(
+			horizontalArrangement = Arrangement.spacedBy(10.dp),
+			modifier = modifier
+				.horizontalScroll(scrollState)
+				.height(25.dp)
+		) {
+			Spacer(modifier = Modifier.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp))
 
-		filters.map { (name, enabled) ->
-			FilterChip(name = name, enabled = enabled) { hasEnabled ->
-				onFilterChange(name, hasEnabled)
+			filters.map { (name, enabled) ->
+				FilterChip(name = name, enabled = enabled) { hasEnabled ->
+					onFilterChange(name, hasEnabled)
+				}
 			}
-		}
 
-		Spacer(modifier = Modifier.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp))
+			Spacer(modifier = Modifier.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp))
+		}
 	}
 }

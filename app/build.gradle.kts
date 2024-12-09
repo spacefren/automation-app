@@ -15,6 +15,9 @@ plugins {
 
 	// Datastore
 	id("com.google.protobuf") version "0.9.4"
+
+	// Serialization
+	id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -94,6 +97,9 @@ dependencies {
 	implementation(libs.androidx.datastore.core)
 	implementation(libs.protobuf.javalite)
 	implementation(libs.protobuf.kotlin.lite)
+
+	// Serialization
+	implementation(libs.kotlinx.serialization.json)
 
 	// Coil
 	implementation(libs.coil.compose)

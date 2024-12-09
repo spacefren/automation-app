@@ -33,12 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.Automation
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
-import java.time.LocalDateTime
+import java.time.Instant
 
 /* TODO
 	* Swipe-to-archive
@@ -82,8 +81,8 @@ fun TopBar(
 
 @Composable
 private fun AutomationsList(
-	automations: List<Automation>,
-	currentTime: LocalDateTime,
+	automations: List<AutomationCardState>,
+	currentTime: Instant,
 	modifier: Modifier = Modifier
 ) {
 	LazyColumn(
@@ -110,10 +109,12 @@ private fun AutomationsList(
 
 @Composable
 fun HomeScreen(
-	viewModel: HomeViewModel = viewModel(),
+	homeViewModel: HomeViewModel = viewModel(),
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
-	val homeUiState by viewModel.state.collectAsState()
+	val homeUiState by homeViewModel.homeUiState.collectAsState()
+
+	//val automationsUiState by homeViewModel.automationsState.collectAsState()
 
 	Layer(
 		modifier = Modifier
@@ -129,7 +130,7 @@ fun HomeScreen(
 			SearchBar(
 				searchText = "Search for automations",
 				queryText = homeUiState.searchQuery,
-				onSearch = { query -> viewModel.changeSearchQuery(query) },
+				onSearch = { query -> homeViewModel.changeSearchQuery(query) },
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
@@ -140,7 +141,7 @@ fun HomeScreen(
 				filters = homeUiState.filters,
 				sidePadding = sidePadding,
 				onFilterChange = { filter, enabled ->
-					viewModel.changeFilter(filter, enabled)
+					homeViewModel.changeFilter(filter, enabled)
 				}
 			)
 			AutomationsList(
@@ -153,31 +154,31 @@ fun HomeScreen(
 		AddAutomationDrawer(
 			drawerUiState = homeUiState.addAutomationDrawerState,
 			onDismissRequest = {
-				viewModel.changeAddAutomationDrawerVisibility(false)
+				homeViewModel.changeAddAutomationDrawerVisibility(false)
 			},
 			modifier = Modifier.padding(sidePadding),
 			onScreenChanged = { screen ->
-				viewModel.changeAddAutomationDrawerScreen(screen)
+				homeViewModel.changeAddAutomationDrawerScreen(screen)
 			},
 			onIconChanged = { icon ->
-				viewModel.changeAddAutomationDrawerIcon(icon)
+				homeViewModel.changeAddAutomationDrawerIcon(icon)
 			},
 			onNameChanged = { name ->
-				viewModel.changeAddAutomationDrawerName(name)
+				homeViewModel.changeAddAutomationDrawerName(name)
 			},
 			onIconSearch = { searchQuery ->
-				viewModel.changeIconSelectorSearchQuery(searchQuery)
+				homeViewModel.changeIconSelectorSearchQuery(searchQuery)
 			}
 		) {
-			viewModel.addAutomation(
+			homeViewModel.addAutomation(
 				name = homeUiState.addAutomationDrawerState.selectedName,
 				icon = homeUiState.addAutomationDrawerState.selectedIcon
 			)
-			viewModel.changeAddAutomationDrawerVisibility(false)
+			homeViewModel.changeAddAutomationDrawerVisibility(false)
 		}
 
 		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
-			viewModel.changeAddAutomationDrawerVisibility(true)
+			homeViewModel.changeAddAutomationDrawerVisibility(true)
 		}
 	}
 }
