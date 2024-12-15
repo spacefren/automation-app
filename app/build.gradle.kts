@@ -10,7 +10,7 @@ plugins {
 	alias(libs.plugins.kotlin.compose)
 
 	// Hilt / KSP
-	id("com.google.devtools.ksp") version "2.0.21-1.0.27"
+	id("com.google.devtools.ksp") version "2.1.0-1.0.29"
 	id("com.google.dagger.hilt.android")
 
 	// Datastore
@@ -70,6 +70,7 @@ dependencies {
 	// Core
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
+	implementation(libs.androidx.compose.material)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -84,11 +85,13 @@ dependencies {
 	implementation(libs.androidx.ui.tooling.preview)
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.lifecycle.viewmodel.compose)
+	implementation(libs.androidx.navigation.compose)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
 	// Hilt / KSP
 	implementation(libs.hilt.android.v252)
+	implementation(libs.hilt.navigation.compose)
 	ksp(libs.hilt.android.compiler.v252)
 	ksp(libs.hilt.compiler)
 

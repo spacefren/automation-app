@@ -12,15 +12,8 @@ import javax.inject.Inject
 class AutomationsStore @Inject constructor(
 	private val context: Context
 ) {
-	fun readAutomationFile(name: String): String? {
-		val file = File(context.getExternalFilesDir(null), name)
-
-		return if (file.exists()) file.readText() else null
-	}
-
-	fun getAutomations(): List<File> {
-		val directory = getAutomationsDirectory()
-		return directory.listFiles()?.filter { it.isFile } ?: emptyList()
+	private fun readAutomationFile(file: File): Automation {
+		return Json.decodeFromString<Automation>(file.readText())
 	}
 
 	private fun getAutomationsDirectory(): File {
@@ -32,12 +25,27 @@ class AutomationsStore @Inject constructor(
 		return automationsDir
 	}
 
-	fun createAutomationFile(name: String, metadata: AutomationMetadata): Boolean {
+	fun getAutomations(): List<Automation> {
+		val directory = getAutomationsDirectory()
+		return directory.listFiles()
+			?.filter { it.isFile }
+			?.map { file -> readAutomationFile(file) }
+			?: emptyList()
+	}
+
+	fun createAutomationFile(metadata: AutomationMetadata): Boolean {
 		return try {
 			val automationsDirectory = getAutomationsDirectory()
 
-			val file = File(automationsDirectory, "$name.json")
-			val fileContent = Json.encodeToString(Automation(metadata = metadata))
+			val file = File(automationsDirectory, "${metadata.name}.json")
+			val fileContent = Json.encodeToString(
+				Automation(
+					metadata = metadata,
+					variables = emptySet(),
+					functions = emptyList(),
+					triggers = emptyList(),
+				)
+			)
 			file.writeText(fileContent)
 
 			true

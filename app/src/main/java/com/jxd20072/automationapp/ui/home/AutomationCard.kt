@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,76 +50,80 @@ fun AutomationCard(
 	lastUsed: String,
 	modifier: Modifier = Modifier
 ) {
-	Row(
-		modifier = modifier
-			.fillMaxWidth()
-			.shadow(5.dp, RoundedCornerShape(8.dp))
-			.background(MaterialTheme.colorScheme.surface)
+	Box(
+		modifier = Modifier
 			.height(65.dp)
-			.padding(10.dp),
-		horizontalArrangement = Arrangement.End,
-		verticalAlignment = Alignment.CenterVertically
+			.fillMaxWidth()
 	) {
-		Column(
-			modifier = Modifier
-				.weight(1f)
-				.fillMaxHeight()
+		Row(
+			modifier = modifier
+				.shadow(5.dp, RoundedCornerShape(8.dp))
+				.background(MaterialTheme.colorScheme.surface)
+				.padding(10.dp),
+			horizontalArrangement = Arrangement.End,
+			verticalAlignment = Alignment.CenterVertically
 		) {
-			Row(
+			Column(
 				modifier = Modifier
-					.fillMaxWidth()
-					.weight(1f),
-				verticalAlignment = Alignment.Top
+					.weight(1f)
+					.fillMaxHeight()
 			) {
-				Image(
-					painter = getAutomationIconPainter(icon),
-					contentDescription = "",
-					colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+				Row(
 					modifier = Modifier
-						.size(22.dp)
-						.padding(top = 2.dp)
-				)
-				Spacer(modifier = Modifier.width(8.dp))
+						.fillMaxWidth()
+						.weight(1f),
+					verticalAlignment = Alignment.Top
+				) {
+					Image(
+						painter = getAutomationIconPainter(icon),
+						contentDescription = "",
+						colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+						modifier = Modifier
+							.size(22.dp)
+							.padding(top = 2.dp)
+					)
+					Spacer(modifier = Modifier.width(8.dp))
+					Text(
+						text = name,
+						color = MaterialTheme.colorScheme.onBackground,
+						fontSize = 18.sp,
+						modifier = Modifier
+							.height(22.dp)
+					)
+				}
 				Text(
-					text = name,
-					color = MaterialTheme.colorScheme.onBackground,
-					fontSize = 18.sp,
+					text = "Last ran: $lastUsed",
+					color = MaterialTheme.colorScheme.onSurface,
+					fontSize = 13.sp,
+					lineHeight = 13.sp,
 					modifier = Modifier
-						.height(22.dp)
+						.padding(start = 2.dp) // Align with the icon's live area
 				)
 			}
-			Text(
-				text = "Last ran: $lastUsed",
-				color = MaterialTheme.colorScheme.onSurface,
-				fontSize = 13.sp,
-				lineHeight = 13.sp,
+
+			Spacer(modifier = Modifier.width(10.dp))
+
+			IconButton(
+				color = MaterialTheme.colorScheme.tertiary,
+				iconColor = MaterialTheme.colorScheme.onTertiary,
+				drawableRes = R.drawable.round_edit_24,
+				cornerRadius = 5.dp,
+				padding = 6.dp,
 				modifier = Modifier
-					.padding(start = 2.dp) // Align with the icon's live area
-			)
+					.size(45.dp)
+			) {}
+
+			Spacer(modifier = Modifier.width(10.dp))
+
+			IconButton(
+				color = MaterialTheme.colorScheme.secondary,
+				iconColor = MaterialTheme.colorScheme.onSecondary,
+				drawableRes = R.drawable.round_play_arrow_24,
+				cornerRadius = 5.dp,
+				padding = 4.dp,
+				modifier = Modifier
+					.size(45.dp)
+			) {}
 		}
-
-		Spacer(modifier = Modifier.width(10.dp))
-
-		IconButton(
-			color = MaterialTheme.colorScheme.tertiary,
-			iconColor = MaterialTheme.colorScheme.onTertiary,
-			drawableRes = R.drawable.round_edit_24,
-			cornerRadius = 5.dp,
-			padding = 6.dp,
-			modifier = Modifier
-				.size(45.dp)
-		) {}
-
-		Spacer(modifier = Modifier.width(10.dp))
-
-		IconButton(
-			color = MaterialTheme.colorScheme.secondary,
-			iconColor = MaterialTheme.colorScheme.onSecondary,
-			drawableRes = R.drawable.round_play_arrow_24,
-			cornerRadius = 5.dp,
-			padding = 4.dp,
-			modifier = Modifier
-				.size(45.dp)
-		) {}
 	}
 }

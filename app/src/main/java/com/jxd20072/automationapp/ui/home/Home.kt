@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,13 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.Instant
+import java.util.UUID
 
 /* TODO
 	* Swipe-to-archive
@@ -46,7 +48,8 @@ import java.time.Instant
 
 @Composable
 fun TopBar(
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	openSettings: () -> Unit
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -73,6 +76,7 @@ fun TopBar(
 					tint = MaterialTheme.colorScheme.onBackground,
 					modifier = Modifier
 						.size(28.dp)
+						.clickable { openSettings() }
 				)
 			}
 		}
@@ -95,7 +99,9 @@ private fun AutomationsList(
 			AutomationCard(
 				name = automation.name,
 				icon = automation.icon,
-				lastUsed = getRelativeTime(automation.lastUsed, currentTime),
+				lastUsed = if (automation.lastUsed != null) {
+					getRelativeTime(automation.lastUsed, currentTime)
+				} else "never",
 				modifier = Modifier.animateItem(
 					fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
 					fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
@@ -109,7 +115,9 @@ private fun AutomationsList(
 
 @Composable
 fun HomeScreen(
-	homeViewModel: HomeViewModel = viewModel(),
+	homeViewModel: HomeViewModel = hiltViewModel(),
+	openSettings: () -> Unit,
+	openAutomation: (id: UUID) -> Unit
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
@@ -118,14 +126,17 @@ fun HomeScreen(
 
 	Layer(
 		modifier = Modifier
-			.background(MaterialTheme.colorScheme.background)
 			.fillMaxSize()
+			.background(MaterialTheme.colorScheme.background)
 	) {
 		Column(
 			verticalArrangement = Arrangement.spacedBy(15.dp),
 			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
-			TopBar(modifier = Modifier.padding(sidePadding))
+			TopBar(
+				modifier = Modifier.padding(sidePadding),
+				openSettings = openSettings
+			)
 
 			SearchBar(
 				searchText = "Search for automations",

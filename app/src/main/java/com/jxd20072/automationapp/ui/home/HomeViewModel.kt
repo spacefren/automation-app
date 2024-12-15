@@ -54,13 +54,7 @@ data class AutomationCardState(
 	val icon: String,
 	val id: UUID,
 	val tags: List<String>,
-	val lastUsed: Instant
-)
-
-@Immutable
-data class AutomationsListState(
-	val automations: List<AutomationCardState> = emptyList(),
-	val filteredAutomations: List<AutomationCardState> = emptyList(),
+	val lastUsed: Instant?
 )
 
 @HiltViewModel
@@ -94,13 +88,13 @@ class HomeViewModel @Inject constructor(
 			automationsRepository.automationsFlow.collect { automations ->
 				_homeUiState.update {
 					it.copy(
-						automations = automations.map { automationName ->
+						automations = automations.map { automation ->
 							AutomationCardState(
-								name = automationName,
-								icon = "wave-square",
-								id = UUID.randomUUID(),
-								tags = listOf(automationName),
-								lastUsed = Instant.now()
+								name = automation.metadata.name,
+								icon = automation.metadata.icon,
+								id = automation.metadata.id,
+								tags = automation.metadata.tags,
+								lastUsed = automation.metadata.lastRan
 							)
 						},
 						filteredAutomations = getFilteredAutomations(it)
