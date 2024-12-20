@@ -3,23 +3,23 @@ package com.jxd20072.automationapp.core.data.local
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
-import com.jxd20072.automationapp.core.data.UserPreferences
+import com.jxd20072.automationapp.core.data.UserSettings
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
 
-class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
-	override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
+class UserSettingsSerializer @Inject constructor() : Serializer<UserSettings> {
+	override val defaultValue: UserSettings = UserSettings.getDefaultInstance()
 
-	override suspend fun readFrom(input: InputStream): UserPreferences {
+	override suspend fun readFrom(input: InputStream): UserSettings {
 		try {
-			return UserPreferences.parseFrom(input)
+			return UserSettings.parseFrom(input)
 		} catch (exception: InvalidProtocolBufferException) {
 			throw CorruptionException("Cannot read proto.", exception)
 		}
 	}
 
-	override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
+	override suspend fun writeTo(t: UserSettings, output: OutputStream) {
 		t.writeTo(output)
 	}
 }

@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.core.data.di
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.jxd20072.automationapp.core.data.local.UserPreferencesSerializer
+import com.jxd20072.automationapp.core.data.local.UserSettingsSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +19,7 @@ object DataStoreModule {
 	@Singleton
 	fun providesUserPreferencesDataStore(
 		@ApplicationContext context: Context,
-		userPreferencesSerializer: UserPreferencesSerializer
+		userPreferencesSerializer: UserSettingsSerializer
 	) = DataStoreFactory.create(
 		serializer = userPreferencesSerializer
 	) {

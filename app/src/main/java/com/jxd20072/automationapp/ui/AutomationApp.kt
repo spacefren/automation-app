@@ -9,12 +9,15 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.IntOffset
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jxd20072.automationapp.ui.home.HomeScreen
-import com.jxd20072.automationapp.ui.userPreferences.UserPreferencesScreen
+import com.jxd20072.automationapp.ui.home.HomeViewModel
+import com.jxd20072.automationapp.ui.userSettings.UserSettingsScreen
+import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 
 enum class AppScreen { HOME, EDITOR, SETTINGS }
 
@@ -55,6 +58,8 @@ fun homeExitTransition(): ExitTransition {
 fun AutomationApp(
 	navController: NavHostController = rememberNavController()
 ) {
+	val settingsViewModel: UserSettingsViewModel = hiltViewModel()
+	val homeViewModel: HomeViewModel = hiltViewModel()
 	NavHost(
 		navController = navController,
 		startDestination = AppScreen.HOME.name,
@@ -67,6 +72,7 @@ fun AutomationApp(
 			popExitTransition = { homeExitTransition() },
 		) {
 			HomeScreen(
+				homeViewModel = homeViewModel,
 				openSettings = { navController.navigate(route = AppScreen.SETTINGS.name) },
 				openAutomation = { }
 			)
@@ -81,7 +87,8 @@ fun AutomationApp(
 			popEnterTransition = { pageEnterTransition() },
 			popExitTransition = { pageExitTransition() },
 		) {
-			UserPreferencesScreen(
+			UserSettingsScreen(
+				userSettingsViewModel = settingsViewModel,
 				returnHome = { navController.navigate(route = AppScreen.HOME.name) }
 			)
 		}

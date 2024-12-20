@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(
 	private val currentTimeFlow: Flow<Instant> = flow {
 		while (true) {
 			println("refreshing localTime")
-			delay(3_000)
+			delay(10_000)
 			emit(Instant.now())
 		}
 	}

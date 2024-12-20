@@ -5,7 +5,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -69,16 +68,14 @@ fun TopBar(
 				fontSize = 32.sp
 			)
 
-			Box {
-				Icon(
-					painter = painterResource(R.drawable.round_settings_24),
-					contentDescription = "settings",
-					tint = MaterialTheme.colorScheme.onBackground,
-					modifier = Modifier
-						.size(28.dp)
-						.clickable { openSettings() }
-				)
-			}
+			Icon(
+				painter = painterResource(R.drawable.round_settings_24),
+				contentDescription = "settings",
+				tint = MaterialTheme.colorScheme.onBackground,
+				modifier = Modifier
+					.size(28.dp)
+					.clickable { openSettings() }
+			)
 		}
 	}
 }
