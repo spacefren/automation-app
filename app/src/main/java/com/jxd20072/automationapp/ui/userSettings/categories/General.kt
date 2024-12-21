@@ -7,7 +7,8 @@ import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 @Composable
 fun GeneralSettingsCategory(
 	userSettingsUiState: UserSettingsUiState.Success,
-	onAutoSaveChanged: (newVal: Boolean) -> Unit
+	onAutoSaveChanged: (newVal: Boolean) -> Unit,
+	openAutomationsFolder: () -> Unit
 ) {
 	SettingsCategory(
 		name = "General"
@@ -17,6 +18,11 @@ fun GeneralSettingsCategory(
 			displayName = "Auto-save automations",
 			description = "Automatically save changes to automations",
 			onValueChanged = onAutoSaveChanged
+		)
+		UserSettingsItem(
+			displayName = "Open automations folder",
+			description = "Open the automations folder in your device's default file manager",
+			onActivate = openAutomationsFolder
 		)
 	}
 }

@@ -9,13 +9,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.util.UUID
 import javax.inject.Inject
 
 enum class AddAutomationDrawerScreen {
@@ -52,22 +50,21 @@ data class HomeScreenUiState(
 data class AutomationCardState(
 	val name: String,
 	val icon: String,
-	val id: UUID,
+	val id: String,
 	val tags: List<String>,
 	val lastUsed: Instant?
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-	private val automationsRepository: AutomationsRepository
+	private val automationsRepository: AutomationsRepository,
 ) : ViewModel() {
 
 	private val _homeUiState = MutableStateFlow(HomeScreenUiState())
-	val homeUiState: StateFlow<HomeScreenUiState> = _homeUiState.asStateFlow()
+	val homeUiState = _homeUiState.asStateFlow()
 
 	private val currentTimeFlow: Flow<Instant> = flow {
 		while (true) {
-			println("refreshing localTime")
 			delay(10_000)
 			emit(Instant.now())
 		}
@@ -85,20 +82,23 @@ class HomeViewModel @Inject constructor(
 		}
 
 		viewModelScope.launch {
-			automationsRepository.automationsFlow.collect { automations ->
+			automationsRepository.automationsDataFlow.collect { automationsData ->
 				_homeUiState.update {
 					it.copy(
-						automations = automations.map { automation ->
+						automations = automationsData.automationsMap.map { automation ->
+							val automationData = automationsRepository
+								.getAutomationMapEntry(automation.key)
+
 							AutomationCardState(
-								name = automation.metadata.name,
-								icon = automation.metadata.icon,
-								id = automation.metadata.id,
-								tags = automation.metadata.tags,
-								lastUsed = automation.metadata.lastRan
+								name = automation.value.name,
+								icon = automation.value.icon,
+								id = automation.key,
+								tags = automationData?.tagsList ?: emptyList(),
+								lastUsed = if (automationData != null && automationData.lastRan != "") {
+									Instant.parse(automationData.lastRan)
+								} else null,
 							)
-						},
-						filteredAutomations = getFilteredAutomations(it)
-					)
+						})
 				}
 				updateAllFilters()
 			}
@@ -116,6 +116,7 @@ class HomeViewModel @Inject constructor(
 					|| automation.name.lowercase()
 					.contains(currentState.searchQuery.lowercase())
 				)
+
 		}
 
 	private fun filterAutomations() {
@@ -233,19 +234,14 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	fun addAutomation(name: String, icon: String) {
-		automationsRepository.createAutomation(name = name, icon = icon, tags = emptyList())
-
-//		_homeUiState.update { currentState ->
-//			currentState.copy(
-//				automations = currentState.automations + AutomationCardState(
-//					name = name,
-//					id = UUID.randomUUID(),
-//					icon = icon,
-//					lastUsed = Instant.now(),
-//					tags = emptyList()
-//				)
-//			)
-//		}
+	fun addAutomation(name: String, icon: String, onCreate: (id: String) -> Unit) {
+		viewModelScope.launch {
+			val id = automationsRepository.createAutomation(
+				name = name,
+				icon = icon,
+				tags = emptyList()
+			)
+			onCreate(id)
+		}
 	}
 }

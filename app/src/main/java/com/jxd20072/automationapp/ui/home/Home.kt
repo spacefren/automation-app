@@ -38,7 +38,6 @@ import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.Instant
-import java.util.UUID
 
 /* TODO
 	* Swipe-to-archive
@@ -85,7 +84,9 @@ fun TopBar(
 private fun AutomationsList(
 	automations: List<AutomationCardState>,
 	currentTime: Instant,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	runAutomation: (id: String) -> Unit,
+	editAutomation: (id: String) -> Unit
 ) {
 	LazyColumn(
 		modifier = modifier
@@ -102,7 +103,9 @@ private fun AutomationsList(
 				modifier = Modifier.animateItem(
 					fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
 					fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
-				)
+				),
+				runAutomation = { runAutomation(automation.id) },
+				editAutomation = { editAutomation(automation.id) }
 			)
 		}
 
@@ -114,12 +117,11 @@ private fun AutomationsList(
 fun HomeScreen(
 	homeViewModel: HomeViewModel = hiltViewModel(),
 	openSettings: () -> Unit,
-	openAutomation: (id: UUID) -> Unit
+	runAutomation: (id: String) -> Unit,
+	editAutomation: (id: String) -> Unit
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
-
-	//val automationsUiState by homeViewModel.automationsState.collectAsState()
 
 	Layer(
 		modifier = Modifier
@@ -155,7 +157,9 @@ fun HomeScreen(
 			AutomationsList(
 				automations = homeUiState.filteredAutomations,
 				currentTime = homeUiState.currentTime,
-				modifier = Modifier.padding(sidePadding)
+				modifier = Modifier.padding(sidePadding),
+				runAutomation = runAutomation,
+				editAutomation = editAutomation
 			)
 		}
 
@@ -173,8 +177,10 @@ fun HomeScreen(
 			homeViewModel.addAutomation(
 				name = homeUiState.addAutomationDrawerState.selectedName,
 				icon = homeUiState.addAutomationDrawerState.selectedIcon
-			)
-			homeViewModel.changeAddAutomationDrawerVisibility(false)
+			) { id ->
+				homeViewModel.changeAddAutomationDrawerVisibility(false)
+				editAutomation(id)
+			}
 		}
 
 		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {

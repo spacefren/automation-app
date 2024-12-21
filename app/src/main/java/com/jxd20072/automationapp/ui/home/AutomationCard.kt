@@ -48,7 +48,9 @@ fun AutomationCard(
 	name: String,
 	icon: String,
 	lastUsed: String,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	runAutomation: () -> Unit,
+	editAutomation: () -> Unit,
 ) {
 	Box(
 		modifier = modifier
@@ -109,9 +111,10 @@ fun AutomationCard(
 				drawableRes = R.drawable.round_edit_24,
 				cornerRadius = 5.dp,
 				padding = 6.dp,
+				onClick = editAutomation,
 				modifier = Modifier
 					.size(45.dp)
-			) {}
+			)
 
 			Spacer(modifier = Modifier.width(10.dp))
 
@@ -121,9 +124,10 @@ fun AutomationCard(
 				drawableRes = R.drawable.round_play_arrow_24,
 				cornerRadius = 5.dp,
 				padding = 4.dp,
+				onClick = runAutomation,
 				modifier = Modifier
 					.size(45.dp)
-			) {}
+			)
 		}
 	}
 }

@@ -66,7 +66,7 @@ fun UserSettingsItem(
 		modifier = modifier
 	) {
 		Box(
-			modifier = modifier
+			modifier = Modifier
 				.width(containerWidth)
 				.height(containerHeight)
 				.pointerInput(enabled) {

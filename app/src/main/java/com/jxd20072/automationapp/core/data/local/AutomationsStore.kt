@@ -25,19 +25,11 @@ class AutomationsStore @Inject constructor(
 		return automationsDir
 	}
 
-	fun getAutomations(): List<Automation> {
-		val directory = getAutomationsDirectory()
-		return directory.listFiles()
-			?.filter { it.isFile }
-			?.map { file -> readAutomationFile(file) }
-			?: emptyList()
-	}
-
-	fun createAutomationFile(metadata: AutomationMetadata): Boolean {
+	fun createAutomationFile(name: String, metadata: AutomationMetadata): Boolean {
 		return try {
 			val automationsDirectory = getAutomationsDirectory()
 
-			val file = File(automationsDirectory, "${metadata.name}.json")
+			val file = File(automationsDirectory, "${name}.json")
 			val fileContent = Json.encodeToString(
 				Automation(
 					metadata = metadata,
@@ -53,5 +45,14 @@ class AutomationsStore @Inject constructor(
 			e.printStackTrace()
 			false
 		}
+	}
+
+	fun readAutomation(fileName: String): Automation? {
+		val automationsDir = getAutomationsDirectory()
+		val file = automationsDir
+			.listFiles()
+			?.find { it.isFile && it.name == "$fileName.json" }
+
+		return if (file != null) readAutomationFile(file) else null
 	}
 }

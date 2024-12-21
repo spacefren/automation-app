@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Immutable
 enum class UserSettingsType {
-	TOGGLE, TEXT, CHOOSE, UNDEFINED
+	TOGGLE, TEXT, CHOOSE, ACTION, UNDEFINED
 }
 
 @Immutable
@@ -26,6 +26,7 @@ data class UserSettingsEntry<T>(
 		is Boolean -> UserSettingsType.TOGGLE
 		is String -> UserSettingsType.TEXT
 		is Enum<*> -> UserSettingsType.CHOOSE
+		is Unit -> UserSettingsType.ACTION
 		else -> UserSettingsType.UNDEFINED
 	}
 )
@@ -43,7 +44,7 @@ sealed interface UserSettingsUiState {
 
 @HiltViewModel
 class UserSettingsViewModel @Inject constructor(
-	private val userSettingsRepository: UserSettingsRepository
+	private val userSettingsRepository: UserSettingsRepository,
 ) : ViewModel() {
 
 	val userSettingsUiState: StateFlow<UserSettingsUiState> =
@@ -70,4 +71,6 @@ class UserSettingsViewModel @Inject constructor(
 			userSettingsRepository.setAutoSaveEnabled(enabled)
 		}
 	}
+
+	fun openAutomationsFolder() {}
 }

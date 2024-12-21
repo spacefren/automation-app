@@ -95,7 +95,8 @@ fun UserSettingsScreen(
 				) {
 					GeneralSettingsCategory(
 						userSettingsUiState = settings,
-						onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled
+						onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled,
+						openAutomationsFolder = userSettingsViewModel::openAutomationsFolder
 					)
 				}
 			}

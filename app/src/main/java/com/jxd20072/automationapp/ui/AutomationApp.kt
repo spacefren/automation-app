@@ -14,6 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jxd20072.automationapp.ui.editor.AutomationEditor
+import com.jxd20072.automationapp.ui.editor.EditorViewModel
 import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsScreen
@@ -60,6 +62,13 @@ fun AutomationApp(
 ) {
 	val settingsViewModel: UserSettingsViewModel = hiltViewModel()
 	val homeViewModel: HomeViewModel = hiltViewModel()
+	val editorViewModel: EditorViewModel = hiltViewModel()
+
+	fun startEditAutomation(id: String) {
+		navController.navigate(route = AppScreen.EDITOR.name)
+		editorViewModel.loadAutomation(id)
+	}
+
 	NavHost(
 		navController = navController,
 		startDestination = AppScreen.HOME.name,
@@ -74,11 +83,20 @@ fun AutomationApp(
 			HomeScreen(
 				homeViewModel = homeViewModel,
 				openSettings = { navController.navigate(route = AppScreen.SETTINGS.name) },
-				openAutomation = { }
+				runAutomation = {},
+				editAutomation = { id -> startEditAutomation(id) }
 			)
 		}
-		composable(route = AppScreen.EDITOR.name) {
-
+		composable(
+			route = AppScreen.EDITOR.name,
+			enterTransition = { pageEnterTransition() },
+			exitTransition = { pageExitTransition() },
+			popEnterTransition = { pageEnterTransition() },
+			popExitTransition = { pageExitTransition() },
+		) {
+			AutomationEditor(
+				editorViewModel = editorViewModel
+			)
 		}
 		composable(
 			route = AppScreen.SETTINGS.name,

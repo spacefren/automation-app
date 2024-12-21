@@ -6,8 +6,9 @@ import com.jxd20072.automationapp.core.data.copy
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+
 class UserSettingsRepository @Inject constructor(
-	private val userSettingsStore: DataStore<UserSettings>
+	private val userSettingsStore: DataStore<UserSettings>,
 ) {
 	val userSettings: Flow<UserSettings> = userSettingsStore.data
 

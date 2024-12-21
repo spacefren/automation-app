@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.core.data.di
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import com.jxd20072.automationapp.core.data.local.AutomationsDataSerializer
 import com.jxd20072.automationapp.core.data.local.UserSettingsSerializer
 import dagger.Module
 import dagger.Provides
@@ -24,5 +25,16 @@ object DataStoreModule {
 		serializer = userPreferencesSerializer
 	) {
 		context.dataStoreFile("user_preferences.pb")
+	}
+
+	@Provides
+	@Singleton
+	fun providesAutomationsDataMapStore(
+		@ApplicationContext context: Context,
+		automationsDataSerializer: AutomationsDataSerializer
+	) = DataStoreFactory.create(
+		serializer = automationsDataSerializer
+	) {
+		context.dataStoreFile("automations_data_.pb")
 	}
 }
