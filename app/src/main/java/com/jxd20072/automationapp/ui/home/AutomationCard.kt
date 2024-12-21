@@ -51,12 +51,12 @@ fun AutomationCard(
 	modifier: Modifier = Modifier
 ) {
 	Box(
-		modifier = Modifier
+		modifier = modifier
 			.height(65.dp)
 			.fillMaxWidth()
 	) {
 		Row(
-			modifier = modifier
+			modifier = Modifier
 				.shadow(5.dp, RoundedCornerShape(8.dp))
 				.background(MaterialTheme.colorScheme.surface)
 				.padding(10.dp),

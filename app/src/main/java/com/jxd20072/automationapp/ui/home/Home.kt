@@ -43,6 +43,7 @@ import java.util.UUID
 /* TODO
 	* Swipe-to-archive
 	* Toasts
+	* Performance issue with switching home and settings screens
 */
 
 @Composable
@@ -89,7 +90,6 @@ private fun AutomationsList(
 	LazyColumn(
 		modifier = modifier
 			.fillMaxHeight(),
-
 		verticalArrangement = Arrangement.spacedBy(10.dp)
 	) {
 		items(automations, { it.id }) { automation ->
@@ -165,18 +165,10 @@ fun HomeScreen(
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
 			},
 			modifier = Modifier.padding(sidePadding),
-			onScreenChanged = { screen ->
-				homeViewModel.changeAddAutomationDrawerScreen(screen)
-			},
-			onIconChanged = { icon ->
-				homeViewModel.changeAddAutomationDrawerIcon(icon)
-			},
-			onNameChanged = { name ->
-				homeViewModel.changeAddAutomationDrawerName(name)
-			},
-			onIconSearch = { searchQuery ->
-				homeViewModel.changeIconSelectorSearchQuery(searchQuery)
-			}
+			onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
+			onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
+			onNameChanged = homeViewModel::changeAddAutomationDrawerName,
+			onIconSearch = homeViewModel::changeIconSelectorSearchQuery
 		) {
 			homeViewModel.addAutomation(
 				name = homeUiState.addAutomationDrawerState.selectedName,
