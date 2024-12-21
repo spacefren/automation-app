@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
@@ -44,6 +45,8 @@ class AutomationsRepository @Inject constructor(
 			.setName(name)
 			.setIcon(icon)
 			.addAllTags(tags)
+			.setCreationDate(Instant.now().toString())
+			.setLastSaved(Instant.now().toString())
 			.build()
 
 		automationsDataStore.updateData { automationsData ->

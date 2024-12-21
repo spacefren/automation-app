@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 
-sealed class ValidationResult {
-	data object Success : ValidationResult()
-	data class Error(val message: String) : ValidationResult()
+sealed class TextInputValidationResult {
+	data object Success : TextInputValidationResult()
+	data class Error(val message: String) : TextInputValidationResult()
 }
 
 @Composable
@@ -56,7 +56,7 @@ fun BaseTextInput(
 	icon: Int? = null,
 	focused: Boolean = false,
 	modifier: Modifier = Modifier,
-	validateInput: ((text: String) -> ValidationResult)? = null,
+	validateInput: ((text: String) -> TextInputValidationResult)? = null,
 	onTextChanged: ((text: String) -> Unit),
 ) {
 	val focusRequester = remember { FocusRequester() }
@@ -68,7 +68,7 @@ fun BaseTextInput(
 		if (validateInput != null) {
 			val validationResult = validateInput(text)
 
-			if (validationResult is ValidationResult.Error) {
+			if (validationResult is TextInputValidationResult.Error) {
 				errorText = validationResult.message
 			} else {
 				errorText = ""

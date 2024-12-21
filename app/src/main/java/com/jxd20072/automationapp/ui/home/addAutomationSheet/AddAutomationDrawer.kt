@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,6 +22,7 @@ fun AddAutomationDrawer(
 	modifier: Modifier = Modifier,
 	onDismissRequest: () -> Unit,
 	onScreenChanged: (screen: AddAutomationDrawerScreen) -> Unit,
+	validateAutomationName: (name: String) -> TextInputValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChanged: (icon: String) -> Unit,
 	onIconSearch: (query: String) -> Unit,
@@ -45,6 +47,7 @@ fun AddAutomationDrawer(
 						AddAutomationDrawerScreen.AUTOMATION_ADD -> {
 							AddAutomationScreen(
 								selectedIcon = drawerUiState.selectedIcon,
+								validateAutomationName = validateAutomationName,
 								onIconChangeRequest = {
 									onScreenChanged(AddAutomationDrawerScreen.ICON_SELECT)
 								},

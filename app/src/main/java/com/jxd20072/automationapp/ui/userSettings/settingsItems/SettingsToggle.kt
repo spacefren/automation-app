@@ -72,7 +72,6 @@ fun UserSettingsItem(
 				.pointerInput(enabled) {
 					detectTapGestures(
 						onTap = {
-							println("bottom value: $enabled")
 							onValueChanged(!enabled)
 						},
 						onPress = {

@@ -8,6 +8,8 @@ message AutomationsMapEntry {
   string icon = 2;
   repeated string tags = 3;
   optional string lastRan = 4;
+  optional string lastSaved = 5;
+  optional string creationDate = 6;
 }
 
 message AutomationsDataMap {

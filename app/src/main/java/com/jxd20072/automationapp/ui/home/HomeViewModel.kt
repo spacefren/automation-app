@@ -5,12 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.iconCategories
+import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
+import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -39,7 +38,6 @@ data class HomeScreenUiState(
 	val filteredAutomations: List<AutomationCardState> = emptyList(),
 
 	val filters: Map<String, Boolean> = emptyMap(),
-	val currentTime: Instant = Instant.now(),
 	val searchQuery: String = "",
 
 	val addAutomationDrawerState: AddAutomationDrawerUiState =
@@ -58,28 +56,21 @@ data class AutomationCardState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val automationsRepository: AutomationsRepository,
+	private val timeManager: TimeManager
 ) : ViewModel() {
 
 	private val _homeUiState = MutableStateFlow(HomeScreenUiState())
 	val homeUiState = _homeUiState.asStateFlow()
 
-	private val currentTimeFlow: Flow<Instant> = flow {
-		while (true) {
-			delay(10_000)
-			emit(Instant.now())
-		}
+	val currentTime = timeManager.currentTime
+
+	override fun onCleared() {
+		super.onCleared()
+		timeManager.cleanup()
 	}
 
 	init {
 		updateAllFilters()
-
-		viewModelScope.launch {
-			currentTimeFlow.collect { currentTime ->
-				_homeUiState.update {
-					it.copy(currentTime = currentTime)
-				}
-			}
-		}
 
 		viewModelScope.launch {
 			automationsRepository.automationsDataFlow.collect { automationsData ->
@@ -186,6 +177,17 @@ class HomeViewModel @Inject constructor(
 					screen = screen
 				)
 			)
+		}
+	}
+
+	fun validateAddAutomationDrawerName(text: String): TextInputValidationResult {
+		return when {
+			text == "" -> TextInputValidationResult.Error("Name cannot be empty.")
+			text.length > 20 -> TextInputValidationResult.Error("Name is too long.")
+			homeUiState.value.automations.any { it.name.trim() == text.trim() } ->
+				TextInputValidationResult.Error("Name is already taken by an automation.")
+
+			else -> TextInputValidationResult.Success
 		}
 	}
 

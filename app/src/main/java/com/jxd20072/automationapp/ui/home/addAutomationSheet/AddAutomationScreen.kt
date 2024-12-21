@@ -17,25 +17,17 @@ import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.shared.ValidationResult
+import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 
 @Composable
 fun AddAutomationScreen(
 	selectedIcon: String,
 	name: String,
+	validateAutomationName: (name: String) -> TextInputValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChangeRequest: () -> Unit,
 	onCreateAutomation: () -> Unit,
 ) {
-
-	fun validateText(text: String): ValidationResult {
-		return when {
-			text == "" -> ValidationResult.Error("Name cannot be empty.")
-			text.length > 25 -> ValidationResult.Error("Name is too long.")
-			else -> ValidationResult.Success
-		}
-	}
-
 	Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceAround,
@@ -55,7 +47,7 @@ fun AddAutomationScreen(
 				padding = 5.dp,
 				modifier = Modifier.size(45.dp)
 			) {
-				if (validateText(name) is ValidationResult.Success) {
+				if (validateAutomationName(name) is TextInputValidationResult.Success) {
 					onCreateAutomation()
 				}
 			}
@@ -77,7 +69,7 @@ fun AddAutomationScreen(
 				imeAction = ImeAction.Done,
 				focused = false,
 				text = name,
-				validateInput = { text -> validateText(text) }) { text ->
+				validateInput = { text -> validateAutomationName(text) }) { text ->
 				onNameChanged(text)
 			}
 		}

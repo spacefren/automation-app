@@ -122,6 +122,7 @@ fun HomeScreen(
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
+	val currentTime by homeViewModel.currentTime.collectAsState()
 
 	Layer(
 		modifier = Modifier
@@ -156,7 +157,7 @@ fun HomeScreen(
 			)
 			AutomationsList(
 				automations = homeUiState.filteredAutomations,
-				currentTime = homeUiState.currentTime,
+				currentTime = currentTime,
 				modifier = Modifier.padding(sidePadding),
 				runAutomation = runAutomation,
 				editAutomation = editAutomation
@@ -169,6 +170,7 @@ fun HomeScreen(
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
 			},
 			modifier = Modifier.padding(sidePadding),
+			validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
 			onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
 			onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
 			onNameChanged = homeViewModel::changeAddAutomationDrawerName,
