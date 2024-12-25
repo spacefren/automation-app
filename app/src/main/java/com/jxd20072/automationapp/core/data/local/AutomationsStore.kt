@@ -1,8 +1,9 @@
 package com.jxd20072.automationapp.core.data.local
 
 import android.content.Context
-import com.jxd20072.automationapp.core.data.model.Automation
-import com.jxd20072.automationapp.core.data.model.AutomationMetadata
+import com.jxd20072.automationapp.core.data.model.AutomationDef
+import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
+import com.jxd20072.automationapp.core.data.model.EntryPointNodeDef
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -12,8 +13,8 @@ import javax.inject.Inject
 class AutomationsStore @Inject constructor(
 	private val context: Context
 ) {
-	private fun readAutomationFile(file: File): Automation {
-		return Json.decodeFromString<Automation>(file.readText())
+	private fun readAutomationFile(file: File): AutomationDef {
+		return Json.decodeFromString<AutomationDef>(file.readText())
 	}
 
 	private fun getAutomationsDirectory(): File {
@@ -25,17 +26,20 @@ class AutomationsStore @Inject constructor(
 		return automationsDir
 	}
 
-	fun createAutomationFile(name: String, metadata: AutomationMetadata): Boolean {
+	fun createAutomationFile(name: String, metadata: AutomationDefMetadata): Boolean {
 		return try {
 			val automationsDirectory = getAutomationsDirectory()
 
 			val file = File(automationsDirectory, "${name}.json")
 			val fileContent = Json.encodeToString(
-				Automation(
+				AutomationDef(
 					metadata = metadata,
 					variables = emptySet(),
 					functions = emptyList(),
 					triggers = emptyList(),
+					entryPoint = EntryPointNodeDef(
+						content = emptyList()
+					)
 				)
 			)
 			file.writeText(fileContent)
@@ -47,7 +51,7 @@ class AutomationsStore @Inject constructor(
 		}
 	}
 
-	fun readAutomation(fileName: String): Automation? {
+	fun readAutomation(fileName: String): AutomationDef? {
 		val automationsDir = getAutomationsDirectory()
 		val file = automationsDir
 			.listFiles()

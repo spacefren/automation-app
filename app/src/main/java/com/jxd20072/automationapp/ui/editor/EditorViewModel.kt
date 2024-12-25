@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
-import com.jxd20072.automationapp.core.data.model.Automation
+import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @Immutable
 data class EditorUiState(
 	val automationData: AutomationsMapEntry? = null,
-	val automation: Automation? = null,
+	val automationDef: AutomationDef? = null,
 )
 
 @HiltViewModel
@@ -38,7 +38,7 @@ class EditorViewModel @Inject constructor(
 				_editorUiState.update {
 					EditorUiState(
 						automationData = automationData,
-						automation = automation
+						automationDef = automation
 					)
 				}
 			}
