@@ -1,9 +1,16 @@
 package com.jxd20072.automationapp.core.nodes
 
-import com.jxd20072.automationapp.core.nodes.actions.loggerAction
+import com.jxd20072.automationapp.core.nodes.actions.ActionNode
+import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.actions.LoggerNode
+
+data class ActionNodesEntry(
+	val data: ActionNodeData,
+	val factory: (id: String) -> ActionNode
+)
 
 val actionNodes = mapOf(
-	"log" to loggerAction
+	"log" to LoggerNode
 )
 
 /*

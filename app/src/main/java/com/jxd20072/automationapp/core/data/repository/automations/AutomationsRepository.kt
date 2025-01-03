@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.core.data.repository
+package com.jxd20072.automationapp.core.data.repository.automations
 
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
@@ -8,7 +8,6 @@ import com.jxd20072.automationapp.core.data.local.AutomationsStore
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import com.jxd20072.automationapp.core.data.model.EntryPointNodeDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import kotlinx.coroutines.delay
@@ -27,31 +26,31 @@ class AutomationsRepository @Inject constructor(
 ) {
 	init {
 		executeAutomation(
-			AutomationDef(
-				metadata = AutomationDefMetadata(
-					version = 0
-				),
-				entryPoint = EntryPointNodeDef(
-					content = listOf(
-//						ActionNodeDef(
-//							name = "writeVariable",
-//							input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
-//						),
+			createAutomationDraft(
+				AutomationDef(
+					metadata = AutomationDefMetadata(
+						version = 0
+					),
+					entryPoint = listOf(
+//				ActionNodeDef(
+//					name = "writeVariable",
+//					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
+//				),
 						ActionNodeDef(
 							name = "log",
 							input = mapOf("text" to "variable test: @textVariable")
 						),
-					)
-				),
-				variables = setOf(
-					VariableDef.TEXT
-						(
-						name = "textVariable",
-						value = "textVariableValue"
 					),
-				),
-				triggers = emptyList(),
-				functions = emptyList()
+					variables = setOf(
+						VariableDef.TEXT
+							(
+							name = "textVariable",
+							value = "textVariableValue"
+						),
+					),
+					triggers = emptyList(),
+					functions = emptyList()
+				)
 			)
 		)
 	}
@@ -102,8 +101,9 @@ class AutomationsRepository @Inject constructor(
 		return automationsDataStore.data.first().automationsMap[id]
 	}
 
-	suspend fun getAutomation(id: String): AutomationDef? {
+	suspend fun getAutomation(id: String): AutomationDraft? {
 		val mapEntry = getAutomationMapEntry(id) ?: return null
-		return automationsStore.readAutomation(mapEntry.name)
+		val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
+		return createAutomationDraft(automationDef)
 	}
 }

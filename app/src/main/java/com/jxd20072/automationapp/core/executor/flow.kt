@@ -1,16 +1,16 @@
 package com.jxd20072.automationapp.core.executor
 
 import android.util.Log
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import java.time.Instant
 
-private const val TAG = "APP_EecutionFlow"
+private const val TAG = "APP_ExecutionFlow"
 
 class ExecutionFlow(
-	private val actionDefinitions: List<ActionNodeDef>,
+	private val actionDefinitions: List<ActionNodeDraft>,
 	val initialVariables: Set<VariableDef>,
 	val scope: String = "main"
 ) {
@@ -25,16 +25,16 @@ class ExecutionFlow(
 	}
 
 	private fun buildActions(): List<ActionNode> {
-		return actionDefinitions.map { actionNodeDef ->
-			val action = actionNodes[actionNodeDef.name]
-				?: throw Exception("Action node not found: ${actionNodeDef.name}")
-			// Should validate first too
+		return actionDefinitions.map { actionNodeDraft ->
+			val actionNodeEntry = actionNodes[actionNodeDraft.name]
+				?: throw Exception("Action node not found: ${actionNodeDraft.name}")
+			val action = actionNodeEntry.factory.invoke(actionNodeDraft.id)
+			val actionData = actionNodeEntry.data
 
-			val input = mutableMapOf<String, Any>()
-			actionNodeDef.input.forEach { nodeDefInputEntry ->
-				val actionNodeInput = action.data.inputDefinitions[nodeDefInputEntry.key]
+			actionNodeDraft.input.forEach { nodeDefInputEntry ->
+				val actionNodeInput = actionData.inputDefinitions[nodeDefInputEntry.key]
 					?: throw Exception(
-						"Input ${nodeDefInputEntry.key} not found in ${actionNodeDef.name}"
+						"Input ${nodeDefInputEntry.key} not found in ${actionNodeDraft.name}"
 					)
 
 				val newVar = linkInput(
@@ -44,10 +44,10 @@ class ExecutionFlow(
 				)
 
 				if (newVar != null) {
-					input[nodeDefInputEntry.key] = newVar
+					action.input[nodeDefInputEntry.key] = newVar
 				}
 			}
-			action.copy(input = input)
+			action
 		}
 	}
 
@@ -64,7 +64,7 @@ class ExecutionFlow(
 
 		context.getVariables().forEach { variable -> readVariable(variable, context) }
 		actions.forEach { action ->
-			action.execute(action.input, context)
+			action.execute(context)
 		}
 
 		Log.i(

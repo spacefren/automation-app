@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
-import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
+import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
+import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ sealed interface EditorUiState {
 	data object Loading : EditorUiState
 	data class Success(
 		val automationData: AutomationsMapEntry,
-		val automationDef: AutomationDef,
+		val automationDef: AutomationDraft,
 	) : EditorUiState
 }
 

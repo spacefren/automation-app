@@ -3,7 +3,6 @@ package com.jxd20072.automationapp.core.data.local
 import android.content.Context
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import com.jxd20072.automationapp.core.data.model.EntryPointNodeDef
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -37,9 +36,7 @@ class AutomationsStore @Inject constructor(
 					variables = emptySet(),
 					functions = emptyList(),
 					triggers = emptyList(),
-					entryPoint = EntryPointNodeDef(
-						content = emptyList()
-					)
+					entryPoint = emptyList()
 				)
 			)
 			file.writeText(fileContent)

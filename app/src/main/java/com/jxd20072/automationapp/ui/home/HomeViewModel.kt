@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.ui.home
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
+import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.iconCategories
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 import com.jxd20072.automationapp.ui.utils.TimeManager
