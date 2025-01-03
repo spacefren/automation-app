@@ -15,17 +15,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Immutable
-data class EditorUiState(
-	val automationData: AutomationsMapEntry? = null,
-	val automationDef: AutomationDef? = null,
-)
+sealed interface EditorUiState {
+	data object Loading : EditorUiState
+	data class Success(
+		val automationData: AutomationsMapEntry,
+		val automationDef: AutomationDef,
+	) : EditorUiState
+}
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
 	private val automationsRepository: AutomationsRepository,
 	timeManager: TimeManager
 ) : ViewModel() {
-	private val _editorUiState = MutableStateFlow(EditorUiState())
+	private val _editorUiState = MutableStateFlow<EditorUiState>(EditorUiState.Loading)
 	val editorUiState = _editorUiState.asStateFlow()
 
 	val currentTime = timeManager.currentTime
@@ -36,7 +39,7 @@ class EditorViewModel @Inject constructor(
 			val automationData = automationsRepository.getAutomationMapEntry(id)
 			if (automation != null && automationData != null) {
 				_editorUiState.update {
-					EditorUiState(
+					EditorUiState.Success(
 						automationData = automationData,
 						automationDef = automation
 					)

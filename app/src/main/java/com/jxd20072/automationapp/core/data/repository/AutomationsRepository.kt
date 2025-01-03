@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.data.repository
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
@@ -27,7 +26,6 @@ class AutomationsRepository @Inject constructor(
 	private val automationsDataStore: DataStore<AutomationsDataMap>
 ) {
 	init {
-		Log.i(TAG, "----- STARTING EXECUTION ------")
 		executeAutomation(
 			AutomationDef(
 				metadata = AutomationDefMetadata(
@@ -35,14 +33,14 @@ class AutomationsRepository @Inject constructor(
 				),
 				entryPoint = EntryPointNodeDef(
 					content = listOf(
-						ActionNodeDef(
-							name = "writeVariable",
-							input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
-						),
+//						ActionNodeDef(
+//							name = "writeVariable",
+//							input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
+//						),
 						ActionNodeDef(
 							name = "log",
 							input = mapOf("text" to "variable test: @textVariable")
-						)
+						),
 					)
 				),
 				variables = setOf(

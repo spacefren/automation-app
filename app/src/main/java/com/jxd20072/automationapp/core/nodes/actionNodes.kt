@@ -1,11 +1,9 @@
 package com.jxd20072.automationapp.core.nodes
 
-import com.jxd20072.automationapp.core.nodes.actions.LoggerNode
-import com.jxd20072.automationapp.core.nodes.actions.VariableWriteNode
+import com.jxd20072.automationapp.core.nodes.actions.loggerAction
 
-val actionNodeFactory = mapOf(
-	"log" to { LoggerNode() },
-	"writeVariable" to { VariableWriteNode() }
+val actionNodes = mapOf(
+	"log" to loggerAction
 )
 
 /*

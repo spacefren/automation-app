@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.core.nodes.actions
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
+import java.util.UUID
 
 sealed class ActionNodeInput<T>(
 	val name: String,
@@ -10,16 +11,14 @@ sealed class ActionNodeInput<T>(
 	val type: VariableDefType,
 	val defaultValue: T,
 	val validate: ((T) -> Boolean)? = null,
-	val onValueChange: (T) -> Unit
-) {
+) where T : Any {
 	class TEXT(
 		name: String,
 		description: String,
 		defaultValue: String,
 		validate: ((String) -> Boolean)?,
-		onValueChange: (String) -> Unit
 	) : ActionNodeInput<String>(
-		name, description, VariableDefType.TEXT, defaultValue, validate, onValueChange
+		name, description, VariableDefType.TEXT, defaultValue, validate
 	)
 
 	class BOOL(
@@ -27,9 +26,8 @@ sealed class ActionNodeInput<T>(
 		description: String,
 		defaultValue: Boolean,
 		validate: ((Boolean) -> Boolean)?,
-		onValueChange: (Boolean) -> Unit
 	) : ActionNodeInput<Boolean>(
-		name, description, VariableDefType.BOOL, defaultValue, validate, onValueChange
+		name, description, VariableDefType.BOOL, defaultValue, validate
 	)
 
 	class NUMBER(
@@ -37,9 +35,8 @@ sealed class ActionNodeInput<T>(
 		description: String,
 		defaultValue: Float,
 		validate: ((Float) -> Boolean)?,
-		onValueChange: (Float) -> Unit
 	) : ActionNodeInput<Float>(
-		name, description, VariableDefType.NUMBER, defaultValue, validate, onValueChange
+		name, description, VariableDefType.NUMBER, defaultValue, validate
 	)
 
 	class VARIABLE(
@@ -47,9 +44,8 @@ sealed class ActionNodeInput<T>(
 		description: String,
 		defaultValue: VariableDef,
 		validate: ((VariableDef) -> Boolean)?,
-		onValueChange: (VariableDef) -> Unit
 	) : ActionNodeInput<VariableDef>(
-		name, description, VariableDefType.VARIABLE, defaultValue, validate, onValueChange
+		name, description, VariableDefType.VARIABLE, defaultValue, validate
 	)
 
 	class GHOST<V>(
@@ -58,21 +54,26 @@ sealed class ActionNodeInput<T>(
 		val enabled: (Map<String, ActionNodeInput<*>>) -> Boolean,
 		defaultValue: V,
 		validate: ((V) -> Boolean)? = null,
-		onValueChange: (V) -> Unit
 	) : ActionNodeInput<V>(
 		name, description, when (defaultValue) {
 			is String -> VariableDefType.TEXT
 			is Float -> VariableDefType.NUMBER
 			is Boolean -> VariableDefType.BOOL
 			else -> VariableDefType.TEXT
-		}, defaultValue, validate, onValueChange
-	)
+		}, defaultValue, validate
+	) where V : Any
 }
 
-open class ActionNode {
-	open val name = ""
-	open val description = ""
-	open val input = emptyMap<String, ActionNodeInput<*>>()
+data class ActionNode(
+	val data: ActionNodeData,
+	val input: Map<String, Any> = data.inputDefinitions.mapValues { it.value.defaultValue },
+	val id: String = UUID.randomUUID().toString(),
+	val execute:
+		(input: Map<String, Any>, context: ExecutionFlowContext) -> Unit
+)
 
-	open fun execute(context: ExecutionFlowContext) {}
-}
+data class ActionNodeData(
+	val name: String,
+	val description: String,
+	val inputDefinitions: Map<String, ActionNodeInput<*>>
+)

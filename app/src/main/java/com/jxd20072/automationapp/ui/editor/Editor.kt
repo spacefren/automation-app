@@ -150,7 +150,7 @@ fun AutomationEditor(
 	val editorUiState by editorViewModel.editorUiState.collectAsState()
 	val currentTime by editorViewModel.currentTime.collectAsState()
 
-	if (editorUiState.automationData != null) {
+	if (editorUiState is EditorUiState.Success) {
 		Layer(
 			modifier = Modifier
 				.fillMaxSize()
@@ -158,7 +158,7 @@ fun AutomationEditor(
 		) {
 			Column {
 				EditorTopBar(
-					automationData = editorUiState.automationData!!,
+					automationData = (editorUiState as EditorUiState.Success).automationData,
 					currentTime = currentTime,
 					saveAutomation = { },
 					runAutomation = { },

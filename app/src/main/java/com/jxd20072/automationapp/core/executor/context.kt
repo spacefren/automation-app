@@ -3,19 +3,21 @@ package com.jxd20072.automationapp.core.executor
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import java.time.Instant
 
-private const val TAG = "APP_Executor/Context"
-
 class ExecutionFlowContext(
 	val scope: String,
 	initialVariables: Set<VariableDef>,
 ) {
 	private val variables = initialVariables.toMutableSet()
-	val executionStart = Instant.now()
+	lateinit var executionStart: Instant
 
 	fun setVariable(name: String, value: String) {
 		val variable = variables.find { it.name == name }
 			?: throw Exception("Variable not found: $name")
 		variable.value = value
+	}
+
+	fun onStartExecution() {
+		executionStart = Instant.now()
 	}
 
 	fun getVariables(): Set<VariableDef> {
