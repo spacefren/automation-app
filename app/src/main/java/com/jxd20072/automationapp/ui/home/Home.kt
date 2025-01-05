@@ -91,8 +91,8 @@ private fun AutomationsList(
 	LazyColumn(
 		modifier = modifier
 			.fillMaxHeight(),
-		verticalArrangement = Arrangement.spacedBy(10.dp)
 	) {
+		item { Spacer(modifier = Modifier.height(2.dp)) }
 		items(automations, { it.id }) { automation ->
 			AutomationCard(
 				name = automation.name,
@@ -107,6 +107,7 @@ private fun AutomationsList(
 				runAutomation = { runAutomation(automation.id) },
 				editAutomation = { editAutomation(automation.id) }
 			)
+			Spacer(modifier = Modifier.height(10.dp))
 		}
 
 		item { Spacer(modifier = Modifier.height(300.dp)) }

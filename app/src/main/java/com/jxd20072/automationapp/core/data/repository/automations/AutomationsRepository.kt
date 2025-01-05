@@ -24,35 +24,35 @@ class AutomationsRepository @Inject constructor(
 	private val automationsStore: AutomationsStore,
 	private val automationsDataStore: DataStore<AutomationsDataMap>
 ) {
-	init {
-		executeAutomation(
-			createAutomationDraft(
-				AutomationDef(
-					metadata = AutomationDefMetadata(
-						version = 0
-					),
-					entryPoint = listOf(
+	private val testingAutomationDraft = createAutomationDraft(
+		AutomationDef(
+			metadata = AutomationDefMetadata(
+				version = 0
+			),
+			entryPoint = listOf(
 //				ActionNodeDef(
 //					name = "writeVariable",
 //					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
 //				),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "variable test: @textVariable")
-						),
-					),
-					variables = setOf(
-						VariableDef.TEXT
-							(
-							name = "textVariable",
-							value = "textVariableValue"
-						),
-					),
-					triggers = emptyList(),
-					functions = emptyList()
-				)
-			)
+				ActionNodeDef(
+					name = "log",
+					input = mapOf("text" to "test: @textVariable")
+				),
+			),
+			variables = setOf(
+				VariableDef.TEXT
+					(
+					name = "textVariable",
+					value = "textVariableValue"
+				),
+			),
+			triggers = emptyList(),
+			functions = emptyList()
 		)
+	)
+
+	init {
+		executeAutomation(testingAutomationDraft)
 	}
 
 	val automationsDataFlow: Flow<AutomationsDataMap> = flow {
@@ -104,6 +104,7 @@ class AutomationsRepository @Inject constructor(
 	suspend fun getAutomation(id: String): AutomationDraft? {
 		val mapEntry = getAutomationMapEntry(id) ?: return null
 		val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
-		return createAutomationDraft(automationDef)
+		//return createAutomationDraft(automationDef)
+		return testingAutomationDraft
 	}
 }

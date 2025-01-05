@@ -1,7 +1,9 @@
 package com.jxd20072.automationapp.ui.editor
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,12 +24,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
+import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.home.getAutomationIconPainter
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.IconLabelButton
@@ -38,6 +45,7 @@ fun EditorTopBar(
 	automationData: AutomationsMapEntry,
 	currentTime: Instant,
 	modifier: Modifier = Modifier,
+	returnHome: (saveChanges: Boolean) -> Unit,
 	saveAutomation: () -> Unit,
 	runAutomation: () -> Unit,
 ) {
@@ -50,6 +58,7 @@ fun EditorTopBar(
 		verticalArrangement = Arrangement.spacedBy(10.dp),
 		modifier = modifier
 			.fillMaxWidth()
+			.shadow(11.dp)
 			.background(MaterialTheme.colorScheme.surface)
 			.windowInsetsPadding(WindowInsets.statusBars)
 			.padding(top = 20.dp)
@@ -68,6 +77,16 @@ fun EditorTopBar(
 					horizontalArrangement = Arrangement.spacedBy(10.dp),
 					verticalAlignment = Alignment.CenterVertically
 				) {
+					Icon(
+						painter = painterResource(R.drawable.round_arrow_back_24),
+						contentDescription = "return to home screen",
+						tint = MaterialTheme.colorScheme.onBackground,
+						modifier = Modifier
+							.size(22.dp)
+							.clickable {
+								returnHome(true)
+							}
+					)
 					Icon(
 						painter = getAutomationIconPainter(automationData.icon),
 						contentDescription = "icon: ${automationData.icon}",
@@ -104,7 +123,7 @@ fun EditorTopBar(
 					drawableRes = R.drawable.round_play_arrow_24,
 					color = MaterialTheme.colorScheme.primary,
 					iconColor = MaterialTheme.colorScheme.onPrimary,
-					padding = 4.dp,
+					padding = 6.dp,
 					cornerRadius = 5.dp,
 					onClick = runAutomation,
 					modifier = Modifier
@@ -145,12 +164,16 @@ fun EditorTopBar(
 
 @Composable
 fun AutomationEditor(
-	editorViewModel: EditorViewModel = hiltViewModel()
+	editorViewModel: EditorViewModel = hiltViewModel(),
+	returnHome: (saveChanges: Boolean) -> Unit
 ) {
 	val editorUiState by editorViewModel.editorUiState.collectAsState()
 	val currentTime by editorViewModel.currentTime.collectAsState()
 
 	if (editorUiState is EditorUiState.Success) {
+		val automationDraft = (editorUiState as EditorUiState.Success).automationDraft
+		val automationData = (editorUiState as EditorUiState.Success).automationData
+
 		Layer(
 			modifier = Modifier
 				.fillMaxSize()
@@ -158,11 +181,52 @@ fun AutomationEditor(
 		) {
 			Column {
 				EditorTopBar(
-					automationData = (editorUiState as EditorUiState.Success).automationData,
+					automationData = automationData,
 					currentTime = currentTime,
+					returnHome = returnHome,
 					saveAutomation = { },
 					runAutomation = { },
 				)
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.spacedBy(20.dp),
+					modifier = Modifier
+						.padding(horizontal = 20.dp)
+						.verticalScroll(rememberScrollState(0))
+				) {
+					Spacer(modifier = Modifier.height(5.dp))
+
+					if (automationDraft.entryPoint.isNotEmpty()) {
+						TopLevelNode(
+							type = TopLevelNodeType.ENTRYPOINT,
+							name = "onExecute",
+							displayName = listOf("On Start"),
+							icon = R.drawable.round_play_arrow_24,
+							content = automationDraft.entryPoint.map { actionNode ->
+								{
+									val actionData = actionNodes[actionNode.name]?.data
+									if (actionData != null) {
+										ChildNode(
+											type = ChildNodeType.ACTION,
+											name = actionData.displayName,
+											displayName = actionData.editorActionDescription(actionNode.input),
+											icon = actionData.icon
+										)
+									} else {
+										Box {}
+									}
+									ChildNode(
+										type = ChildNodeType.ACTION,
+										name = "is this one smaller",
+										displayName = listOf("is this one smaller"),
+										icon = R.drawable.round_search_24
+									)
+								}
+							}
+						)
+					}
+					Spacer(modifier = Modifier.height(50.dp))
+				}
 			}
 		}
 	}

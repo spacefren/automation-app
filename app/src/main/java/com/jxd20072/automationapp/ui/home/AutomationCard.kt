@@ -123,7 +123,7 @@ fun AutomationCard(
 				iconColor = MaterialTheme.colorScheme.onSecondary,
 				drawableRes = R.drawable.round_play_arrow_24,
 				cornerRadius = 5.dp,
-				padding = 4.dp,
+				padding = 6.dp,
 				onClick = runAutomation,
 				modifier = Modifier
 					.size(45.dp)

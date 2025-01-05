@@ -57,7 +57,7 @@ class ExecutionFlow(
 	}
 
 	fun startExecution() {
-		Log.i(TAG, "STARTING EXECUTION");
+		Log.i(TAG, "STARTING EXECUTION")
 
 		resetState()
 		context.onStartExecution()
@@ -71,6 +71,6 @@ class ExecutionFlow(
 			TAG, "EXECUTION ENDED in ${
 				Instant.now().toEpochMilli() - context.executionStart.toEpochMilli()
 			} ms"
-		);
+		)
 	}
 }

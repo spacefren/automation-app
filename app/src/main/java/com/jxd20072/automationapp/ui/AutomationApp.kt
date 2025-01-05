@@ -95,7 +95,8 @@ fun AutomationApp(
 			popExitTransition = { pageExitTransition() },
 		) {
 			AutomationEditor(
-				editorViewModel = editorViewModel
+				editorViewModel = editorViewModel,
+				returnHome = { navController.navigate(route = AppScreen.HOME.name) }
 			)
 		}
 		composable(

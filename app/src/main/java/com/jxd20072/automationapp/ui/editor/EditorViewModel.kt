@@ -19,7 +19,7 @@ sealed interface EditorUiState {
 	data object Loading : EditorUiState
 	data class Success(
 		val automationData: AutomationsMapEntry,
-		val automationDef: AutomationDraft,
+		val automationDraft: AutomationDraft,
 	) : EditorUiState
 }
 
@@ -41,7 +41,7 @@ class EditorViewModel @Inject constructor(
 				_editorUiState.update {
 					EditorUiState.Success(
 						automationData = automationData,
-						automationDef = automation
+						automationDraft = automation
 					)
 				}
 			}
