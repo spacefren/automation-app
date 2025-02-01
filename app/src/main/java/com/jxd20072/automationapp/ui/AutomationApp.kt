@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -7,7 +8,10 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -24,6 +28,11 @@ import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 enum class AppScreen { HOME, EDITOR, SETTINGS }
 
 val animationSpec: FiniteAnimationSpec<IntOffset> = spring(
+	dampingRatio = Spring.DampingRatioNoBouncy,
+	stiffness = Spring.StiffnessLow
+)
+
+val animationSpec_f: FiniteAnimationSpec<Float> = spring(
 	dampingRatio = Spring.DampingRatioNoBouncy,
 	stiffness = Spring.StiffnessLow
 )
@@ -72,43 +81,70 @@ fun AutomationApp(
 	NavHost(
 		navController = navController,
 		startDestination = AppScreen.HOME.name,
+		modifier = Modifier.background(MaterialTheme.colorScheme.background)
 	) {
 		composable(
 			route = AppScreen.HOME.name,
-			enterTransition = { homeEnterTransition() },
-			exitTransition = { homeExitTransition() },
-			popEnterTransition = { homeEnterTransition() },
-			popExitTransition = { homeExitTransition() },
+			enterTransition = {
+				slideIntoContainer(
+					AnimatedContentTransitionScope.SlideDirection.Right,
+					initialOffset = { it / 5 },
+					animationSpec = animationSpec
+				)
+			},
+			exitTransition = {
+				slideOutOfContainer(
+					AnimatedContentTransitionScope.SlideDirection.Left,
+					targetOffset = { it / 5 },
+					animationSpec = animationSpec
+				)
+			},
 		) {
 			HomeScreen(
 				homeViewModel = homeViewModel,
 				openSettings = { navController.navigate(route = AppScreen.SETTINGS.name) },
 				runAutomation = {},
-				editAutomation = { id -> startEditAutomation(id) }
+				editAutomation = { id -> startEditAutomation(id) },
 			)
 		}
 		composable(
 			route = AppScreen.EDITOR.name,
-			enterTransition = { pageEnterTransition() },
-			exitTransition = { pageExitTransition() },
-			popEnterTransition = { pageEnterTransition() },
-			popExitTransition = { pageExitTransition() },
+			enterTransition = {
+				slideIntoContainer(
+					AnimatedContentTransitionScope.SlideDirection.Left,
+					animationSpec = animationSpec
+				)
+			},
+			exitTransition = {
+				slideOutOfContainer(
+					AnimatedContentTransitionScope.SlideDirection.Right,
+					animationSpec = animationSpec
+				)
+			},
 		) {
 			AutomationEditor(
 				editorViewModel = editorViewModel,
-				returnHome = { navController.navigate(route = AppScreen.HOME.name) }
+				returnHome = { navController.popBackStack() }
 			)
 		}
 		composable(
 			route = AppScreen.SETTINGS.name,
-			enterTransition = { pageEnterTransition() },
-			exitTransition = { pageExitTransition() },
-			popEnterTransition = { pageEnterTransition() },
-			popExitTransition = { pageExitTransition() },
+			enterTransition = {
+				slideIntoContainer(
+					AnimatedContentTransitionScope.SlideDirection.Left,
+					animationSpec = animationSpec
+				)
+			},
+			exitTransition = {
+				slideOutOfContainer(
+					AnimatedContentTransitionScope.SlideDirection.Right,
+					animationSpec = animationSpec
+				)
+			},
 		) {
 			UserSettingsScreen(
 				userSettingsViewModel = settingsViewModel,
-				returnHome = { navController.navigate(route = AppScreen.HOME.name) }
+				returnHome = { navController.popBackStack() }
 			)
 		}
 	}

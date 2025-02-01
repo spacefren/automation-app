@@ -58,7 +58,7 @@ class AutomationsRepository @Inject constructor(
 	val automationsDataFlow: Flow<AutomationsDataMap> = flow {
 		while (true) {
 			emit(getAutomationDataMap())
-			delay(5_000)
+			delay(10_000)
 		}
 	}
 

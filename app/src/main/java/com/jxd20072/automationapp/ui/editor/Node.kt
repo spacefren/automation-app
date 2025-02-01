@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.editor
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -122,7 +121,6 @@ fun ChildNode(
 	}
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TopLevelNode(
 	type: TopLevelNodeType,

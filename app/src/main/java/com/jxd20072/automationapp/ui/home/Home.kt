@@ -119,7 +119,7 @@ fun HomeScreen(
 	homeViewModel: HomeViewModel = hiltViewModel(),
 	openSettings: () -> Unit,
 	runAutomation: (id: String) -> Unit,
-	editAutomation: (id: String) -> Unit
+	editAutomation: (id: String) -> Unit,
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
