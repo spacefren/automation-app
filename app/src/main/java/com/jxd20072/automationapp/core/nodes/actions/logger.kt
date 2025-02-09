@@ -21,7 +21,10 @@ class LoggerAction(id: String) : ActionNode(id) {
 
 		val text = this.input["text"] as String
 		Log.d(TAG, processText(text, context))
-		Log.d(TAG, context.getVariables().map { "${it.value} (${it.type})" }.toString())
+		Log.d(
+			TAG,
+			context.getVariables().map { "${it.name}: ${it.value} (${it.type})" }.toString()
+		)
 	}
 }
 

@@ -1,7 +1,6 @@
 package com.jxd20072.automationapp.ui.userSettings
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,73 +55,72 @@ fun UserSettingsScreen(
 		modifier = Modifier
 			.fillMaxSize()
 			.background(MaterialTheme.colorScheme.background)
+	)
+	Column(
+		modifier = Modifier
+			.windowInsetsPadding(WindowInsets.statusBars)
+			.padding(top = 30.dp, start = 20.dp, end = 20.dp)
 	) {
-		Column(
-			modifier = Modifier
-				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = 30.dp, start = 20.dp, end = 20.dp)
+		Row(
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.SpaceBetween,
+			modifier = Modifier.fillMaxWidth()
 		) {
 			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.SpaceBetween,
-				modifier = Modifier.fillMaxWidth()
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Row(
-					verticalAlignment = Alignment.CenterVertically
-				) {
-					Icon(
-						painter = painterResource(R.drawable.round_arrow_back_24),
-						contentDescription = "back",
-						tint = MaterialTheme.colorScheme.onBackground,
-						modifier = Modifier
-							.size(28.dp)
-							.clickable { returnHome() }
-					)
-					Spacer(modifier = Modifier.width(10.dp))
-					Text(
-						text = "Settings",
-						color = MaterialTheme.colorScheme.onBackground,
-						fontSize = 32.sp
-					)
-				}
 				Icon(
-					painter = painterResource(R.drawable.round_loop_24),
-					contentDescription = "settings",
+					painter = painterResource(R.drawable.round_arrow_back_24),
+					contentDescription = "back",
 					tint = MaterialTheme.colorScheme.onBackground,
 					modifier = Modifier
 						.size(28.dp)
-						.rotate(resetIconRotation.value)
-						.clickable {
-							userSettingsViewModel.resetSettingsToDefault()
-							coroutineScope.launch {
-								resetIconRotation.animateTo(
-									-360f,
-									animationSpec = spring(
-										dampingRatio = Spring.DampingRatioMediumBouncy,
-										stiffness = 120f
-									)
-								)
-								resetIconRotation.snapTo(0f)
-							}
-						}
+						.clickable { returnHome() }
+				)
+				Spacer(modifier = Modifier.width(10.dp))
+				Text(
+					text = "Settings",
+					color = MaterialTheme.colorScheme.onBackground,
+					fontSize = 32.sp
 				)
 			}
-			Spacer(modifier = Modifier.height(20.dp))
-			if (userSettingsUiState is UserSettingsUiState.Success) {
-				val settings = userSettingsUiState as UserSettingsUiState.Success
+			Icon(
+				painter = painterResource(R.drawable.round_loop_24),
+				contentDescription = "settings",
+				tint = MaterialTheme.colorScheme.onBackground,
+				modifier = Modifier
+					.size(28.dp)
+					.rotate(resetIconRotation.value)
+					.clickable {
+						userSettingsViewModel.resetSettingsToDefault()
+						coroutineScope.launch {
+							resetIconRotation.animateTo(
+								-360f,
+								animationSpec = spring(
+									dampingRatio = 0.6f,
+									stiffness = 80f
+								)
+							)
+							resetIconRotation.snapTo(0f)
+						}
+					}
+			)
+		}
+		Spacer(modifier = Modifier.height(20.dp))
+		if (userSettingsUiState is UserSettingsUiState.Success) {
+			val settings = userSettingsUiState as UserSettingsUiState.Success
 
-				Column(
-					verticalArrangement = Arrangement.spacedBy(30.dp),
-					modifier = Modifier
-						.verticalScroll(rememberScrollState(0))
-						.padding(top = 10.dp)
-				) {
-					GeneralSettingsCategory(
-						userSettingsUiState = settings,
-						onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled,
-						openAutomationsFolder = userSettingsViewModel::openAutomationsFolder
-					)
-				}
+			Column(
+				verticalArrangement = Arrangement.spacedBy(30.dp),
+				modifier = Modifier
+					.verticalScroll(rememberScrollState(0))
+					.padding(top = 10.dp)
+			) {
+				GeneralSettingsCategory(
+					userSettingsUiState = settings,
+					onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled,
+					openAutomationsFolder = userSettingsViewModel::openAutomationsFolder
+				)
 			}
 		}
 	}

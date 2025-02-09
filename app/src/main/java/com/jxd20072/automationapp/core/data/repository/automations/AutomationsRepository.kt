@@ -8,6 +8,7 @@ import com.jxd20072.automationapp.core.data.local.AutomationsStore
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
+import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import kotlinx.coroutines.delay
@@ -38,6 +39,18 @@ class AutomationsRepository @Inject constructor(
 					name = "log",
 					input = mapOf("text" to "test: @textVariable")
 				),
+				ActionNodeDef(
+					name = "log",
+					input = mapOf("text" to "second test")
+				),
+				ActionNodeDef(
+					name = "log",
+					input = mapOf("text" to "third test")
+				),
+				ActionNodeDef(
+					name = "log",
+					input = mapOf("text" to "fourth test")
+				),
 			),
 			variables = setOf(
 				VariableDef.TEXT
@@ -47,7 +60,31 @@ class AutomationsRepository @Inject constructor(
 				),
 			),
 			triggers = emptyList(),
-			functions = emptyList()
+			functions = listOf(
+				FunctionNodeDef(
+					name = "myFunction",
+					input = mapOf("input1" to "value1"),
+					output = mapOf("output1" to "value2"),
+					content = listOf(
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "1")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "2")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "3")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "4")
+						),
+					)
+				)
+			)
 		)
 	)
 

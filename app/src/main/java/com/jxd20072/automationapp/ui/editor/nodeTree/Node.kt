@@ -1,0 +1,319 @@
+package com.jxd20072.automationapp.ui.editor.nodeTree
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Draggable2DState
+import androidx.compose.foundation.gestures.draggable2D
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
+import com.jxd20072.automationapp.core.data.repository.automations.FunctionNodeDraft
+import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
+import com.jxd20072.automationapp.ui.utils.conditional
+
+enum class TopLevelNodeType { ENTRYPOINT, TRIGGER, FUNCTION }
+enum class ChildNodeType { ACTION }
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+fun NodeHeaderIcons(
+	draggableState: Draggable2DState? = null,
+	onDragStart: (() -> Unit)? = null,
+	onStopDrag: (() -> Unit)? = null,
+	forceShowDragHandle: Boolean = false,
+	icon: Int
+) {
+	val shouldShowDragHandle =
+		onDragStart != null && onStopDrag != null && draggableState != null
+	Row(
+		horizontalArrangement = Arrangement.spacedBy(6.dp),
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		if (shouldShowDragHandle || forceShowDragHandle) {
+			Box(
+				Modifier.width(10.dp)
+			) {
+				Icon(
+					painter = painterResource(R.drawable.round_drag_indicator_24),
+					tint = MaterialTheme.colorScheme.onSurface,
+					contentDescription = "dragIndicator",
+					modifier = Modifier
+						.size(20.dp)
+						.requiredWidth(IntrinsicSize.Max)
+						.conditional(shouldShowDragHandle, ifTrue = {
+							draggable2D(
+								state = draggableState!!,
+								onDragStarted = {
+									onDragStart!!()
+								},
+								onDragStopped = {
+									onStopDrag!!()
+								}
+							)
+						})
+				)
+			}
+		}
+		Icon(
+			painter = painterResource(icon),
+			tint = MaterialTheme.colorScheme.onBackground,
+			contentDescription = "dragIndicator",
+			modifier = Modifier
+				.size(26.dp)
+				.aspectRatio(.7f)
+		)
+	}
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun NodeHeader(
+	displayName: List<String>,
+	nodeId: String,
+	icon: Int,
+	draggableState: Draggable2DState,
+	onDragStart: (() -> Unit)? = null,
+	onStopDrag: (() -> Unit)? = null,
+	modifier: Modifier = Modifier,
+) {
+	Row(
+		horizontalArrangement = Arrangement.spacedBy(6.dp),
+		verticalAlignment = Alignment.CenterVertically,
+		modifier = modifier
+	) {
+		NodeHeaderIcons(
+			draggableState = draggableState,
+			onDragStart = onDragStart,
+			onStopDrag = onStopDrag,
+			icon = icon
+		)
+		FlowRow(
+			horizontalArrangement = Arrangement.spacedBy(5.dp),
+			verticalArrangement = Arrangement.Top
+		) {
+			displayName.forEach { piece ->
+				if (piece.startsWith("*")) {
+					Box(
+						modifier = Modifier
+							.shadow(5.dp, RoundedCornerShape(5.dp))
+							.background(MaterialTheme.colorScheme.surface)
+							.padding(horizontal = 6.dp, vertical = 3.dp)
+					) {
+						Text(
+							text = piece.removePrefix("*"),
+							color = MaterialTheme.colorScheme.onBackground,
+							fontStyle = FontStyle.Italic,
+							fontSize = 16.sp,
+						)
+					}
+				} else {
+					piece.split(" ").forEach { word ->
+						Text(
+							text = word,
+							color = MaterialTheme.colorScheme.onBackground,
+							fontSize = 16.sp,
+							modifier = Modifier.align(Alignment.CenterVertically)
+						)
+					}
+				}
+			}
+		}
+	}
+}
+
+@Composable
+fun NodeContainer(
+	modifier: Modifier = Modifier,
+	level: Int,
+	disabledForDragging: Boolean = false,
+	enabledByDragging: Boolean? = false,
+	onPositioned: (position: Offset) -> Unit,
+	content: @Composable BoxScope.() -> Unit
+) {
+	Box(
+		content = content,
+		modifier = modifier
+			.graphicsLayer(
+				alpha = if (!disabledForDragging) 1f else .3f
+			)
+			.conditional(enabledByDragging == false, ifTrue = {
+				fillMaxWidth()
+			})
+			.shadow(
+				if (enabledByDragging == true) 10.dp else 5.dp,
+				RoundedCornerShape(
+					when (level) {
+						1 -> 8.dp
+						2 -> 4.dp
+						else -> 5.dp
+					}
+				)
+			)
+			.background(
+				when (level) {
+					1 -> MaterialTheme.colorScheme.surface
+					2 -> MaterialTheme.colorScheme.tertiary
+					else -> Color.Red
+				}
+			)
+			.onGloballyPositioned { layout ->
+				onPositioned(layout.positionInRoot())
+			}
+			.padding(
+				when (level) {
+					1 -> 10.dp
+					2 -> 8.dp
+					else -> 8.dp
+				}
+			)
+	)
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FunctionNode(
+	functionNode: FunctionNodeDraft,
+	dragging: Boolean = false,
+	draggableState: Draggable2DState,
+	onStopDrag: () -> Unit,
+	onDragStart: (id: String, position: Offset, scope: EditorDraggableScope) -> Unit
+) {
+	TopLevelNode(
+		type = TopLevelNodeType.FUNCTION,
+		id = functionNode.id,
+		displayName = listOf(functionNode.name),
+		draggableState = draggableState,
+		onStopDrag = onStopDrag,
+		onDragStart = onDragStart,
+		content = functionNode.content,
+	)
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TopLevelNode(
+	type: TopLevelNodeType,
+	id: String,
+	displayName: List<String>,
+	draggableState: Draggable2DState,
+	onDragStart: (id: String, position: Offset, scope: EditorDraggableScope) -> Unit,
+	onStopDrag: () -> Unit,
+	modifier: Modifier = Modifier,
+	content: List<ActionNodeDraft>
+) {
+	var dragging by remember { mutableStateOf(false) }
+	var position by remember { mutableStateOf(Offset(0f, 0f)) }
+
+	NodeContainer(
+		modifier = modifier,
+		level = 1,
+		onPositioned = { position = it },
+		disabledForDragging = dragging
+	) {
+		Column(
+			verticalArrangement = Arrangement.spacedBy(10.dp)
+		) {
+			NodeHeader(
+				displayName = displayName,
+				nodeId = id,
+				icon = when (type) {
+					TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
+					TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
+					TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
+				},
+				draggableState = draggableState,
+				onStopDrag = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
+					dragging = false
+					onStopDrag()
+				}),
+				onDragStart = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
+					dragging = true
+					onDragStart(id, position, EditorDraggableScope.FUNCTION)
+				})
+			)
+			content.map { actionNode ->
+				ActionNode(
+					actionNode = actionNode,
+					draggableState = draggableState,
+					onStopDrag = onStopDrag,
+					onDragStart = onDragStart,
+					modifier = Modifier
+				)
+			}
+		}
+	}
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ActionNode(
+	modifier: Modifier = Modifier,
+	actionNode: ActionNodeDraft,
+	draggableState: Draggable2DState,
+	onStopDrag: (() -> Unit)? = null,
+	onDragStart:
+	((id: String, position: Offset, scope: EditorDraggableScope) -> Unit)? = null,
+) {
+	var dragging by remember { mutableStateOf(false) }
+	var position by remember { mutableStateOf(Offset(0f, 0f)) }
+
+	val actionData = actionNodes[actionNode.name]?.data
+	if (actionData != null) {
+		NodeContainer(
+			modifier = modifier,
+			level = 2,
+			onPositioned = { position = it },
+			disabledForDragging = dragging
+		) {
+			NodeHeader(
+				displayName = actionData.editorActionDescription(actionNode.input),
+				nodeId = actionNode.id,
+				icon = actionData.icon,
+				draggableState = draggableState,
+				onStopDrag = {
+					onStopDrag?.invoke()
+					dragging = false
+				},
+				onDragStart = {
+					onDragStart?.invoke(actionNode.id, position, EditorDraggableScope.ACTION)
+					dragging = true
+				}
+			)
+		}
+	}
+}

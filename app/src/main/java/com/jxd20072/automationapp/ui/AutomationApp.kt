@@ -1,13 +1,9 @@
 package com.jxd20072.automationapp.ui
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -31,39 +27,6 @@ val animationSpec: FiniteAnimationSpec<IntOffset> = spring(
 	dampingRatio = Spring.DampingRatioNoBouncy,
 	stiffness = Spring.StiffnessLow
 )
-
-val animationSpec_f: FiniteAnimationSpec<Float> = spring(
-	dampingRatio = Spring.DampingRatioNoBouncy,
-	stiffness = Spring.StiffnessLow
-)
-
-fun pageEnterTransition(): EnterTransition {
-	return slideInHorizontally(
-		animationSpec = animationSpec,
-		initialOffsetX = { it }
-	)
-}
-
-fun pageExitTransition(): ExitTransition {
-	return slideOutHorizontally(
-		animationSpec = animationSpec,
-		targetOffsetX = { it }
-	)
-}
-
-fun homeEnterTransition(): EnterTransition {
-	return slideInHorizontally(
-		animationSpec = animationSpec,
-		initialOffsetX = { -it }
-	)
-}
-
-fun homeExitTransition(): ExitTransition {
-	return slideOutHorizontally(
-		animationSpec = animationSpec,
-		targetOffsetX = { -it }
-	)
-}
 
 @Composable
 fun AutomationApp(
@@ -126,6 +89,7 @@ fun AutomationApp(
 				editorViewModel = editorViewModel,
 				returnHome = { navController.popBackStack() }
 			)
+			//ReorderableTesting()
 		}
 		composable(
 			route = AppScreen.SETTINGS.name,

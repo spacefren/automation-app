@@ -39,35 +39,34 @@ fun AddAutomationDrawer(
 		) {
 			Layer(
 				modifier = modifier
-			) {
-				AnimatedContent(
-					targetState = drawerUiState.screen, label = "",
-				) { targetState ->
-					when (targetState) {
-						AddAutomationDrawerScreen.AUTOMATION_ADD -> {
-							AddAutomationScreen(
-								selectedIcon = drawerUiState.selectedIcon,
-								validateAutomationName = validateAutomationName,
-								onIconChangeRequest = {
-									onScreenChanged(AddAutomationDrawerScreen.ICON_SELECT)
-								},
-								name = drawerUiState.selectedName,
-								onNameChanged = { newName ->
-									onNameChanged(newName)
-								},
-								onCreateAutomation = onCreateAutomation
-							)
-						}
+			)
+			AnimatedContent(
+				targetState = drawerUiState.screen, label = "",
+			) { targetState ->
+				when (targetState) {
+					AddAutomationDrawerScreen.AUTOMATION_ADD -> {
+						AddAutomationScreen(
+							selectedIcon = drawerUiState.selectedIcon,
+							validateAutomationName = validateAutomationName,
+							onIconChangeRequest = {
+								onScreenChanged(AddAutomationDrawerScreen.ICON_SELECT)
+							},
+							name = drawerUiState.selectedName,
+							onNameChanged = { newName ->
+								onNameChanged(newName)
+							},
+							onCreateAutomation = onCreateAutomation
+						)
+					}
 
-						AddAutomationDrawerScreen.ICON_SELECT -> {
-							IconSelectScreen(
-								filteredIcons = drawerUiState.filteredIcons,
-								iconSearchQuery = drawerUiState.iconSearchQuery,
-								onIconSearch = onIconSearch
-							) { icon ->
-								onIconChanged(icon)
-								onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
-							}
+					AddAutomationDrawerScreen.ICON_SELECT -> {
+						IconSelectScreen(
+							filteredIcons = drawerUiState.filteredIcons,
+							iconSearchQuery = drawerUiState.iconSearchQuery,
+							onIconSearch = onIconSearch
+						) { icon ->
+							onIconChanged(icon)
+							onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
 						}
 					}
 				}

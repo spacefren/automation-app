@@ -56,12 +56,12 @@ data class AutomationCardState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val automationsRepository: AutomationsRepository,
-	private val timeManager: TimeManager
 ) : ViewModel() {
 
 	private val _homeUiState = MutableStateFlow(HomeScreenUiState())
 	val homeUiState = _homeUiState.asStateFlow()
 
+	private val timeManager = TimeManager(viewModelScope, 5000)
 	val currentTime = timeManager.currentTime
 
 	override fun onCleared() {

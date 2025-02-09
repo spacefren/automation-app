@@ -11,14 +11,14 @@ data class AutomationDraft(
 	val metadata: AutomationDefMetadata,
 	val variables: Set<VariableDef>,
 	val entryPoint: List<ActionNodeDraft>,
-	val triggers: List<TriggerNodeDef>,
+	val triggers: List<TriggerNodeDraft>,
 	val functions: List<FunctionNodeDraft>
 )
 
 data class ActionNodeDraft(
+	val name: String,
 	val id: String = UUID.randomUUID().toString(),
 	val input: Map<String, String>,
-	val name: String,
 )
 
 data class FunctionNodeDraft(
@@ -29,10 +29,23 @@ data class FunctionNodeDraft(
 	val output: Map<String, String>
 )
 
+data class TriggerNodeDraft(
+	val name: String,
+	val id: String = UUID.randomUUID().toString(),
+	val content: List<ActionNodeDef>
+)
+
 fun createActionNodeDraft(actionNodeDef: ActionNodeDef): ActionNodeDraft {
 	return ActionNodeDraft(
 		input = actionNodeDef.input,
 		name = actionNodeDef.name
+	)
+}
+
+fun createTriggerNodeDraft(triggerNodeDef: TriggerNodeDef): TriggerNodeDraft {
+	return TriggerNodeDraft(
+		name = triggerNodeDef.name,
+		content = triggerNodeDef.content
 	)
 }
 
@@ -41,7 +54,7 @@ fun createAutomationDraft(automationDef: AutomationDef): AutomationDraft {
 		metadata = automationDef.metadata,
 		variables = automationDef.variables,
 		entryPoint = automationDef.entryPoint.map { createActionNodeDraft(it) },
-		triggers = automationDef.triggers,
+		triggers = automationDef.triggers.map { createTriggerNodeDraft(it) },
 		functions = automationDef.functions.map { functionDef ->
 			FunctionNodeDraft(
 				name = functionDef.name,
