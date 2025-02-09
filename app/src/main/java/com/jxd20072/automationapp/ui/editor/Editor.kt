@@ -37,24 +37,25 @@ fun AutomationEditor(
 			modifier = Modifier
 				.fillMaxSize()
 				.background(MaterialTheme.colorScheme.background)
-		)
-		DraggingNode(
-			draggingData = draggingData
-		)
-		Column {
-			EditorTopBar(
-				automationData = automationData,
-				currentTime = currentTime,
-				returnHome = returnHome,
-				saveAutomation = { },
-				runAutomation = { },
+		) {
+			DraggingNode(
+				draggingData = draggingData
 			)
-			EditorNodeTree(
-				automationDraft = automationDraft,
-				onNodeDrag = editorViewModel::onNodeDrag,
-				onStopDrag = editorViewModel::onStopDrag,
-				draggableState = draggableState
-			)
+			Column {
+				EditorTopBar(
+					automationData = automationData,
+					currentTime = currentTime,
+					returnHome = returnHome,
+					saveAutomation = { },
+					runAutomation = { },
+				)
+				EditorNodeTree(
+					automationDraft = automationDraft,
+					onNodeDrag = editorViewModel::onNodeDrag,
+					onStopDrag = editorViewModel::onStopDrag,
+					draggableState = draggableState
+				)
+			}
 		}
 	}
 }

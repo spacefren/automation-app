@@ -130,66 +130,67 @@ fun HomeScreen(
 		modifier = Modifier
 			.fillMaxSize()
 			.background(MaterialTheme.colorScheme.background)
-	)
-	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp),
-		modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 	) {
-		TopBar(
-			modifier = Modifier.padding(sidePadding),
-			openSettings = openSettings
-		)
+		Column(
+			verticalArrangement = Arrangement.spacedBy(15.dp),
+			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+		) {
+			TopBar(
+				modifier = Modifier.padding(sidePadding),
+				openSettings = openSettings
+			)
 
-		SearchBar(
-			searchText = "Search for automations",
-			queryText = homeUiState.searchQuery,
-			onSearch = { query -> homeViewModel.changeSearchQuery(query) },
-			modifier = Modifier
-				.fillMaxWidth()
-				.height(45.dp)
-				.padding(sidePadding),
-		)
+			SearchBar(
+				searchText = "Search for automations",
+				queryText = homeUiState.searchQuery,
+				onSearch = { query -> homeViewModel.changeSearchQuery(query) },
+				modifier = Modifier
+					.fillMaxWidth()
+					.height(45.dp)
+					.padding(sidePadding),
+			)
 
-		FilterChips(
-			filters = homeUiState.filters,
-			sidePadding = sidePadding,
-			onFilterChange = { filter, enabled ->
-				homeViewModel.changeFilter(filter, enabled)
-			}
-		)
-		AutomationsList(
-			automations = homeUiState.filteredAutomations,
-			currentTime = currentTime,
-			modifier = Modifier.padding(sidePadding),
-			runAutomation = runAutomation,
-			editAutomation = editAutomation
-		)
-	}
-
-	AddAutomationDrawer(
-		drawerUiState = homeUiState.addAutomationDrawerState,
-		onDismissRequest = {
-			homeViewModel.changeAddAutomationDrawerVisibility(false)
-		},
-		modifier = Modifier.padding(sidePadding),
-		validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
-		onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
-		onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
-		onNameChanged = homeViewModel::changeAddAutomationDrawerName,
-		onIconSearch = homeViewModel::changeIconSelectorSearchQuery
-	) {
-		homeViewModel.addAutomation(
-			name = homeUiState.addAutomationDrawerState.selectedName,
-			icon = homeUiState.addAutomationDrawerState.selectedIcon
-		) { id ->
-			homeViewModel.changeAddAutomationDrawerVisibility(false)
-			editAutomation(id)
+			FilterChips(
+				filters = homeUiState.filters,
+				sidePadding = sidePadding,
+				onFilterChange = { filter, enabled ->
+					homeViewModel.changeFilter(filter, enabled)
+				}
+			)
+			AutomationsList(
+				automations = homeUiState.filteredAutomations,
+				currentTime = currentTime,
+				modifier = Modifier.padding(sidePadding),
+				runAutomation = runAutomation,
+				editAutomation = editAutomation
+			)
 		}
-	}
 
-	Box(modifier = Modifier.fillMaxSize()) {
-		FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
-			homeViewModel.changeAddAutomationDrawerVisibility(true)
+		AddAutomationDrawer(
+			drawerUiState = homeUiState.addAutomationDrawerState,
+			onDismissRequest = {
+				homeViewModel.changeAddAutomationDrawerVisibility(false)
+			},
+			modifier = Modifier.padding(sidePadding),
+			validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
+			onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
+			onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
+			onNameChanged = homeViewModel::changeAddAutomationDrawerName,
+			onIconSearch = homeViewModel::changeIconSelectorSearchQuery
+		) {
+			homeViewModel.addAutomation(
+				name = homeUiState.addAutomationDrawerState.selectedName,
+				icon = homeUiState.addAutomationDrawerState.selectedIcon
+			) { id ->
+				homeViewModel.changeAddAutomationDrawerVisibility(false)
+				editAutomation(id)
+			}
+		}
+
+		Box(modifier = Modifier.fillMaxSize()) {
+			FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
+				homeViewModel.changeAddAutomationDrawerVisibility(true)
+			}
 		}
 	}
 }
