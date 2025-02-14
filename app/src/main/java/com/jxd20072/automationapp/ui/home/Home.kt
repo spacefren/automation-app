@@ -43,7 +43,6 @@ import java.time.Instant
 /* TODO
 	* Swipe-to-archive
 	* Toasts
-	* Performance issue with switching home and settings screens
 */
 
 @Composable

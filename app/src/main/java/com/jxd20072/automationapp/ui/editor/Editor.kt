@@ -53,7 +53,8 @@ fun AutomationEditor(
 					automationDraft = automationDraft,
 					onNodeDrag = editorViewModel::onNodeDrag,
 					onStopDrag = editorViewModel::onStopDrag,
-					draggableState = draggableState
+					draggableState = draggableState,
+					draggingData = draggingData
 				)
 			}
 		}

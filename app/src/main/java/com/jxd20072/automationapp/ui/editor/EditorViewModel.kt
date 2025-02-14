@@ -30,7 +30,8 @@ sealed interface EditorDraggingData {
 		val draggingAction: ActionNodeDraft? = null,
 		val draggingFunction: FunctionNodeDraft? = null,
 		val draggingTrigger: TriggerNodeDraft? = null,
-		val inputPosition: Offset,
+		val nodePosition: Offset,
+		val inputOffset: Offset,
 		val scope: EditorDraggableScope
 	) : EditorDraggingData
 }
@@ -71,7 +72,12 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun onNodeDrag(id: String, position: Offset, scope: EditorDraggableScope) {
+	fun onNodeDrag(
+		id: String,
+		nodePosition: Offset,
+		pressedPosition: Offset,
+		scope: EditorDraggableScope
+	) {
 		_editorUiState.update { currentState ->
 			currentState as EditorUiState.Success
 
@@ -101,7 +107,8 @@ class EditorViewModel @Inject constructor(
 			(currentState).copy(
 				draggingData = EditorDraggingData.Dragging(
 					scope = scope,
-					inputPosition = position,
+					nodePosition = nodePosition,
+					inputOffset = pressedPosition - nodePosition,
 					draggingAction = actionNode,
 					draggingFunction = functionNode,
 					draggingTrigger = triggerNode
@@ -119,7 +126,7 @@ class EditorViewModel @Inject constructor(
 
 			currentState.copy(
 				draggingData = currentState.draggingData.copy(
-					inputPosition = currentState.draggingData.inputPosition + delta
+					nodePosition = currentState.draggingData.nodePosition + delta
 				)
 			)
 		}

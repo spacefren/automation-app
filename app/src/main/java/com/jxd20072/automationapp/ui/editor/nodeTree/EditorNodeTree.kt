@@ -16,12 +16,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
+import com.jxd20072.automationapp.ui.editor.EditorDraggingData
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeTree(
 	automationDraft: AutomationDraft,
-	onNodeDrag: (id: String, position: Offset, scope: EditorDraggableScope) -> Unit,
+	draggingData: EditorDraggingData,
+	onNodeDrag: (
+		id: String,
+		startedPosition: Offset,
+		startedOffset: Offset,
+		scope: EditorDraggableScope
+	) -> Unit,
 	onStopDrag: () -> Unit,
 	draggableState: Draggable2DState
 ) {
@@ -40,17 +47,22 @@ fun EditorNodeTree(
 				id = "0",
 				displayName = listOf("On Start"),
 				content = automationDraft.entryPoint,
-				onDragStart = { id, offset, scope -> onNodeDrag(id, offset, scope) },
+				onDragStart = onNodeDrag,
 				onStopDrag = onStopDrag,
-				draggableState = draggableState
+				draggableState = draggableState,
+				draggingData = draggingData
 			)
 		}
 		automationDraft.functions.forEach { function ->
-			FunctionNode(
-				functionNode = function,
-				draggableState = draggableState,
+			TopLevelNode(
+				type = TopLevelNodeType.FUNCTION,
+				id = "0",
+				displayName = listOf(function.name),
+				content = automationDraft.entryPoint,
+				onDragStart = onNodeDrag,
 				onStopDrag = onStopDrag,
-				onDragStart = onNodeDrag
+				draggableState = draggableState,
+				draggingData = draggingData
 			)
 		}
 		Spacer(modifier = Modifier.height(50.dp))

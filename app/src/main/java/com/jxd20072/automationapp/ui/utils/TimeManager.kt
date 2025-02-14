@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.utils
 
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -19,7 +18,6 @@ class TimeManager(private val scope: CoroutineScope, private val interval: Long)
 			while (true) {
 				delay(interval)
 				_currentTime.value = Instant.now()
-				Log.d("APP_TimeManager", "emitting at interval $interval");
 			}
 		}
 	}
