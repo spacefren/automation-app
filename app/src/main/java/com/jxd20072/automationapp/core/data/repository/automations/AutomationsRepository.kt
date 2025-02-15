@@ -30,28 +30,6 @@ class AutomationsRepository @Inject constructor(
 			metadata = AutomationDefMetadata(
 				version = 0
 			),
-			entryPoint = listOf(
-//				ActionNodeDef(
-//					name = "writeVariable",
-//					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
-//				),
-				ActionNodeDef(
-					name = "log",
-					input = mapOf("text" to "test: @textVariable")
-				),
-				ActionNodeDef(
-					name = "log",
-					input = mapOf("text" to "second test")
-				),
-				ActionNodeDef(
-					name = "log",
-					input = mapOf("text" to "third test")
-				),
-				ActionNodeDef(
-					name = "log",
-					input = mapOf("text" to "fourth test")
-				),
-			),
 			variables = setOf(
 				VariableDef.TEXT
 					(
@@ -61,6 +39,33 @@ class AutomationsRepository @Inject constructor(
 			),
 			triggers = emptyList(),
 			functions = listOf(
+				FunctionNodeDef(
+					name = "OnStart",
+					input = emptyMap(),
+					output = emptyMap(),
+					content = listOf(
+//				ActionNodeDef(
+//					name = "writeVariable",
+//					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
+//				),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "test: @textVariable")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "second test")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "third test")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "fourth test")
+						),
+					),
+				),
 				FunctionNodeDef(
 					name = "myFunction",
 					input = mapOf("input1" to "value1"),
@@ -83,8 +88,31 @@ class AutomationsRepository @Inject constructor(
 							input = mapOf("text" to "4")
 						),
 					)
+				),
+				FunctionNodeDef(
+					name = "myFunction2",
+					input = mapOf("input1" to "value1"),
+					output = mapOf("output1" to "value2"),
+					content = listOf(
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "1")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "2")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "3")
+						),
+						ActionNodeDef(
+							name = "log",
+							input = mapOf("text" to "4")
+						),
+					)
 				)
-			)
+			),
 		)
 	)
 

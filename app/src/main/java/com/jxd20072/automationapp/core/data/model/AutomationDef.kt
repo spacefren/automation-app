@@ -42,15 +42,13 @@ sealed class VariableDef(val name: String, var value: String, val type: Variable
 data class AutomationDef(
 	val metadata: AutomationDefMetadata,
 	val variables: Set<VariableDef>,
-	val entryPoint: List<ActionNodeDef>,
-	val triggers: List<TriggerNodeDef>,
+	val triggers: List<TriggerDef>,
 	val functions: List<FunctionNodeDef>
 )
 
 @Serializable
-data class TriggerNodeDef(
+data class TriggerDef(
 	val name: String,
-	val content: List<ActionNodeDef>
 )
 
 @Serializable

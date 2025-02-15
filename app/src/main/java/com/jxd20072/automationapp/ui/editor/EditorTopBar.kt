@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +49,6 @@ fun EditorTopBar(
 		verticalArrangement = Arrangement.spacedBy(10.dp),
 		modifier = modifier
 			.fillMaxWidth()
-			.shadow(11.dp)
 			.background(MaterialTheme.colorScheme.surface)
 			.windowInsetsPadding(WindowInsets.statusBars)
 			.padding(top = 20.dp)
@@ -126,6 +124,18 @@ fun EditorTopBar(
 		Row(
 			horizontalArrangement = Arrangement.spacedBy(10.dp)
 		) {
+			IconLabelButton(
+				label = "Triggers",
+				fontSize = 15,
+				drawableRes = R.drawable.round_electric_bolt_24,
+				color = MaterialTheme.colorScheme.tertiary,
+				iconColor = MaterialTheme.colorScheme.onSecondary,
+				cornerRadius = 5,
+				elevation = 8,
+				padding = 8,
+				height = 18
+			) { }
+
 			IconLabelButton(
 				label = "Variables",
 				fontSize = 15,

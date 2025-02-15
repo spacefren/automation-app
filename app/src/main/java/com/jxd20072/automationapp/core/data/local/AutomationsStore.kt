@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.core.data.local
 import android.content.Context
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import kotlinx.serialization.encodeToString
+import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
@@ -34,9 +34,15 @@ class AutomationsStore @Inject constructor(
 				AutomationDef(
 					metadata = metadata,
 					variables = emptySet(),
-					functions = emptyList(),
+					functions = listOf(
+						FunctionNodeDef(
+							name = "OnStart",
+							input = emptyMap(),
+							output = emptyMap(),
+							content = emptyList()
+						)
+					),
 					triggers = emptyList(),
-					entryPoint = emptyList()
 				)
 			)
 			file.writeText(fileContent)

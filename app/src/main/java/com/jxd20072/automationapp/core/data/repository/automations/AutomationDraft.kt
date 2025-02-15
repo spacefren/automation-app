@@ -3,14 +3,13 @@ package com.jxd20072.automationapp.core.data.repository.automations
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import com.jxd20072.automationapp.core.data.model.TriggerNodeDef
+import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import java.util.UUID
 
 data class AutomationDraft(
 	val metadata: AutomationDefMetadata,
 	val variables: Set<VariableDef>,
-	val entryPoint: List<ActionNodeDraft>,
 	val triggers: List<TriggerNodeDraft>,
 	val functions: List<FunctionNodeDraft>
 )
@@ -31,8 +30,7 @@ data class FunctionNodeDraft(
 
 data class TriggerNodeDraft(
 	val name: String,
-	val id: String = UUID.randomUUID().toString(),
-	val content: List<ActionNodeDef>
+	val id: String = UUID.randomUUID().toString()
 )
 
 fun createActionNodeDraft(actionNodeDef: ActionNodeDef): ActionNodeDraft {
@@ -42,10 +40,9 @@ fun createActionNodeDraft(actionNodeDef: ActionNodeDef): ActionNodeDraft {
 	)
 }
 
-fun createTriggerNodeDraft(triggerNodeDef: TriggerNodeDef): TriggerNodeDraft {
+fun createTriggerNodeDraft(triggerNodeDef: TriggerDef): TriggerNodeDraft {
 	return TriggerNodeDraft(
 		name = triggerNodeDef.name,
-		content = triggerNodeDef.content
 	)
 }
 
@@ -53,7 +50,6 @@ fun createAutomationDraft(automationDef: AutomationDef): AutomationDraft {
 	return AutomationDraft(
 		metadata = automationDef.metadata,
 		variables = automationDef.variables,
-		entryPoint = automationDef.entryPoint.map { createActionNodeDraft(it) },
 		triggers = automationDef.triggers.map { createTriggerNodeDraft(it) },
 		functions = automationDef.functions.map { functionDef ->
 			FunctionNodeDraft(

@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -46,7 +44,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.EditorDraggingData
+import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.utils.conditional
 
 enum class TopLevelNodeType { ENTRYPOINT, TRIGGER, FUNCTION }
@@ -171,8 +169,11 @@ fun NodeContainer(
 	disabledForDragging: Boolean = false,
 	enabledByDragging: Boolean? = false,
 	onLayout: (layout: LayoutCoordinates) -> Unit,
+	ignoreBottomPadding: Boolean = false,
 	content: @Composable BoxScope.() -> Unit
 ) {
+	val paddingLevels = listOf(10.dp, 8.dp)
+
 	Box(
 		content = content,
 		modifier = modifier
@@ -202,13 +203,12 @@ fun NodeContainer(
 			.onGloballyPositioned { layout ->
 				onLayout(layout)
 			}
-			.padding(
-				when (level) {
-					1 -> 10.dp
-					2 -> 8.dp
-					else -> 8.dp
-				}
-			)
+			.conditional(!ignoreBottomPadding, ifTrue = {
+				padding(paddingLevels[level - 1])
+			}, ifFalse = {
+				val padding = paddingLevels[level - 1]
+				padding(start = padding, end = padding, top = padding)
+			})
 	)
 }
 
@@ -219,7 +219,7 @@ fun TopLevelNode(
 	id: String,
 	displayName: List<String>,
 	draggableState: Draggable2DState,
-	draggingData: EditorDraggingData,
+	draggingData: EditorNodeDragData,
 	onDragStart: (
 		id: String,
 		nodePosition: Offset,
@@ -227,6 +227,8 @@ fun TopLevelNode(
 		scope: EditorDraggableScope
 	) -> Unit,
 	onStopDrag: () -> Unit,
+	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
+	onDropZoneExit: () -> Unit,
 	modifier: Modifier = Modifier,
 	content: List<ActionNodeDraft>
 ) {
@@ -239,7 +241,8 @@ fun TopLevelNode(
 		onLayout = { layout ->
 			rootPosition = layout.positionInRoot()
 		},
-		disabledForDragging = dragging
+		disabledForDragging = dragging,
+		ignoreBottomPadding = true
 	) {
 		Column(
 			horizontalAlignment = Alignment.CenterHorizontally
@@ -247,11 +250,8 @@ fun TopLevelNode(
 			NodeHeader(
 				displayName = displayName,
 				nodeId = id,
-				icon = when (type) {
-					TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
-					TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
-					TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
-				},
+				icon = if (displayName[0] == "OnStart") R.drawable.round_play_arrow_24
+				else R.drawable.round_functions_24,
 				draggableState = draggableState,
 				onStopDrag = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
 					dragging = false
@@ -262,17 +262,14 @@ fun TopLevelNode(
 					onDragStart(id, rootPosition, it, EditorDraggableScope.FUNCTION)
 				})
 			)
-			content.map { actionNode ->
-				Spacer(modifier = Modifier.height(5.dp))
-
-				if (draggingData is EditorDraggingData.Dragging) {
-					ActionNodeDropTarget(
-						parentId = id,
-						draggingData = draggingData
-					)
-				}
-
-				Spacer(modifier = Modifier.height(5.dp))
+			content.forEachIndexed { index, actionNode ->
+				EditorNodeDropTarget(
+					gap = 10.dp,
+					draggingData = draggingData,
+					scope = EditorDraggableScope.ACTION,
+					onEnter = { onDropZoneEnter(index, id) },
+					onExit = onDropZoneExit
+				)
 
 				ActionNode(
 					actionNode = actionNode,
@@ -282,6 +279,13 @@ fun TopLevelNode(
 					modifier = Modifier
 				)
 			}
+			EditorNodeDropTarget(
+				gap = 10.dp,
+				draggingData = draggingData,
+				scope = EditorDraggableScope.ACTION,
+				onEnter = { onDropZoneEnter(content.size, id) },
+				onExit = onDropZoneExit
+			)
 		}
 	}
 }
