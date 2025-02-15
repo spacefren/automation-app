@@ -2,12 +2,11 @@ package com.jxd20072.automationapp.ui.editor.nodeTree
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Draggable2DState
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,15 +32,18 @@ fun EditorNodeTree(
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
 ) {
-	Column(
+	LazyColumn(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		modifier = Modifier
 			.padding(horizontal = 20.dp)
-			.verticalScroll(rememberScrollState(0))
 	) {
-		Spacer(modifier = Modifier.height(10.dp))
+		item { Spacer(modifier = Modifier.height(10.dp)) }
 
-		automationDraft.functions.forEachIndexed { index, function ->
+		itemsIndexed(
+			automationDraft.functions,
+			key = { _, item -> item.id }
+		)
+		{ index, function ->
 			EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
@@ -64,14 +66,49 @@ fun EditorNodeTree(
 			)
 		}
 
-		EditorNodeDropTarget(
-			gap = 20.dp,
-			draggingData = draggingData,
-			scope = EditorDraggableScope.FUNCTION,
-			onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },
-			onExit = onDropZoneExit
-		)
+		item {
+			EditorNodeDropTarget(
+				gap = 20.dp,
+				draggingData = draggingData,
+				scope = EditorDraggableScope.FUNCTION,
+				onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },
+				onExit = onDropZoneExit
+			)
+		}
 
-		Spacer(modifier = Modifier.height(50.dp))
+		item { Spacer(modifier = Modifier.height(50.dp)) }
+
+//		automationDraft.functions.forEachIndexed { index, function ->
+//			EditorNodeDropTarget(
+//				gap = 20.dp,
+//				draggingData = draggingData,
+//				scope = EditorDraggableScope.FUNCTION,
+//				onEnter = { onDropZoneEnter(index, null) },
+//				onExit = onDropZoneExit
+//			)
+//
+//			TopLevelNode(
+//				type = TopLevelNodeType.FUNCTION,
+//				id = function.id,
+//				displayName = listOf(function.name),
+//				content = function.content,
+//				onDragStart = onNodeDrag,
+//				onStopDrag = onStopDrag,
+//				draggableState = draggableState,
+//				draggingData = draggingData,
+//				onDropZoneEnter = onDropZoneEnter,
+//				onDropZoneExit = onDropZoneExit
+//			)
+//		}
+//
+//		EditorNodeDropTarget(
+//			gap = 20.dp,
+//			draggingData = draggingData,
+//			scope = EditorDraggableScope.FUNCTION,
+//			onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },
+//			onExit = onDropZoneExit
+//		)
+//
+//		Spacer(modifier = Modifier.height(50.dp))
 	}
 }
