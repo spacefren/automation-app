@@ -156,6 +156,7 @@ fun HomeScreen(
 					homeViewModel.changeFilter(filter, enabled)
 				}
 			)
+
 			AutomationsList(
 				automations = homeUiState.filteredAutomations,
 				currentTime = currentTime,

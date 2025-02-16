@@ -21,8 +21,8 @@ fun AutomationEditor(
 	editorViewModel: EditorViewModel = hiltViewModel(),
 	returnHome: (saveChanges: Boolean) -> Unit
 ) {
-	val editorUiState by editorViewModel.editorUiState.collectAsState()
 	val currentTime by editorViewModel.currentTime.collectAsState()
+	val editorUiState by editorViewModel.editorUiState.collectAsState()
 
 	if (editorUiState is EditorUiState.Success) {
 		val automationDraft = (editorUiState as EditorUiState.Success).automationDraft

@@ -30,6 +30,7 @@ import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.IconButton
+import com.jxd20072.automationapp.ui.shared.SwipeableContainer
 
 @Composable
 fun getAutomationIconPainter(name: String): Painter {
@@ -52,82 +53,89 @@ fun AutomationCard(
 	runAutomation: () -> Unit,
 	editAutomation: () -> Unit,
 ) {
-	Box(
-		modifier = modifier
-			.height(65.dp)
-			.fillMaxWidth()
+	SwipeableContainer(
+		icon1 = R.drawable.round_archive_24,
+		backgroundColor1 = MaterialTheme.colorScheme.tertiary,
+		containerCornerRadius = 8.dp,
+		onAction1 = { },
 	) {
-		Row(
-			modifier = Modifier
-				.shadow(5.dp, RoundedCornerShape(8.dp))
-				.background(MaterialTheme.colorScheme.surface)
-				.padding(10.dp),
-			horizontalArrangement = Arrangement.End,
-			verticalAlignment = Alignment.CenterVertically
+		Box(
+			modifier = modifier
+				.height(65.dp)
+				.fillMaxWidth()
 		) {
-			Column(
+			Row(
 				modifier = Modifier
-					.weight(1f)
-					.fillMaxHeight()
+					.shadow(5.dp, RoundedCornerShape(8.dp))
+					.background(MaterialTheme.colorScheme.surface)
+					.padding(10.dp),
+				horizontalArrangement = Arrangement.End,
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Row(
+				Column(
 					modifier = Modifier
-						.fillMaxWidth()
-						.weight(1f),
-					verticalAlignment = Alignment.Top
+						.weight(1f)
+						.fillMaxHeight()
 				) {
-					Image(
-						painter = getAutomationIconPainter(icon),
-						contentDescription = "",
-						colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+					Row(
 						modifier = Modifier
-							.size(22.dp)
-							.padding(top = 2.dp)
-					)
-					Spacer(modifier = Modifier.width(8.dp))
+							.fillMaxWidth()
+							.weight(1f),
+						verticalAlignment = Alignment.Top
+					) {
+						Image(
+							painter = getAutomationIconPainter(icon),
+							contentDescription = "",
+							colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+							modifier = Modifier
+								.size(22.dp)
+								.padding(top = 2.dp)
+						)
+						Spacer(modifier = Modifier.width(8.dp))
+						Text(
+							text = name,
+							color = MaterialTheme.colorScheme.onBackground,
+							fontSize = 18.sp,
+							modifier = Modifier
+								.height(22.dp)
+						)
+					}
 					Text(
-						text = name,
-						color = MaterialTheme.colorScheme.onBackground,
-						fontSize = 18.sp,
+						text = "Last ran: $lastUsed",
+						color = MaterialTheme.colorScheme.onSurface,
+						fontSize = 13.sp,
+						lineHeight = 13.sp,
 						modifier = Modifier
-							.height(22.dp)
+							.padding(start = 2.dp) // Align with the icon's live area
 					)
 				}
-				Text(
-					text = "Last ran: $lastUsed",
-					color = MaterialTheme.colorScheme.onSurface,
-					fontSize = 13.sp,
-					lineHeight = 13.sp,
+
+				Spacer(modifier = Modifier.width(10.dp))
+
+				IconButton(
+					color = MaterialTheme.colorScheme.tertiary,
+					iconColor = MaterialTheme.colorScheme.onTertiary,
+					drawableRes = R.drawable.round_edit_24,
+					cornerRadius = 5.dp,
+					padding = 6.dp,
+					onClick = editAutomation,
 					modifier = Modifier
-						.padding(start = 2.dp) // Align with the icon's live area
+						.size(45.dp)
+				)
+
+				Spacer(modifier = Modifier.width(10.dp))
+
+				IconButton(
+					color = MaterialTheme.colorScheme.secondary,
+					iconColor = MaterialTheme.colorScheme.onSecondary,
+					drawableRes = R.drawable.round_play_arrow_24,
+					cornerRadius = 5.dp,
+					padding = 6.dp,
+					onClick = runAutomation,
+					modifier = Modifier
+						.size(45.dp)
 				)
 			}
-
-			Spacer(modifier = Modifier.width(10.dp))
-
-			IconButton(
-				color = MaterialTheme.colorScheme.tertiary,
-				iconColor = MaterialTheme.colorScheme.onTertiary,
-				drawableRes = R.drawable.round_edit_24,
-				cornerRadius = 5.dp,
-				padding = 6.dp,
-				onClick = editAutomation,
-				modifier = Modifier
-					.size(45.dp)
-			)
-
-			Spacer(modifier = Modifier.width(10.dp))
-
-			IconButton(
-				color = MaterialTheme.colorScheme.secondary,
-				iconColor = MaterialTheme.colorScheme.onSecondary,
-				drawableRes = R.drawable.round_play_arrow_24,
-				cornerRadius = 5.dp,
-				padding = 6.dp,
-				onClick = runAutomation,
-				modifier = Modifier
-					.size(45.dp)
-			)
 		}
 	}
 }

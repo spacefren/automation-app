@@ -83,7 +83,7 @@ fun EditorNodeDropTarget(
 		val checkHovering = { position: Offset ->
 			val pos = draggingData.nodePosition.y
 			val offset = draggingData.inputOffset.y
-			draggingData.scope == scope && abs(pos + offset - position.y) < 30
+			draggingData.scope == scope && abs(pos + offset - position.y) < 40
 		}
 
 		var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }

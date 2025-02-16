@@ -77,38 +77,5 @@ fun EditorNodeTree(
 		}
 
 		item { Spacer(modifier = Modifier.height(50.dp)) }
-
-//		automationDraft.functions.forEachIndexed { index, function ->
-//			EditorNodeDropTarget(
-//				gap = 20.dp,
-//				draggingData = draggingData,
-//				scope = EditorDraggableScope.FUNCTION,
-//				onEnter = { onDropZoneEnter(index, null) },
-//				onExit = onDropZoneExit
-//			)
-//
-//			TopLevelNode(
-//				type = TopLevelNodeType.FUNCTION,
-//				id = function.id,
-//				displayName = listOf(function.name),
-//				content = function.content,
-//				onDragStart = onNodeDrag,
-//				onStopDrag = onStopDrag,
-//				draggableState = draggableState,
-//				draggingData = draggingData,
-//				onDropZoneEnter = onDropZoneEnter,
-//				onDropZoneExit = onDropZoneExit
-//			)
-//		}
-//
-//		EditorNodeDropTarget(
-//			gap = 20.dp,
-//			draggingData = draggingData,
-//			scope = EditorDraggableScope.FUNCTION,
-//			onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },
-//			onExit = onDropZoneExit
-//		)
-//
-//		Spacer(modifier = Modifier.height(50.dp))
 	}
 }
