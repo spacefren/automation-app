@@ -5,15 +5,16 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,8 +35,10 @@ fun AddAutomationDrawer(
 		ModalBottomSheet(
 			sheetState = sheetState,
 			onDismissRequest = onDismissRequest,
-			containerColor = MaterialTheme.colorScheme.background,
-			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+			containerColor = LocalTheme.colorScheme.background,
+			modifier = Modifier
+				.zIndex(10f)
+				.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			Layer(
 				modifier = modifier

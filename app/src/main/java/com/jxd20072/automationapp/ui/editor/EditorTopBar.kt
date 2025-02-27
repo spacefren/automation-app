@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.ui.home.getAutomationIconPainter
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.IconLabelButton
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.Instant
 
@@ -49,7 +49,7 @@ fun EditorTopBar(
 		verticalArrangement = Arrangement.spacedBy(10.dp),
 		modifier = modifier
 			.fillMaxWidth()
-			.background(MaterialTheme.colorScheme.surface)
+			.background(LocalTheme.colorScheme.surface)
 			.windowInsetsPadding(WindowInsets.statusBars)
 			.padding(top = 20.dp)
 			.padding(horizontal = 20.dp)
@@ -70,7 +70,7 @@ fun EditorTopBar(
 					Icon(
 						painter = painterResource(R.drawable.round_arrow_back_24),
 						contentDescription = "return to home screen",
-						tint = MaterialTheme.colorScheme.onBackground,
+						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier
 							.size(22.dp)
 							.clickable {
@@ -80,18 +80,18 @@ fun EditorTopBar(
 					Icon(
 						painter = getAutomationIconPainter(automationData.icon),
 						contentDescription = "icon: ${automationData.icon}",
-						tint = MaterialTheme.colorScheme.onBackground,
+						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier.size(20.dp)
 					)
 					Text(
 						text = automationData.name,
-						color = MaterialTheme.colorScheme.onBackground,
+						color = LocalTheme.colorScheme.onBackground,
 						fontSize = 20.sp
 					)
 				}
 				Text(
 					text = "Last saved: ${elapsedTime ?: "never"}",
-					color = MaterialTheme.colorScheme.onSurface,
+					color = LocalTheme.colorScheme.onSurface,
 					fontSize = 15.sp
 				)
 			}
@@ -100,8 +100,8 @@ fun EditorTopBar(
 			) {
 				IconButton(
 					drawableRes = R.drawable.round_save_24,
-					color = MaterialTheme.colorScheme.tertiary,
-					iconColor = MaterialTheme.colorScheme.onSurface,
+					color = LocalTheme.colorScheme.tertiary,
+					iconColor = LocalTheme.colorScheme.onSurface,
 					padding = 6.dp,
 					cornerRadius = 5.dp,
 					onClick = saveAutomation,
@@ -111,8 +111,8 @@ fun EditorTopBar(
 
 				IconButton(
 					drawableRes = R.drawable.round_play_arrow_24,
-					color = MaterialTheme.colorScheme.primary,
-					iconColor = MaterialTheme.colorScheme.onPrimary,
+					color = LocalTheme.colorScheme.primary,
+					iconColor = LocalTheme.colorScheme.onPrimary,
 					padding = 6.dp,
 					cornerRadius = 5.dp,
 					onClick = runAutomation,
@@ -128,8 +128,8 @@ fun EditorTopBar(
 				label = "Triggers",
 				fontSize = 15,
 				drawableRes = R.drawable.round_electric_bolt_24,
-				color = MaterialTheme.colorScheme.tertiary,
-				iconColor = MaterialTheme.colorScheme.onSecondary,
+				color = LocalTheme.colorScheme.tertiary,
+				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5,
 				elevation = 8,
 				padding = 8,
@@ -140,8 +140,8 @@ fun EditorTopBar(
 				label = "Variables",
 				fontSize = 15,
 				drawableRes = R.drawable.round_data_object_24,
-				color = MaterialTheme.colorScheme.tertiary,
-				iconColor = MaterialTheme.colorScheme.onSecondary,
+				color = LocalTheme.colorScheme.tertiary,
+				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5,
 				elevation = 8,
 				padding = 8,
@@ -152,8 +152,8 @@ fun EditorTopBar(
 				label = "Logs",
 				fontSize = 15,
 				drawableRes = R.drawable.baseline_format_align_left_24,
-				color = MaterialTheme.colorScheme.tertiary,
-				iconColor = MaterialTheme.colorScheme.onSecondary,
+				color = LocalTheme.colorScheme.tertiary,
+				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5,
 				elevation = 8,
 				padding = 8,

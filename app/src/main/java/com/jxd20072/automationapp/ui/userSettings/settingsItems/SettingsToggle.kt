@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +24,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsEntry
 
 @Composable
@@ -55,8 +55,8 @@ fun UserSettingsItem(
 	)
 
 	val knobColor by animateColorAsState(
-		if (enabled) MaterialTheme.colorScheme.secondary
-		else MaterialTheme.colorScheme.tertiary,
+		if (enabled) LocalTheme.colorScheme.secondary
+		else LocalTheme.colorScheme.tertiary,
 		label = "settings-toggle-animation-color"
 	)
 
@@ -85,7 +85,7 @@ fun UserSettingsItem(
 					)
 				}
 				.shadow(5.dp, RoundedCornerShape(8.dp))
-				.background(MaterialTheme.colorScheme.surface)
+				.background(LocalTheme.colorScheme.surface)
 				.padding(vertical = padding)
 		) {
 			Box(

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 private fun FilterChip(
@@ -41,7 +41,7 @@ private fun FilterChip(
 		modifier = modifier
 			.fillMaxHeight()
 			.shadow(5.dp, RoundedCornerShape(6.dp))
-			.background(if (enabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface)
+			.background(if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.surface)
 			.clickable(
 				interactionSource = interactionSource,
 				indication = null
@@ -54,8 +54,8 @@ private fun FilterChip(
 			text = name,
 			fontSize = 13.sp,
 			color =
-			if (enabled) MaterialTheme.colorScheme.onBackground
-			else MaterialTheme.colorScheme.onSurface,
+			if (enabled) LocalTheme.colorScheme.onBackground
+			else LocalTheme.colorScheme.onSurface,
 			modifier = Modifier
 				.align(Alignment.Center)
 		)

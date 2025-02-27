@@ -5,7 +5,6 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
@@ -18,6 +17,7 @@ import com.jxd20072.automationapp.ui.editor.AutomationEditor
 import com.jxd20072.automationapp.ui.editor.EditorViewModel
 import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsScreen
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 
@@ -44,7 +44,19 @@ fun AutomationApp(
 	NavHost(
 		navController = navController,
 		startDestination = AppScreen.HOME.name,
-		modifier = Modifier.background(MaterialTheme.colorScheme.background)
+		modifier = Modifier.background(LocalTheme.colorScheme.background),
+		enterTransition = {
+			slideIntoContainer(
+				AnimatedContentTransitionScope.SlideDirection.Left,
+				animationSpec = animationSpec
+			)
+		},
+		exitTransition = {
+			slideOutOfContainer(
+				AnimatedContentTransitionScope.SlideDirection.Right,
+				animationSpec = animationSpec
+			)
+		},
 	) {
 		composable(
 			route = AppScreen.HOME.name,
@@ -71,40 +83,15 @@ fun AutomationApp(
 			)
 		}
 		composable(
-			route = AppScreen.EDITOR.name,
-			enterTransition = {
-				slideIntoContainer(
-					AnimatedContentTransitionScope.SlideDirection.Left,
-					animationSpec = animationSpec
-				)
-			},
-			exitTransition = {
-				slideOutOfContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					animationSpec = animationSpec
-				)
-			},
+			route = AppScreen.EDITOR.name
 		) {
 			AutomationEditor(
 				editorViewModel = editorViewModel,
 				returnHome = { navController.popBackStack() }
 			)
-			//ReorderableTesting()
 		}
 		composable(
-			route = AppScreen.SETTINGS.name,
-			enterTransition = {
-				slideIntoContainer(
-					AnimatedContentTransitionScope.SlideDirection.Left,
-					animationSpec = animationSpec
-				)
-			},
-			exitTransition = {
-				slideOutOfContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					animationSpec = animationSpec
-				)
-			},
+			route = AppScreen.SETTINGS.name
 		) {
 			UserSettingsScreen(
 				userSettingsViewModel = settingsViewModel,

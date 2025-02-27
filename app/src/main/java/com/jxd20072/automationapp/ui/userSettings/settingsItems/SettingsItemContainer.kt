@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun UserSettingsItemContainer(
@@ -36,13 +36,13 @@ fun UserSettingsItemContainer(
 		) {
 			Text(
 				text = displayName,
-				color = MaterialTheme.colorScheme.onBackground,
+				color = LocalTheme.colorScheme.onBackground,
 				fontSize = 18.sp
 			)
 			Spacer(modifier = Modifier.height(2.dp))
 			Text(
 				text = description,
-				color = MaterialTheme.colorScheme.onSurface,
+				color = LocalTheme.colorScheme.onSurface,
 				fontSize = 14.sp,
 				lineHeight = 20.sp
 			)

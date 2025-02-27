@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SearchBar
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -32,7 +32,7 @@ fun IconSelectScreen(
 	Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
 		Text(
 			text = "Change icon",
-			color = MaterialTheme.colorScheme.onBackground,
+			color = LocalTheme.colorScheme.onBackground,
 			fontSize = 27.sp,
 		)
 
@@ -59,8 +59,8 @@ fun IconSelectScreen(
 					) {
 						filteredIcons[category]!!.forEach() { icon ->
 							IconButton(
-								color = MaterialTheme.colorScheme.surface,
-								iconColor = MaterialTheme.colorScheme.onSurface,
+								color = LocalTheme.colorScheme.surface,
+								iconColor = LocalTheme.colorScheme.onSurface,
 								iconName = icon,
 								cornerRadius = 8.dp,
 								padding = 8.dp,

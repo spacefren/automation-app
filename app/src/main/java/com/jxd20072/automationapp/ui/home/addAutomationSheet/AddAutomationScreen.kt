@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun AddAutomationScreen(
@@ -35,13 +35,13 @@ fun AddAutomationScreen(
 		) {
 			Text(
 				text = "New automation",
-				color = MaterialTheme.colorScheme.onBackground,
+				color = LocalTheme.colorScheme.onBackground,
 				fontSize = 27.sp,
 				modifier = Modifier.weight(1f)
 			)
 			IconButton(
-				color = MaterialTheme.colorScheme.secondary,
-				iconColor = MaterialTheme.colorScheme.onSecondary,
+				color = LocalTheme.colorScheme.secondary,
+				iconColor = LocalTheme.colorScheme.onSecondary,
 				drawableRes = R.drawable.round_check_24,
 				cornerRadius = 8.dp,
 				padding = 5.dp,
@@ -56,8 +56,8 @@ fun AddAutomationScreen(
 			horizontalArrangement = Arrangement.spacedBy(10.dp)
 		) {
 			IconButton(
-				color = MaterialTheme.colorScheme.surface,
-				iconColor = MaterialTheme.colorScheme.onSurface,
+				color = LocalTheme.colorScheme.surface,
+				iconColor = LocalTheme.colorScheme.onSurface,
 				iconName = selectedIcon,
 				cornerRadius = 8.dp,
 				padding = 8.dp,

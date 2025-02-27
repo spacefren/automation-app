@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +25,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -100,7 +100,7 @@ fun EditorNodeDropTarget(
 			modifier = Modifier
 				.height(height)
 				.fillMaxWidth(.8f)
-				.background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(10.dp))
+				.background(LocalTheme.colorScheme.secondary, RoundedCornerShape(10.dp))
 				.onGloballyPositioned { layout -> positionInRoot = layout.positionInRoot() }
 		)
 	}

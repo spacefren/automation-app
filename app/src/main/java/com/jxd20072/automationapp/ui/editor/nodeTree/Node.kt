@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +44,7 @@ import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDra
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 
 enum class TopLevelNodeType { ENTRYPOINT, TRIGGER, FUNCTION }
@@ -73,7 +73,7 @@ fun NodeHeaderIcons(
 			) {
 				Icon(
 					painter = painterResource(R.drawable.round_drag_indicator_24),
-					tint = MaterialTheme.colorScheme.onSurface,
+					tint = LocalTheme.colorScheme.onSurface,
 					contentDescription = "dragIndicator",
 					modifier = Modifier
 						.size(20.dp)
@@ -97,7 +97,7 @@ fun NodeHeaderIcons(
 		}
 		Icon(
 			painter = painterResource(icon),
-			tint = MaterialTheme.colorScheme.onBackground,
+			tint = LocalTheme.colorScheme.onBackground,
 			contentDescription = "dragIndicator",
 			modifier = Modifier
 				.size(26.dp)
@@ -137,12 +137,12 @@ fun NodeHeader(
 					Box(
 						modifier = Modifier
 							.shadow(5.dp, RoundedCornerShape(5.dp))
-							.background(MaterialTheme.colorScheme.surface)
+							.background(LocalTheme.colorScheme.surface)
 							.padding(horizontal = 6.dp, vertical = 3.dp)
 					) {
 						Text(
 							text = piece.removePrefix("*"),
-							color = MaterialTheme.colorScheme.onBackground,
+							color = LocalTheme.colorScheme.onBackground,
 							fontStyle = FontStyle.Italic,
 							fontSize = 16.sp,
 						)
@@ -151,7 +151,7 @@ fun NodeHeader(
 					piece.split(" ").forEach { word ->
 						Text(
 							text = word,
-							color = MaterialTheme.colorScheme.onBackground,
+							color = LocalTheme.colorScheme.onBackground,
 							fontSize = 16.sp,
 							modifier = Modifier.align(Alignment.CenterVertically)
 						)
@@ -195,8 +195,8 @@ fun NodeContainer(
 			)
 			.background(
 				when (level) {
-					1 -> MaterialTheme.colorScheme.surface
-					2 -> MaterialTheme.colorScheme.tertiary
+					1 -> LocalTheme.colorScheme.surface
+					2 -> LocalTheme.colorScheme.tertiary
 					else -> Color.Red
 				}
 			)

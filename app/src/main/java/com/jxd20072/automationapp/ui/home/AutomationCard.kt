@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +30,7 @@ import coil3.svg.SvgDecoder
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SwipeableContainer
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun getAutomationIconPainter(name: String): Painter {
@@ -55,7 +55,7 @@ fun AutomationCard(
 ) {
 	SwipeableContainer(
 		icon1 = R.drawable.round_archive_24,
-		backgroundColor1 = MaterialTheme.colorScheme.tertiary,
+		backgroundColor1 = LocalTheme.colorScheme.tertiary,
 		containerCornerRadius = 8.dp,
 		onAction1 = { },
 	) {
@@ -67,7 +67,7 @@ fun AutomationCard(
 			Row(
 				modifier = Modifier
 					.shadow(5.dp, RoundedCornerShape(8.dp))
-					.background(MaterialTheme.colorScheme.surface)
+					.background(LocalTheme.colorScheme.surface)
 					.padding(10.dp),
 				horizontalArrangement = Arrangement.End,
 				verticalAlignment = Alignment.CenterVertically
@@ -86,7 +86,7 @@ fun AutomationCard(
 						Image(
 							painter = getAutomationIconPainter(icon),
 							contentDescription = "",
-							colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+							colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
 							modifier = Modifier
 								.size(22.dp)
 								.padding(top = 2.dp)
@@ -94,7 +94,7 @@ fun AutomationCard(
 						Spacer(modifier = Modifier.width(8.dp))
 						Text(
 							text = name,
-							color = MaterialTheme.colorScheme.onBackground,
+							color = LocalTheme.colorScheme.onBackground,
 							fontSize = 18.sp,
 							modifier = Modifier
 								.height(22.dp)
@@ -102,7 +102,7 @@ fun AutomationCard(
 					}
 					Text(
 						text = "Last ran: $lastUsed",
-						color = MaterialTheme.colorScheme.onSurface,
+						color = LocalTheme.colorScheme.onSurface,
 						fontSize = 13.sp,
 						lineHeight = 13.sp,
 						modifier = Modifier
@@ -113,8 +113,8 @@ fun AutomationCard(
 				Spacer(modifier = Modifier.width(10.dp))
 
 				IconButton(
-					color = MaterialTheme.colorScheme.tertiary,
-					iconColor = MaterialTheme.colorScheme.onTertiary,
+					color = LocalTheme.colorScheme.tertiary,
+					iconColor = LocalTheme.colorScheme.onTertiary,
 					drawableRes = R.drawable.round_edit_24,
 					cornerRadius = 5.dp,
 					padding = 6.dp,
@@ -126,8 +126,8 @@ fun AutomationCard(
 				Spacer(modifier = Modifier.width(10.dp))
 
 				IconButton(
-					color = MaterialTheme.colorScheme.secondary,
-					iconColor = MaterialTheme.colorScheme.onSecondary,
+					color = LocalTheme.colorScheme.secondary,
+					iconColor = LocalTheme.colorScheme.onSecondary,
 					drawableRes = R.drawable.round_play_arrow_24,
 					cornerRadius = 5.dp,
 					padding = 6.dp,

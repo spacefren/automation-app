@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.categories.GeneralSettingsCategory
 import kotlinx.coroutines.launch
 
@@ -54,7 +54,7 @@ fun UserSettingsScreen(
 	Layer(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.background)
+			.background(LocalTheme.colorScheme.background)
 	) {
 		Column(
 			modifier = Modifier
@@ -72,7 +72,7 @@ fun UserSettingsScreen(
 					Icon(
 						painter = painterResource(R.drawable.round_arrow_back_24),
 						contentDescription = "back",
-						tint = MaterialTheme.colorScheme.onBackground,
+						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier
 							.size(28.dp)
 							.clickable { returnHome() }
@@ -80,14 +80,14 @@ fun UserSettingsScreen(
 					Spacer(modifier = Modifier.width(10.dp))
 					Text(
 						text = "Settings",
-						color = MaterialTheme.colorScheme.onBackground,
+						color = LocalTheme.colorScheme.onBackground,
 						fontSize = 32.sp
 					)
 				}
 				Icon(
 					painter = painterResource(R.drawable.round_loop_24),
 					contentDescription = "settings",
-					tint = MaterialTheme.colorScheme.onBackground,
+					tint = LocalTheme.colorScheme.onBackground,
 					modifier = Modifier
 						.size(28.dp)
 						.rotate(resetIconRotation.value)

@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 sealed class TextInputValidationResult {
 	data object Success : TextInputValidationResult()
@@ -83,7 +83,7 @@ fun BaseTextInput(
 			modifier = Modifier
 				.height(45.dp)
 				.shadow(5.dp, RoundedCornerShape(8.dp))
-				.background(MaterialTheme.colorScheme.surface)
+				.background(LocalTheme.colorScheme.surface)
 				.clickable() {
 					focusRequester.requestFocus()
 				}
@@ -96,7 +96,7 @@ fun BaseTextInput(
 					Icon(
 						painter = painterResource(icon),
 						contentDescription = "search",
-						tint = MaterialTheme.colorScheme.onSurface,
+						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
 							.size(35.dp)
 							.padding(5.dp)
@@ -115,9 +115,9 @@ fun BaseTextInput(
 						},
 						singleLine = true,
 						enabled = true,
-						cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
+						cursorBrush = SolidColor(LocalTheme.colorScheme.onSurface),
 						textStyle = TextStyle(
-							color = MaterialTheme.colorScheme.onBackground,
+							color = LocalTheme.colorScheme.onBackground,
 							fontSize = 17.sp
 						),
 						keyboardOptions = KeyboardOptions(imeAction = imeAction),
@@ -133,7 +133,7 @@ fun BaseTextInput(
 					if (text == "") {
 						Text(
 							text = placeholderText,
-							color = MaterialTheme.colorScheme.onSurface,
+							color = LocalTheme.colorScheme.onSurface,
 							fontSize = 17.sp,
 							modifier = Modifier
 								.fillMaxHeight()
@@ -147,7 +147,7 @@ fun BaseTextInput(
 					Icon(
 						painter = painterResource(R.drawable.round_close_24),
 						contentDescription = "search",
-						tint = MaterialTheme.colorScheme.onSurface,
+						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
 							.size(35.dp)
 							.padding(5.dp)
@@ -165,7 +165,7 @@ fun BaseTextInput(
 				Spacer(modifier = Modifier.height(2.dp))
 				Text(
 					text = errorText,
-					color = MaterialTheme.colorScheme.error,
+					color = LocalTheme.colorScheme.error,
 					fontSize = 14.sp
 				)
 			}

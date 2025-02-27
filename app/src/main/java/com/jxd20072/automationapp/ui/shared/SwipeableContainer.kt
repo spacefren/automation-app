@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -129,7 +129,7 @@ fun SwipeableContainer(
 			Icon(
 				painter = painterResource(icon1),
 				contentDescription = "",
-				tint = MaterialTheme.colorScheme.onBackground,
+				tint = LocalTheme.colorScheme.onBackground,
 				modifier = Modifier
 					.size(exponentialDecay(totalDelta.value, maxIconSize, !isDraggingStartToEnd).dp)
 					.align(Alignment.CenterStart)
@@ -137,7 +137,7 @@ fun SwipeableContainer(
 			Icon(
 				painter = painterResource(icon2),
 				contentDescription = "",
-				tint = MaterialTheme.colorScheme.onBackground,
+				tint = LocalTheme.colorScheme.onBackground,
 				modifier = Modifier
 					.size(exponentialDecay(totalDelta.value, maxIconSize, !isDraggingStartToEnd).dp)
 					.align(Alignment.CenterEnd)

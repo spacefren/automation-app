@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -37,13 +36,9 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.Instant
-
-/* TODO
-	* Swipe-to-archive
-	* Toasts
-*/
 
 @Composable
 fun TopBar(
@@ -64,14 +59,14 @@ fun TopBar(
 		) {
 			Text(
 				text = "Home",
-				color = MaterialTheme.colorScheme.onBackground,
+				color = LocalTheme.colorScheme.onBackground,
 				fontSize = 32.sp
 			)
 
 			Icon(
 				painter = painterResource(R.drawable.round_settings_24),
 				contentDescription = "settings",
-				tint = MaterialTheme.colorScheme.onBackground,
+				tint = LocalTheme.colorScheme.onBackground,
 				modifier = Modifier
 					.size(28.dp)
 					.clickable { openSettings() }
@@ -128,7 +123,7 @@ fun HomeScreen(
 	Layer(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.background)
+			.background(LocalTheme.colorScheme.background)
 	) {
 		Column(
 			verticalArrangement = Arrangement.spacedBy(15.dp),
