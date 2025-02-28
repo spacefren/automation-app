@@ -49,6 +49,7 @@ sealed interface EditorNodeDropData {
 sealed interface EditorUiState {
 	data object Loading : EditorUiState
 	data class Success(
+		val automationId: String,
 		val automationData: AutomationsMapEntry,
 		val automationDraft: AutomationDraft,
 		val draggingData: EditorNodeDragData
@@ -67,17 +68,37 @@ class EditorViewModel @Inject constructor(
 
 	fun loadAutomation(id: String) {
 		viewModelScope.launch {
-			val automation = automationsRepository.getAutomation(id)
+			val automation = automationsRepository.getAutomationDraft(id)
 			val automationData = automationsRepository.getAutomationMapEntry(id)
 			if (automation != null && automationData != null) {
 				_editorUiState.update {
 					EditorUiState.Success(
+						automationId = id,
 						automationData = automationData,
 						automationDraft = automation,
 						draggingData = EditorNodeDragData.NotDragging
 					)
 				}
 			}
+		}
+	}
+
+	init {
+		viewModelScope.launch {
+			automationsRepository.automationsDataFlow.collect { automationData ->
+				_editorUiState.update { uiState ->
+					if (uiState !is EditorUiState.Success) return@update uiState
+					val newData = automationData.automationsMap[uiState.automationId] ?: return@update uiState
+					uiState.copy(automationData = newData)
+				}
+			}
+		}
+	}
+
+	fun trySaveAutomation() {
+		val uiState = editorUiState.value
+		if (uiState is EditorUiState.Success) {
+			automationsRepository.writeAutomation(uiState.automationId, uiState.automationDraft)
 		}
 	}
 
@@ -106,7 +127,7 @@ class EditorViewModel @Inject constructor(
 				else -> null
 			}
 
-			(currentState).copy(
+			currentState.copy(
 				draggingData = EditorNodeDragData.Dragging(
 					scope = scope,
 					nodePosition = nodePosition,
@@ -196,6 +217,7 @@ class EditorViewModel @Inject constructor(
 
 			newState
 		}
+		trySaveAutomation()
 	}
 
 	fun onNodeDropZoneEnter(targetIndex: Int, parentId: String?) {

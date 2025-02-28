@@ -40,7 +40,7 @@ fun readVariable(
 }
 
 fun readVariable(variable: VariableDef, context: ExecutionFlowContext): Any? {
-	return when (variable.type) {
+	return when (variable.variableType) {
 		VariableDefType.TEXT -> readVariable(variable as VariableDef.TEXT)
 		VariableDefType.NUMBER -> readVariable(variable as VariableDef.NUMBER)
 		VariableDefType.BOOL -> readVariable(variable as VariableDef.BOOL)
@@ -51,7 +51,7 @@ fun readVariable(variable: VariableDef, context: ExecutionFlowContext): Any? {
 fun readVariableAsText(variable: VariableDef): String {
 	if (variable !is VariableDef.TEXT) {
 		throw Exception(
-			"Attempt to read variable ${variable.name} (${variable.type}) as TEXT"
+			"Attempt to read variable ${variable.name} (${variable.variableType}) as TEXT"
 		)
 	}
 	return readVariable(variable)
@@ -60,7 +60,7 @@ fun readVariableAsText(variable: VariableDef): String {
 fun readVariableAsNumber(variable: VariableDef): Float? {
 	if (variable !is VariableDef.NUMBER) {
 		throw Exception(
-			"Attempt to read variable ${variable.name} (${variable.type}) as NUMBER"
+			"Attempt to read variable ${variable.name} (${variable.variableType}) as NUMBER"
 		)
 	}
 	return readVariable(variable)
@@ -69,7 +69,7 @@ fun readVariableAsNumber(variable: VariableDef): Float? {
 fun readVariableAsBool(variable: VariableDef): Boolean? {
 	if (variable !is VariableDef.BOOL) {
 		throw Exception(
-			"Attempt to read variable ${variable.name} (${variable.type}) as BOOL"
+			"Attempt to read variable ${variable.name} (${variable.variableType}) as BOOL"
 		)
 	}
 	return readVariable(variable)
@@ -81,7 +81,7 @@ fun readVariableAsVariable(
 ): VariableDef? {
 	if (variable !is VariableDef.VARIABLE) {
 		throw Exception(
-			"Attempt to read variable ${variable.name} (${variable.type}) as BOOL"
+			"Attempt to read variable ${variable.name} (${variable.variableType}) as BOOL"
 		)
 	}
 	return readVariable(variable, context)

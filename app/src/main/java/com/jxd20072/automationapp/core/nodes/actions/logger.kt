@@ -23,7 +23,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 		Log.d(TAG, processText(text, context))
 		Log.d(
 			TAG,
-			context.getVariables().map { "${it.name}: ${it.value} (${it.type})" }.toString()
+			context.getVariables().map { "${it.name}: ${it.value} (${it.variableType})" }.toString()
 		)
 	}
 }

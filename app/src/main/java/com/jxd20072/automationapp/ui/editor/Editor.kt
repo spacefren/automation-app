@@ -46,7 +46,7 @@ fun AutomationEditor(
 					automationData = automationData,
 					currentTime = currentTime,
 					returnHome = returnHome,
-					saveAutomation = { },
+					saveAutomation = editorViewModel::trySaveAutomation,
 					runAutomation = { },
 				)
 				EditorNodeTree(

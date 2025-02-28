@@ -13,18 +13,33 @@ enum class VariableDefType {
 }
 
 @Serializable
-sealed class VariableDef(val name: String, var value: String, val type: VariableDefType) {
-	class TEXT(name: String, value: String) :
-		VariableDef(name, value, VariableDefType.TEXT)
+sealed class VariableDef(val variableType: VariableDefType) {
+	abstract val name: String
+	abstract var value: String
 
-	class BOOL(name: String, value: String) :
-		VariableDef(name, value, VariableDefType.BOOL)
+	@Serializable
+	class TEXT(
+		override val name: String,
+		override var value: String
+	) : VariableDef(VariableDefType.TEXT)
 
-	class NUMBER(name: String, value: String) :
-		VariableDef(name, value, VariableDefType.NUMBER)
+	@Serializable
+	class BOOL(
+		override val name: String,
+		override var value: String
+	) : VariableDef(VariableDefType.BOOL)
 
-	class VARIABLE(name: String, value: String) :
-		VariableDef(name, value, VariableDefType.VARIABLE)
+	@Serializable
+	class NUMBER(
+		override val name: String,
+		override var value: String
+	) : VariableDef(VariableDefType.NUMBER)
+
+	@Serializable
+	class VARIABLE(
+		override val name: String,
+		override var value: String
+	) : VariableDef(VariableDefType.VARIABLE)
 
 	companion object {
 		fun withType(name: String, value: String, type: VariableDefType): VariableDef {

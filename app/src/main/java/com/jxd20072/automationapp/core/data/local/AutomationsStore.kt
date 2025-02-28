@@ -2,8 +2,6 @@ package com.jxd20072.automationapp.core.data.local
 
 import android.content.Context
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
@@ -25,35 +23,6 @@ class AutomationsStore @Inject constructor(
 		return automationsDir
 	}
 
-	fun createAutomationFile(name: String, metadata: AutomationDefMetadata): Boolean {
-		return try {
-			val automationsDirectory = getAutomationsDirectory()
-
-			val file = File(automationsDirectory, "${name}.json")
-			val fileContent = Json.encodeToString(
-				AutomationDef(
-					metadata = metadata,
-					variables = emptySet(),
-					functions = listOf(
-						FunctionNodeDef(
-							name = "OnStart",
-							input = emptyMap(),
-							output = emptyMap(),
-							content = emptyList()
-						)
-					),
-					triggers = emptyList(),
-				)
-			)
-			file.writeText(fileContent)
-
-			true
-		} catch (e: IOException) {
-			e.printStackTrace()
-			false
-		}
-	}
-
 	fun readAutomation(fileName: String): AutomationDef? {
 		val automationsDir = getAutomationsDirectory()
 		val file = automationsDir
@@ -61,5 +30,20 @@ class AutomationsStore @Inject constructor(
 			?.find { it.isFile && it.name == "$fileName.json" }
 
 		return if (file != null) readAutomationFile(file) else null
+	}
+
+	fun writeAutomationToFile(name: String, automationDef: AutomationDef): Boolean {
+		return try {
+			val automationsDirectory = getAutomationsDirectory()
+
+			val file = File(automationsDirectory, "${name}.json")
+			val fileContent = Json.encodeToString(automationDef)
+			file.writeText(fileContent)
+
+			true
+		} catch (e: IOException) {
+			e.printStackTrace()
+			false
+		}
 	}
 }

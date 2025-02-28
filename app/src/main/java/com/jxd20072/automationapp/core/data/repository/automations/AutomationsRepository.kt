@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.core.data.repository.automations
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
@@ -10,120 +11,100 @@ import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.executor.executeAutomation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
-
-private const val TAG = "APP_AutomationsRepository"
 
 class AutomationsRepository @Inject constructor(
 	private val automationsStore: AutomationsStore,
 	private val automationsDataStore: DataStore<AutomationsDataMap>
 ) {
-	private val testingAutomationDraft = createAutomationDraft(
-		AutomationDef(
-			metadata = AutomationDefMetadata(
-				version = 0
+	private val testingAutomationDef = AutomationDef(
+		metadata = AutomationDefMetadata(
+			version = 0
+		),
+		variables = setOf(
+			VariableDef.TEXT
+				(
+				name = "textVariable",
+				value = "textVariableValue"
 			),
-			variables = setOf(
-				VariableDef.TEXT
-					(
-					name = "textVariable",
-					value = "textVariableValue"
-				),
-			),
-			triggers = emptyList(),
-			functions = listOf(
-				FunctionNodeDef(
-					name = "OnStart",
-					input = emptyMap(),
-					output = emptyMap(),
-					content = listOf(
+		),
+		triggers = emptyList(),
+		functions = listOf(
+			FunctionNodeDef(
+				name = "OnStart",
+				input = emptyMap(),
+				output = emptyMap(),
+				content = listOf(
 //				ActionNodeDef(
 //					name = "writeVariable",
 //					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
 //				),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "test: @textVariable")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "second test")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "third test")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "fourth test")
-						),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "test: @textVariable")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "second test")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "third test")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "fourth test")
 					),
 				),
-				FunctionNodeDef(
-					name = "myFunction",
-					input = mapOf("input1" to "value1"),
-					output = mapOf("output1" to "value2"),
-					content = listOf(
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "1")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "2")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "3")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "4")
-						),
-					)
-				),
-				FunctionNodeDef(
-					name = "myFunction2",
-					input = mapOf("input1" to "value1"),
-					output = mapOf("output1" to "value2"),
-					content = listOf(
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "1")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "2")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "3")
-						),
-						ActionNodeDef(
-							name = "log",
-							input = mapOf("text" to "4")
-						),
-					)
+			),
+			FunctionNodeDef(
+				name = "myFunction",
+				input = mapOf("input1" to "value1"),
+				output = mapOf("output1" to "value2"),
+				content = listOf(
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "1")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "2")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "3")
+					),
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("text" to "4")
+					),
 				)
 			),
-		)
+		),
 	)
+	private val _automationsDataFlow = MutableSharedFlow<AutomationsDataMap>(replay = 1)
+	val automationsDataFlow: SharedFlow<AutomationsDataMap> = _automationsDataFlow.asSharedFlow()
 
-	init {
-		executeAutomation(testingAutomationDraft)
+	private suspend fun startPolling() {
+		while (true) {
+			_automationsDataFlow.emit(getAutomationDataMap())
+			delay(10_000)
+		}
 	}
 
-	val automationsDataFlow: Flow<AutomationsDataMap> = flow {
-		while (true) {
-			emit(getAutomationDataMap())
-			delay(10_000)
+	init {
+		CoroutineScope(Dispatchers.IO).launch {
+			startPolling()
 		}
 	}
 
@@ -134,11 +115,15 @@ class AutomationsRepository @Inject constructor(
 	): String {
 		val id = UUID.randomUUID().toString()
 
-		automationsStore.createAutomationFile(
+		automationsStore.writeAutomationToFile(
 			name = name,
-			metadata = AutomationDefMetadata(
-				version = 1
-			)
+			automationDef = testingAutomationDef
+//			automationDef = AutomationDef(
+//				metadata = AutomationDefMetadata(version = 1),
+//				functions = emptyList(),
+//				triggers = emptyList(),
+//				variables = emptySet()
+//			)
 		)
 
 		val entry = AutomationsMapEntry.newBuilder()
@@ -149,13 +134,20 @@ class AutomationsRepository @Inject constructor(
 			.setLastSaved(Instant.now().toString())
 			.build()
 
-		automationsDataStore.updateData { automationsData ->
+		updateAutomationDataMap { automationsData ->
 			automationsData.copy {
 				automations[id] = entry
 			}
 		}
 
 		return id
+	}
+
+	private suspend fun updateAutomationDataMap(
+		transform: (AutomationsDataMap) -> AutomationsDataMap
+	) {
+		automationsDataStore.updateData(transform = transform)
+		_automationsDataFlow.emit(getAutomationDataMap())
 	}
 
 	private suspend fun getAutomationDataMap(): AutomationsDataMap {
@@ -166,10 +158,24 @@ class AutomationsRepository @Inject constructor(
 		return automationsDataStore.data.first().automationsMap[id]
 	}
 
-	suspend fun getAutomation(id: String): AutomationDraft? {
+	suspend fun getAutomationDraft(id: String): AutomationDraft? {
 		val mapEntry = getAutomationMapEntry(id) ?: return null
 		val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
-		//return createAutomationDraft(automationDef)
-		return testingAutomationDraft
+		return createAutomationDraft(automationDef)
+	}
+
+	fun writeAutomation(id: String, draft: AutomationDraft) {
+		CoroutineScope(Dispatchers.IO).launch {
+			Log.d("APP_A", "saving...");
+			val automationData = getAutomationMapEntry(id) ?: return@launch
+
+			automationsStore.writeAutomationToFile(automationData.name, createAutomationDef(draft))
+
+			updateAutomationDataMap { automationsData ->
+				automationsData.copy {
+					automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
+				}
+			}
+		}
 	}
 }
