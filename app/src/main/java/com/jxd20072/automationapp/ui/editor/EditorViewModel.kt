@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
+import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
@@ -59,6 +60,7 @@ sealed interface EditorUiState {
 @HiltViewModel
 class EditorViewModel @Inject constructor(
 	private val automationsRepository: AutomationsRepository,
+	private val settingsRepository: UserSettingsRepository
 ) : ViewModel() {
 	private val _editorUiState = MutableStateFlow<EditorUiState>(EditorUiState.Loading)
 	val editorUiState = _editorUiState.asStateFlow()
@@ -95,10 +97,14 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun trySaveAutomation() {
-		val uiState = editorUiState.value
-		if (uiState is EditorUiState.Success) {
-			automationsRepository.writeAutomation(uiState.automationId, uiState.automationDraft)
+	fun trySaveAutomation(force: Boolean = false) {
+		viewModelScope.launch {
+			if (force || settingsRepository.getSettings().autoSave) {
+				val uiState = editorUiState.value
+				if (uiState is EditorUiState.Success) {
+					automationsRepository.writeAutomation(uiState.automationId, uiState.automationDraft)
+				}
+			}
 		}
 	}
 
