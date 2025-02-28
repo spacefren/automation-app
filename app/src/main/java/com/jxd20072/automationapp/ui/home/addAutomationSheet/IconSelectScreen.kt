@@ -50,7 +50,11 @@ fun IconSelectScreen(
 						fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
 					)
 				) {
-					Text(text = category, fontSize = 17.sp)
+					Text(
+						text = category,
+						color = LocalTheme.colorScheme.onSecondary,
+						fontSize = 17.sp
+					)
 					Spacer(modifier = Modifier.height(8.dp))
 					FlowRow(
 						verticalArrangement = Arrangement.spacedBy(8.dp),

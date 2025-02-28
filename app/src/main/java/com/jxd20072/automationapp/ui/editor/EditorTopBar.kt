@@ -73,7 +73,7 @@ fun EditorTopBar(
 						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier
 							.size(22.dp)
-							.clickable {
+							.clickable(interactionSource = null, indication = null) {
 								returnHome(true)
 							}
 					)

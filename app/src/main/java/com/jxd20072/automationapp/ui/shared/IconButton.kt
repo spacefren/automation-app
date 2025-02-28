@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -31,7 +32,7 @@ fun Button(
 	Box(
 		modifier = modifier
 			.shadow(5.dp, RoundedCornerShape(cornerRadius))
-			.clickable(enabled = true, onClick = onClick)
+			.clickable(interactionSource = null, indication = ripple(), onClick = onClick)
 			.background(color),
 		content = content
 	)

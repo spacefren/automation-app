@@ -1,31 +1,25 @@
 package com.jxd20072.automationapp.ui.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jxd20072.automationapp.ui.shared.Button
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -35,19 +29,14 @@ private fun FilterChip(
 	modifier: Modifier = Modifier,
 	onActiveChanged: (active: Boolean) -> Unit
 ) {
-	val interactionSource = remember { MutableInteractionSource() }
-
-	Box(
-		modifier = modifier
-			.fillMaxHeight()
-			.shadow(5.dp, RoundedCornerShape(6.dp))
-			.background(if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.surface)
-			.clickable(
-				interactionSource = interactionSource,
-				indication = null
-			) {
-				onActiveChanged(!enabled)
-			}
+	Button(
+		color =
+		if (enabled) LocalTheme.colorScheme.secondary
+		else LocalTheme.colorScheme.surface,
+		cornerRadius = 6.dp,
+		onClick = { onActiveChanged(!enabled) },
+		modifier = Modifier
+			.shadow(5.dp)
 			.padding(horizontal = 6.dp)
 	) {
 		Text(
@@ -78,7 +67,10 @@ fun FilterChips(
 				.horizontalScroll(scrollState)
 				.height(25.dp)
 		) {
-			Spacer(modifier = Modifier.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp))
+			Spacer(
+				modifier = Modifier
+					.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp)
+			)
 
 			filters.map { (name, enabled) ->
 				FilterChip(name = name, enabled = enabled) { hasEnabled ->
@@ -86,7 +78,10 @@ fun FilterChips(
 				}
 			}
 
-			Spacer(modifier = Modifier.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp))
+			Spacer(
+				modifier = Modifier
+					.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp)
+			)
 		}
 	}
 }

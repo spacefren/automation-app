@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -84,7 +85,7 @@ fun BaseTextInput(
 				.height(45.dp)
 				.shadow(5.dp, RoundedCornerShape(8.dp))
 				.background(LocalTheme.colorScheme.surface)
-				.clickable() {
+				.clickable(interactionSource = null, indication = ripple()) {
 					focusRequester.requestFocus()
 				}
 				.padding(5.dp)
