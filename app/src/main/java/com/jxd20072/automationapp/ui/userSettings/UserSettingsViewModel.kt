@@ -47,6 +47,10 @@ class UserSettingsViewModel @Inject constructor(
 	private val userSettingsRepository: UserSettingsRepository,
 ) : ViewModel() {
 
+	init {
+		userSettingsRepository.initializeSettings()
+	}
+
 	val userSettingsUiState: StateFlow<UserSettingsUiState> =
 		userSettingsRepository.userSettings
 			.map { userSettings ->

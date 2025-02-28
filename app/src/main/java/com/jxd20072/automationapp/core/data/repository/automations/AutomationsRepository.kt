@@ -102,7 +102,7 @@ class AutomationsRepository @Inject constructor(
 		}
 	}
 
-	init {
+	fun initialize() {
 		CoroutineScope(Dispatchers.IO).launch {
 			startPolling()
 		}
