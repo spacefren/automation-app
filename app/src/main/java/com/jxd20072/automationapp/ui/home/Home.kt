@@ -46,21 +46,19 @@ fun TopBar(
 	openSettings: () -> Unit
 ) {
 	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp),
-		modifier = modifier
-			.padding(top = 30.dp)
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+		modifier = modifier.padding(top = 30.dp)
 	) {
 
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceBetween,
-			modifier = Modifier
-				.fillMaxWidth()
+			modifier = Modifier.fillMaxWidth()
 		) {
 			Text(
 				text = "Home",
 				color = LocalTheme.colorScheme.onBackground,
-				fontSize = 32.sp
+				fontSize = 32.sp,
 			)
 
 			Icon(
@@ -84,28 +82,32 @@ private fun AutomationsList(
 	editAutomation: (id: String) -> Unit
 ) {
 	LazyColumn(
-		modifier = modifier
-			.fillMaxHeight(),
+		modifier = modifier.fillMaxHeight()
 	) {
-		item { Spacer(modifier = Modifier.height(2.dp)) }
+		item {
+			Spacer(modifier = Modifier.height(2.dp))
+		}
+
 		items(automations, { it.id }) { automation ->
 			AutomationCard(
 				name = automation.name,
 				icon = automation.icon,
+				runAutomation = { runAutomation(automation.id) },
+				editAutomation = { editAutomation(automation.id) },
 				lastUsed = if (automation.lastUsed != null) {
 					getRelativeTime(automation.lastUsed, currentTime)
 				} else "never",
 				modifier = Modifier.animateItem(
 					fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
 					fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
-				),
-				runAutomation = { runAutomation(automation.id) },
-				editAutomation = { editAutomation(automation.id) }
+				)
 			)
 			Spacer(modifier = Modifier.height(10.dp))
 		}
 
-		item { Spacer(modifier = Modifier.height(300.dp)) }
+		item {
+			Spacer(modifier = Modifier.height(300.dp))
+		}
 	}
 }
 
@@ -113,6 +115,7 @@ private fun AutomationsList(
 fun HomeScreen(
 	homeViewModel: HomeViewModel = hiltViewModel(),
 	openSettings: () -> Unit,
+	modifier: Modifier = Modifier,
 	runAutomation: (id: String) -> Unit,
 	editAutomation: (id: String) -> Unit,
 ) {
@@ -121,7 +124,7 @@ fun HomeScreen(
 	val currentTime by homeViewModel.currentTime.collectAsState()
 
 	Layer(
-		modifier = Modifier
+		modifier = modifier
 			.fillMaxSize()
 			.background(LocalTheme.colorScheme.background)
 	) {
@@ -130,8 +133,8 @@ fun HomeScreen(
 			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			TopBar(
-				modifier = Modifier.padding(sidePadding),
-				openSettings = openSettings
+				openSettings = openSettings,
+				modifier = Modifier.padding(sidePadding)
 			)
 
 			SearchBar(
@@ -141,7 +144,7 @@ fun HomeScreen(
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
-					.padding(sidePadding),
+					.padding(sidePadding)
 			)
 
 			FilterChips(
@@ -149,15 +152,15 @@ fun HomeScreen(
 				sidePadding = sidePadding,
 				onFilterChange = { filter, enabled ->
 					homeViewModel.changeFilter(filter, enabled)
-				}
+				},
 			)
 
 			AutomationsList(
 				automations = homeUiState.filteredAutomations,
 				currentTime = currentTime,
-				modifier = Modifier.padding(sidePadding),
 				runAutomation = runAutomation,
-				editAutomation = editAutomation
+				editAutomation = editAutomation,
+				modifier = Modifier.padding(sidePadding)
 			)
 		}
 
@@ -166,12 +169,12 @@ fun HomeScreen(
 			onDismissRequest = {
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
 			},
-			modifier = Modifier.padding(sidePadding),
 			validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
 			onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
 			onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
 			onNameChanged = homeViewModel::changeAddAutomationDrawerName,
-			onIconSearch = homeViewModel::changeIconSelectorSearchQuery
+			onIconSearch = homeViewModel::changeIconSelectorSearchQuery,
+			modifier = Modifier.padding(sidePadding)
 		) {
 			homeViewModel.addAutomation(
 				name = homeUiState.addAutomationDrawerState.selectedName,

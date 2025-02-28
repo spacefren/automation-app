@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
@@ -51,8 +51,8 @@ fun EditorTopBar(
 			.fillMaxWidth()
 			.background(LocalTheme.colorScheme.surface)
 			.windowInsetsPadding(WindowInsets.statusBars)
-			.padding(top = 20.dp)
-			.padding(horizontal = 20.dp)
+			.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,

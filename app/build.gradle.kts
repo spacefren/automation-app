@@ -110,7 +110,7 @@ dependencies {
 	// Coil
 	implementation(libs.coil.compose)
 	implementation(libs.coil.svg.v304)
-	implementation(kotlin("reflect"))
+	implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
 }
 
 androidComponents {

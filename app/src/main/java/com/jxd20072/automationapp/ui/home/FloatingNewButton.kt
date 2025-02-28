@@ -9,7 +9,10 @@ import com.jxd20072.automationapp.ui.shared.IconLabelButton
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun FloatingNewButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun FloatingNewButton(
+	modifier: Modifier = Modifier,
+	onClick: () -> Unit
+) {
 	IconLabelButton(
 		label = "New",
 		fontSize = 20,
@@ -20,8 +23,7 @@ fun FloatingNewButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 		cornerRadius = 8,
 		padding = 15,
 		height = 30,
-		modifier = modifier
-			.offset(-(20).dp, -(30).dp),
+		modifier = modifier.offset(-(20).dp, -(30).dp),
 		onClick = onClick
 	)
 }

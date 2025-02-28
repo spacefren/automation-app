@@ -69,10 +69,10 @@ fun BaseTextInput(
 		if (validateInput != null) {
 			val validationResult = validateInput(text)
 
-			if (validationResult is TextInputValidationResult.Error) {
-				errorText = validationResult.message
+			errorText = if (validationResult is TextInputValidationResult.Error) {
+				validationResult.message
 			} else {
-				errorText = ""
+				""
 			}
 		}
 	}
@@ -83,12 +83,15 @@ fun BaseTextInput(
 		Box(
 			modifier = Modifier
 				.height(45.dp)
-				.shadow(5.dp, RoundedCornerShape(8.dp))
+				.shadow(
+					LocalTheme.layoutSystem.shadows.primary,
+					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+				)
 				.background(LocalTheme.colorScheme.surface)
 				.clickable(interactionSource = null, indication = ripple()) {
 					focusRequester.requestFocus()
 				}
-				.padding(5.dp)
+				.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 		) {
 			Row(
 				horizontalArrangement = Arrangement.Start,
@@ -100,10 +103,10 @@ fun BaseTextInput(
 						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
 							.size(35.dp)
-							.padding(5.dp)
+							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 					)
 				}
-				Spacer(modifier = Modifier.width(5.dp))
+				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
 				Box(
 					modifier = Modifier
 						.weight(1f)
@@ -151,7 +154,7 @@ fun BaseTextInput(
 						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
 							.size(35.dp)
-							.padding(5.dp)
+							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 							.clickable(interactionSource = closeInteractionSource, indication = null) {
 								onTextChanged("")
 								focusManager.clearFocus()

@@ -94,7 +94,7 @@ fun SnackbarHost() {
 	Box(
 		modifier = Modifier
 			.zIndex(100f)
-			.padding(horizontal = 20.dp)
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.fillMaxSize()
 			.windowInsetsPadding(WindowInsets.safeDrawing)
 	) {
@@ -155,7 +155,10 @@ fun Snackbar(
 			.clickable(interactionSource, null) {
 				localSnackbarState.dismissSnackbar(snackbarData.id)
 			}
-			.shadow(5.dp, RoundedCornerShape(8.dp))
+			.shadow(
+				LocalTheme.layoutSystem.shadows.primary,
+				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+			)
 			.background(
 				when (snackbarData.type) {
 					SnackbarType.INFO -> LocalTheme.colorScheme.surface
@@ -167,8 +170,7 @@ fun Snackbar(
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.spacedBy(5.dp),
-			modifier = Modifier
-				.padding(10.dp)
+			modifier = Modifier.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
 		) {
 			Icon(
 				painter = painterResource(snackbarData.icon),
@@ -203,8 +205,7 @@ fun Snackbar(
 						text = snackbarData.action.name,
 						fontSize = 17.sp,
 						lineHeight = 1.sp,
-						modifier = Modifier
-							.padding(8.dp)
+						modifier = Modifier.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
 					)
 				}
 			}
@@ -214,7 +215,7 @@ fun Snackbar(
 				.fillMaxWidth(remainingTime.value)
 				.height(3.dp)
 				.align(Alignment.BottomStart)
-				.clip(RoundedCornerShape(5.dp))
+				.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
 				.background(
 					when (snackbarData.type) {
 						SnackbarType.INFO -> LocalTheme.colorScheme.secondary

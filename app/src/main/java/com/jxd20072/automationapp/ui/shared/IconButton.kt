@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.ui.home.getAutomationIconPainter
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun Button(
@@ -31,7 +31,7 @@ fun Button(
 ) {
 	Box(
 		modifier = modifier
-			.shadow(5.dp, RoundedCornerShape(cornerRadius))
+			.shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
 			.clickable(interactionSource = null, indication = ripple(), onClick = onClick)
 			.background(color),
 		content = content

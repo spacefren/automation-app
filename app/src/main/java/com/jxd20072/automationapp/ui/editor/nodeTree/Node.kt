@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -47,7 +48,7 @@ import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 
-enum class TopLevelNodeType { ENTRYPOINT, TRIGGER, FUNCTION }
+enum class TopLevelNodeType { ENTRYPOINT, FUNCTION }
 enum class ChildNodeType { ACTION }
 
 @Composable
@@ -136,9 +137,9 @@ fun NodeHeader(
 				if (piece.startsWith("*")) {
 					Box(
 						modifier = Modifier
-							.shadow(5.dp, RoundedCornerShape(5.dp))
+							.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
 							.background(LocalTheme.colorScheme.surface)
-							.padding(horizontal = 6.dp, vertical = 3.dp)
+							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 					) {
 						Text(
 							text = piece.removePrefix("*"),
@@ -172,7 +173,11 @@ fun NodeContainer(
 	ignoreBottomPadding: Boolean = false,
 	content: @Composable BoxScope.() -> Unit
 ) {
-	val paddingLevels = listOf(10.dp, 8.dp)
+	val padding = when (level) {
+		1 -> LocalTheme.layoutSystem.spacing.paddingLevel2
+		2 -> LocalTheme.layoutSystem.spacing.paddingLevel3
+		else -> 0.dp
+	}
 
 	Box(
 		content = content,
@@ -184,12 +189,13 @@ fun NodeContainer(
 				fillMaxWidth()
 			})
 			.shadow(
-				if (enabledByDragging == true) 10.dp else 5.dp,
+				if (enabledByDragging == true) LocalTheme.layoutSystem.shadows.primary
+				else LocalTheme.layoutSystem.shadows.secondary,
 				RoundedCornerShape(
 					when (level) {
-						1 -> 8.dp
-						2 -> 4.dp
-						else -> 5.dp
+						1 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel1
+						2 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel2
+						else -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel3
 					}
 				)
 			)
@@ -204,9 +210,8 @@ fun NodeContainer(
 				onLayout(layout)
 			}
 			.conditional(!ignoreBottomPadding, ifTrue = {
-				padding(paddingLevels[level - 1])
+				padding(padding)
 			}, ifFalse = {
-				val padding = paddingLevels[level - 1]
 				padding(start = padding, end = padding, top = padding)
 			})
 	)
@@ -264,7 +269,7 @@ fun TopLevelNode(
 			)
 			content.forEachIndexed { index, actionNode ->
 				EditorNodeDropTarget(
-					gap = 10.dp,
+					gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 					draggingData = draggingData,
 					scope = EditorDraggableScope.ACTION,
 					onEnter = { onDropZoneEnter(index, id) },
@@ -280,7 +285,7 @@ fun TopLevelNode(
 				)
 			}
 			EditorNodeDropTarget(
-				gap = 10.dp,
+				gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 				draggingData = draggingData,
 				scope = EditorDraggableScope.ACTION,
 				onEnter = { onDropZoneEnter(content.size, id) },

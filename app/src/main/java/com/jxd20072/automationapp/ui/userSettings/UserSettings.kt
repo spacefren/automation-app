@@ -59,7 +59,8 @@ fun UserSettingsScreen(
 		Column(
 			modifier = Modifier
 				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = 30.dp, start = 20.dp, end = 20.dp)
+				.padding(top = 30.dp)
+				.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 		) {
 			Row(
 				verticalAlignment = Alignment.CenterVertically,
@@ -77,7 +78,7 @@ fun UserSettingsScreen(
 							.size(28.dp)
 							.clickable { returnHome() }
 					)
-					Spacer(modifier = Modifier.width(10.dp))
+					Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 					Text(
 						text = "Settings",
 						color = LocalTheme.colorScheme.onBackground,
@@ -106,15 +107,15 @@ fun UserSettingsScreen(
 						}
 				)
 			}
-			Spacer(modifier = Modifier.height(20.dp))
+			Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel1))
 			if (userSettingsUiState is UserSettingsUiState.Success) {
 				val settings = userSettingsUiState as UserSettingsUiState.Success
 
 				Column(
-					verticalArrangement = Arrangement.spacedBy(30.dp),
+					verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 					modifier = Modifier
 						.verticalScroll(rememberScrollState(0))
-						.padding(top = 10.dp)
+						.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel2)
 				) {
 					GeneralSettingsCategory(
 						userSettingsUiState = settings,

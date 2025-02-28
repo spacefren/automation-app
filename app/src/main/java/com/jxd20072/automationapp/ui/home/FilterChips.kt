@@ -30,23 +30,18 @@ private fun FilterChip(
 	onActiveChanged: (active: Boolean) -> Unit
 ) {
 	Button(
-		color =
-		if (enabled) LocalTheme.colorScheme.secondary
-		else LocalTheme.colorScheme.surface,
-		cornerRadius = 6.dp,
+		color = if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.surface,
+		cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 		onClick = { onActiveChanged(!enabled) },
-		modifier = Modifier
-			.shadow(5.dp)
-			.padding(horizontal = 6.dp)
+		modifier = modifier
+			.shadow(LocalTheme.layoutSystem.shadows.secondary)
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel3)
 	) {
 		Text(
 			text = name,
 			fontSize = 13.sp,
-			color =
-			if (enabled) LocalTheme.colorScheme.onBackground
-			else LocalTheme.colorScheme.onSurface,
-			modifier = Modifier
-				.align(Alignment.Center)
+			color = if (enabled) LocalTheme.colorScheme.onBackground else LocalTheme.colorScheme.onSurface,
+			modifier = Modifier.align(Alignment.Center)
 		)
 	}
 }
@@ -62,14 +57,13 @@ fun FilterChips(
 
 	if (filters.isNotEmpty()) {
 		Row(
-			horizontalArrangement = Arrangement.spacedBy(10.dp),
+			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			modifier = modifier
 				.horizontalScroll(scrollState)
 				.height(25.dp)
 		) {
 			Spacer(
-				modifier = Modifier
-					.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp)
+				modifier = Modifier.width(sidePadding.calculateStartPadding(LayoutDirection.Ltr) - 10.dp)
 			)
 
 			filters.map { (name, enabled) ->
@@ -79,8 +73,7 @@ fun FilterChips(
 			}
 
 			Spacer(
-				modifier = Modifier
-					.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp)
+				modifier = Modifier.width(sidePadding.calculateEndPadding(LayoutDirection.Ltr) - 10.dp)
 			)
 		}
 	}

@@ -100,7 +100,10 @@ fun EditorNodeDropTarget(
 			modifier = Modifier
 				.height(height)
 				.fillMaxWidth(.8f)
-				.background(LocalTheme.colorScheme.secondary, RoundedCornerShape(10.dp))
+				.background(
+					LocalTheme.colorScheme.secondary,
+					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
+				)
 				.onGloballyPositioned { layout -> positionInRoot = layout.positionInRoot() }
 		)
 	}

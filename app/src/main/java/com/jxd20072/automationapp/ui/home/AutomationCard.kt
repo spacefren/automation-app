@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
+import com.jxd20072.automationapp.AutomationApplication
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SwipeableContainer
@@ -41,6 +42,7 @@ fun getAutomationIconPainter(name: String): Painter {
 			.data("file:///android_asset/icons/$name.svg")
 			.decoderFactory(SvgDecoder.Factory())
 			.build(),
+		imageLoader = (context.applicationContext as AutomationApplication).imageLoader
 	)
 }
 
@@ -56,7 +58,7 @@ fun AutomationCard(
 	SwipeableContainer(
 		icon1 = R.drawable.round_archive_24,
 		backgroundColor1 = LocalTheme.colorScheme.tertiary,
-		containerCornerRadius = 8.dp,
+		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 		onAction1 = { },
 	) {
 		Box(
@@ -66,9 +68,12 @@ fun AutomationCard(
 		) {
 			Row(
 				modifier = Modifier
-					.shadow(5.dp, RoundedCornerShape(8.dp))
+					.shadow(
+						LocalTheme.layoutSystem.shadows.primary,
+						RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+					)
 					.background(LocalTheme.colorScheme.surface)
-					.padding(10.dp),
+					.padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
 				horizontalArrangement = Arrangement.End,
 				verticalAlignment = Alignment.CenterVertically
 			) {
@@ -78,10 +83,10 @@ fun AutomationCard(
 						.fillMaxHeight()
 				) {
 					Row(
+						verticalAlignment = Alignment.Top,
 						modifier = Modifier
 							.fillMaxWidth()
-							.weight(1f),
-						verticalAlignment = Alignment.Top
+							.weight(1f)
 					) {
 						Image(
 							painter = getAutomationIconPainter(icon),
@@ -96,8 +101,7 @@ fun AutomationCard(
 							text = name,
 							color = LocalTheme.colorScheme.onBackground,
 							fontSize = 18.sp,
-							modifier = Modifier
-								.height(22.dp)
+							modifier = Modifier.height(22.dp)
 						)
 					}
 					Text(
@@ -105,35 +109,32 @@ fun AutomationCard(
 						color = LocalTheme.colorScheme.onSurface,
 						fontSize = 13.sp,
 						lineHeight = 13.sp,
-						modifier = Modifier
-							.padding(start = 2.dp) // Align with the icon's live area
+						modifier = Modifier.padding(start = 2.dp) // Align with the icon's live area
 					)
 				}
 
-				Spacer(modifier = Modifier.width(10.dp))
+				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 
 				IconButton(
 					color = LocalTheme.colorScheme.tertiary,
 					iconColor = LocalTheme.colorScheme.onTertiary,
 					drawableRes = R.drawable.round_edit_24,
-					cornerRadius = 5.dp,
-					padding = 6.dp,
+					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = editAutomation,
-					modifier = Modifier
-						.size(45.dp)
+					modifier = Modifier.size(45.dp)
 				)
 
-				Spacer(modifier = Modifier.width(10.dp))
+				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 
 				IconButton(
 					color = LocalTheme.colorScheme.secondary,
 					iconColor = LocalTheme.colorScheme.onSecondary,
 					drawableRes = R.drawable.round_play_arrow_24,
-					cornerRadius = 5.dp,
-					padding = 6.dp,
+					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = runAutomation,
-					modifier = Modifier
-						.size(45.dp)
+					modifier = Modifier.size(45.dp)
 				)
 			}
 		}

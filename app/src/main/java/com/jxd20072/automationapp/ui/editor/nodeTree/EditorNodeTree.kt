@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,13 +32,13 @@ fun EditorNodeTree(
 	onStopDrag: () -> Unit,
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
+	modifier: Modifier = Modifier
 ) {
 	LazyColumn(
 		horizontalAlignment = Alignment.CenterHorizontally,
-		modifier = Modifier
-			.padding(horizontal = 20.dp)
+		modifier = modifier
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
-		item { Spacer(modifier = Modifier.height(10.dp)) }
 
 		itemsIndexed(
 			automationDraft.functions,
@@ -68,7 +69,7 @@ fun EditorNodeTree(
 
 		item {
 			EditorNodeDropTarget(
-				gap = 20.dp,
+				gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
 				draggingData = draggingData,
 				scope = EditorDraggableScope.FUNCTION,
 				onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },

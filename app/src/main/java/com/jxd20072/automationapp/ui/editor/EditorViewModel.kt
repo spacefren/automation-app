@@ -140,9 +140,7 @@ class EditorViewModel @Inject constructor(
 			val draggingData = currentState.draggingData
 			if (draggingData !is EditorNodeDragData.Dragging) return
 
-			var newState = currentState.copy(
-				draggingData = EditorNodeDragData.NotDragging
-			)
+			var newState = currentState.copy(draggingData = EditorNodeDragData.NotDragging)
 
 			val dropData = draggingData.dropData
 			if (dropData !is EditorNodeDropData.Dropping) return@update newState
@@ -159,25 +157,20 @@ class EditorViewModel @Inject constructor(
 				newState = newState.copy(
 					automationDraft = automationDraft.copy(
 						functions = automationDraft.functions
-							.toMutableList()
-							.also { functions ->
+							.toMutableList().also { functions ->
 								functions[previousParentIndex] = functions[previousParentIndex].copy(
 									content = functions[previousParentIndex].content
-										.toMutableList()
-										.also { previousParentContent ->
+										.toMutableList().also { previousParentContent ->
 											previousParentContent.removeAt(previousItemIndex)
 										}
 								)
 								functions[newParentIndex] = functions[newParentIndex].copy(
 									content = functions[newParentIndex].content
-										.toMutableList()
-										.also { newParentContent ->
+										.toMutableList().also { newParentContent ->
 											newParentContent.add(
-												dropData.targetIndex -
-													if (previousParent == newParent
+												dropData.targetIndex - if (previousParent == newParent
 														&& previousItemIndex < dropData.targetIndex
-													)
-														1 else 0,
+												) 1 else 0,
 												draggingData.draggingAction
 											)
 										}
@@ -188,8 +181,7 @@ class EditorViewModel @Inject constructor(
 
 			} else if (draggingData.draggingFunction != null) {
 
-				val previousIndex = automationDraft.functions
-					.indexOf(draggingData.draggingFunction)
+				val previousIndex = automationDraft.functions.indexOf(draggingData.draggingFunction)
 
 				newState = newState.copy(
 					automationDraft = automationDraft.copy(

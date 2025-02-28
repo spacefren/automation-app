@@ -100,12 +100,10 @@ class HomeViewModel @Inject constructor(
 		currentState.automations.filter { automation ->
 			(
 				currentState.filters.all { filter -> !filter.value }
-					|| automation.tags
-					.any { tag -> currentState.filters[tag] == true }
+					|| automation.tags.any { tag -> currentState.filters[tag] == true }
 				) && (
 				currentState.searchQuery == ""
-					|| automation.name.lowercase()
-					.contains(currentState.searchQuery.lowercase())
+					|| automation.name.lowercase().contains(currentState.searchQuery.lowercase())
 				)
 
 		}
@@ -130,8 +128,7 @@ class HomeViewModel @Inject constructor(
 	private fun getAllFilters(currentState: HomeScreenUiState) =
 		currentState.copy(
 			filters = currentState.filters +
-				currentState.automations.flatMap { it.tags }.distinct()
-					.associateWith { false }
+				currentState.automations.flatMap { it.tags }.distinct().associateWith { false }
 		)
 
 	private fun updateAllFilters() {
@@ -140,11 +137,7 @@ class HomeViewModel @Inject constructor(
 	}
 
 	fun changeSearchQuery(query: String) {
-		_homeUiState.update { currentState ->
-			currentState.copy(
-				searchQuery = query
-			)
-		}
+		_homeUiState.update { currentState -> currentState.copy(searchQuery = query) }
 		filterAutomations()
 	}
 
@@ -163,9 +156,7 @@ class HomeViewModel @Inject constructor(
 
 		_homeUiState.update { currentState ->
 			currentState.copy(
-				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
-					isDrawerOpen = open
-				)
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(isDrawerOpen = open)
 			)
 		}
 	}
@@ -173,9 +164,7 @@ class HomeViewModel @Inject constructor(
 	fun changeAddAutomationDrawerScreen(screen: AddAutomationDrawerScreen) {
 		_homeUiState.update { currentState ->
 			currentState.copy(
-				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
-					screen = screen
-				)
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(screen = screen)
 			)
 		}
 	}
@@ -194,9 +183,7 @@ class HomeViewModel @Inject constructor(
 	fun changeAddAutomationDrawerName(name: String) {
 		_homeUiState.update { currentState ->
 			currentState.copy(
-				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
-					selectedName = name
-				)
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(selectedName = name)
 			)
 		}
 	}
@@ -204,9 +191,7 @@ class HomeViewModel @Inject constructor(
 	fun changeAddAutomationDrawerIcon(icon: String) {
 		_homeUiState.update { currentState ->
 			currentState.copy(
-				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
-					selectedIcon = icon
-				)
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(selectedIcon = icon)
 			)
 		}
 	}
@@ -224,8 +209,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun filterIcons() {
 		_homeUiState.update { currentState ->
-			val searchQuery =
-				currentState.addAutomationDrawerState.iconSearchQuery.lowercase()
+			val searchQuery = currentState.addAutomationDrawerState.iconSearchQuery.lowercase()
 			currentState.copy(
 				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
 					filteredIcons = currentState.addAutomationDrawerState.icons.mapValues { entry ->

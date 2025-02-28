@@ -38,7 +38,7 @@ fun UserSettingsItem(
 	val enabled = item.value
 	var isPressed by remember { mutableStateOf(false) }
 
-	val padding = 5.dp
+	val padding = LocalTheme.layoutSystem.spacing.paddingLevel3
 	val containerWidth = 65.dp
 	val containerHeight = 35.dp
 	val knobSize = (containerHeight - padding * 2)
@@ -84,7 +84,10 @@ fun UserSettingsItem(
 						}
 					)
 				}
-				.shadow(5.dp, RoundedCornerShape(8.dp))
+				.shadow(
+					LocalTheme.layoutSystem.shadows.primary,
+					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+				)
 				.background(LocalTheme.colorScheme.surface)
 				.padding(vertical = padding)
 		) {
@@ -97,7 +100,10 @@ fun UserSettingsItem(
 					modifier = Modifier
 						.fillMaxSize()
 						.scale(knobScale)
-						.shadow(5.dp, RoundedCornerShape(5.dp))
+						.shadow(
+							LocalTheme.layoutSystem.shadows.secondary,
+							RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
+						)
 						.background(knobColor)
 				)
 			}
