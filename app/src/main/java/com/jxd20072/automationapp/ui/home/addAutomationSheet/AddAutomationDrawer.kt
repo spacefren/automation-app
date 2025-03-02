@@ -14,13 +14,14 @@ import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 @Composable
 fun AddAutomationDrawer(
 	drawerUiState: AddAutomationDrawerUiState,
-	modifier: Modifier = Modifier,
+	autoOpenKeyboard: Boolean,
 	onDismissRequest: () -> Unit,
 	onScreenChanged: (screen: AddAutomationDrawerScreen) -> Unit,
 	validateAutomationName: (name: String) -> TextInputValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChanged: (icon: String) -> Unit,
 	onIconSearch: (query: String) -> Unit,
+	modifier: Modifier = Modifier,
 	onCreateAutomation: () -> Unit,
 ) {
 	val sheetState = remember { ModalBottomSheetState() }
@@ -52,7 +53,8 @@ fun AddAutomationDrawer(
 								onNameChanged(newName)
 							},
 							onCreateAutomation = onCreateAutomation,
-							isSheetOpen = drawerUiState.isDrawerOpen
+							isSheetOpen = drawerUiState.isDrawerOpen,
+							autoOpenKeyboard = autoOpenKeyboard
 						)
 					}
 

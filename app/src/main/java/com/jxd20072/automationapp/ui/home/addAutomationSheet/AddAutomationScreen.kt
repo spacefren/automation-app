@@ -25,6 +25,7 @@ fun AddAutomationScreen(
 	selectedIcon: String,
 	name: String,
 	isSheetOpen: Boolean,
+	autoOpenKeyboard: Boolean,
 	validateAutomationName: (name: String) -> TextInputValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChangeRequest: () -> Unit,
@@ -72,7 +73,7 @@ fun AddAutomationScreen(
 			}
 			BaseTextInput(placeholderText = "Name",
 				imeAction = ImeAction.Done,
-				focused = isSheetOpen,
+				focused = if (autoOpenKeyboard) isSheetOpen else false,
 				text = name,
 				validateInput = { text -> validateAutomationName(text) }) { text ->
 				onNameChanged(text)

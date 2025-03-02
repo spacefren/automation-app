@@ -33,6 +33,7 @@ class UserSettingsRepository @Inject constructor(
 				.toBuilder()
 				.setHasInitialized(true)
 				.setAutoSave(true)
+				.setAutoOpenKeyboard(true)
 				.build()
 		}
 	}
@@ -41,6 +42,14 @@ class UserSettingsRepository @Inject constructor(
 		userSettingsStore.updateData { userSettings ->
 			userSettings.copy {
 				autoSave = enabled
+			}
+		}
+	}
+
+	suspend fun setAutoOpenKeyboard(enabled: Boolean) {
+		userSettingsStore.updateData { userSettings ->
+			userSettings.copy {
+				autoOpenKeyboard = enabled
 			}
 		}
 	}

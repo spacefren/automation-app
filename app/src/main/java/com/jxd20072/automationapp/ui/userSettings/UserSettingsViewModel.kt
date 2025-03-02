@@ -20,7 +20,6 @@ enum class UserSettingsType {
 
 @Immutable
 data class UserSettingsEntry<T>(
-	val name: String,
 	val value: T,
 	val type: UserSettingsType = when (value) {
 		is Boolean -> UserSettingsType.TOGGLE
@@ -34,6 +33,7 @@ data class UserSettingsEntry<T>(
 @Immutable
 data class UserEditableSettings(
 	val autoSave: UserSettingsEntry<Boolean>,
+	val autoOpenKeyboard: UserSettingsEntry<Boolean>,
 )
 
 @Immutable
@@ -73,6 +73,12 @@ class UserSettingsViewModel @Inject constructor(
 	fun setAutoSaveEnabled(enabled: Boolean) {
 		viewModelScope.launch {
 			userSettingsRepository.setAutoSaveEnabled(enabled)
+		}
+	}
+
+	fun setAutoOpenKeyboard(enabled: Boolean) {
+		viewModelScope.launch {
+			userSettingsRepository.setAutoOpenKeyboard(enabled)
 		}
 	}
 

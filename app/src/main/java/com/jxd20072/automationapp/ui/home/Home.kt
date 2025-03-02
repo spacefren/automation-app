@@ -37,6 +37,8 @@ import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
+import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 import com.jxd20072.automationapp.ui.utils.getRelativeTime
 import java.time.Instant
 
@@ -114,6 +116,7 @@ private fun AutomationsList(
 @Composable
 fun HomeScreen(
 	homeViewModel: HomeViewModel = hiltViewModel(),
+	settingsViewModel: UserSettingsViewModel = hiltViewModel(),
 	openSettings: () -> Unit,
 	modifier: Modifier = Modifier,
 	runAutomation: (id: String) -> Unit,
@@ -121,6 +124,7 @@ fun HomeScreen(
 ) {
 	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
+	val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
 	val currentTime by homeViewModel.currentTime.collectAsState()
 
 	Layer(
@@ -166,6 +170,8 @@ fun HomeScreen(
 
 		AddAutomationDrawer(
 			drawerUiState = homeUiState.addAutomationDrawerState,
+			autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
+				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 			onDismissRequest = {
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
 			},

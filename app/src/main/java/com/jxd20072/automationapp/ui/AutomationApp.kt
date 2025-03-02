@@ -78,6 +78,7 @@ fun AutomationApp(
 		) {
 			HomeScreen(
 				homeViewModel = homeViewModel,
+				settingsViewModel = settingsViewModel,
 				openSettings = { navController.navigate(route = AppScreen.SETTINGS.name) },
 				runAutomation = {},
 				editAutomation = { id -> startEditAutomation(id) },

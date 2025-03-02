@@ -6,4 +6,5 @@ option java_multiple_files = true;
 message UserSettings {
   bool hasInitialized = 1;
   bool autoSave = 2;
+  bool autoOpenKeyboard = 3;
 }
