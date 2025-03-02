@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +30,10 @@ fun AddAutomationScreen(
 	onIconChangeRequest: () -> Unit,
 	onCreateAutomation: () -> Unit,
 ) {
-	Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+	Column(
+		verticalArrangement = Arrangement.spacedBy(15.dp),
+		modifier = Modifier.imePadding()
+	) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceAround,
 			verticalAlignment = Alignment.Bottom

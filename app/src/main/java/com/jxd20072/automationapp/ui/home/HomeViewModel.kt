@@ -8,6 +8,7 @@ import com.jxd20072.automationapp.ui.home.addAutomationSheet.iconCategories
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -151,14 +152,19 @@ class HomeViewModel @Inject constructor(
 	}
 
 	fun changeAddAutomationDrawerVisibility(open: Boolean) {
-		if (open) {
-			resetAddAutomationDrawerState()
-		}
+
 
 		_homeUiState.update { currentState ->
 			currentState.copy(
 				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(isDrawerOpen = open)
 			)
+		}
+
+		if (!open) {
+			viewModelScope.launch {
+				delay(100) // Wait for animation to finish
+				resetAddAutomationDrawerState()
+			}
 		}
 	}
 
