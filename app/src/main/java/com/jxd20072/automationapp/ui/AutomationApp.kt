@@ -44,7 +44,6 @@ fun AutomationApp(
 	NavHost(
 		navController = navController,
 		startDestination = AppScreen.HOME.name,
-		modifier = Modifier.background(LocalTheme.colorScheme.background),
 		enterTransition = {
 			slideIntoContainer(
 				AnimatedContentTransitionScope.SlideDirection.Left,
@@ -57,6 +56,8 @@ fun AutomationApp(
 				animationSpec = animationSpec
 			)
 		},
+		modifier = Modifier
+			.background(LocalTheme.colorScheme.background)
 	) {
 		composable(
 			route = AppScreen.HOME.name,

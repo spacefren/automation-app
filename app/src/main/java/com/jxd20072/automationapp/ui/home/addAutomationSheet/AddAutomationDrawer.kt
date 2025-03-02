@@ -1,22 +1,16 @@
 package com.jxd20072.automationapp.ui.home.addAutomationSheet
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
+import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
-import com.jxd20072.automationapp.ui.theme.LocalTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAutomationDrawer(
 	drawerUiState: AddAutomationDrawerUiState,
@@ -29,48 +23,47 @@ fun AddAutomationDrawer(
 	onIconSearch: (query: String) -> Unit,
 	onCreateAutomation: () -> Unit,
 ) {
-	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+	val sheetState = remember { ModalBottomSheetState() }
 
-	if (drawerUiState.isDrawerOpen) {
-		ModalBottomSheet(
-			sheetState = sheetState,
-			onDismissRequest = onDismissRequest,
-			containerColor = LocalTheme.colorScheme.background,
-			modifier = Modifier
-				.zIndex(10f)
-				.windowInsetsPadding(WindowInsets.statusBars)
+	sheetState.isOpen = drawerUiState.isDrawerOpen
+	ModalBottomSheet(
+		state = sheetState,
+		onDismissRequest = {
+			onDismissRequest()
+			true
+		},
+	) {
+		Layer(
+			modifier = modifier
 		) {
-			Layer(
-				modifier = modifier
-			) {
-				AnimatedContent(
-					targetState = drawerUiState.screen, label = "",
-				) { targetState ->
-					when (targetState) {
-						AddAutomationDrawerScreen.AUTOMATION_ADD -> {
-							AddAutomationScreen(
-								selectedIcon = drawerUiState.selectedIcon,
-								validateAutomationName = validateAutomationName,
-								onIconChangeRequest = {
-									onScreenChanged(AddAutomationDrawerScreen.ICON_SELECT)
-								},
-								name = drawerUiState.selectedName,
-								onNameChanged = { newName ->
-									onNameChanged(newName)
-								},
-								onCreateAutomation = onCreateAutomation
-							)
-						}
+			AnimatedContent(
+				targetState = drawerUiState.screen, label = "",
+			) { targetState ->
+				when (targetState) {
+					AddAutomationDrawerScreen.AUTOMATION_ADD -> {
+						AddAutomationScreen(
+							selectedIcon = drawerUiState.selectedIcon,
+							validateAutomationName = validateAutomationName,
+							onIconChangeRequest = {
+								onScreenChanged(AddAutomationDrawerScreen.ICON_SELECT)
+							},
+							name = drawerUiState.selectedName,
+							onNameChanged = { newName ->
+								onNameChanged(newName)
+							},
+							onCreateAutomation = onCreateAutomation,
+							isSheetOpen = drawerUiState.isDrawerOpen
+						)
+					}
 
-						AddAutomationDrawerScreen.ICON_SELECT -> {
-							IconSelectScreen(
-								filteredIcons = drawerUiState.filteredIcons,
-								iconSearchQuery = drawerUiState.iconSearchQuery,
-								onIconSearch = onIconSearch
-							) { icon ->
-								onIconChanged(icon)
-								onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
-							}
+					AddAutomationDrawerScreen.ICON_SELECT -> {
+						IconSelectScreen(
+							filteredIcons = drawerUiState.filteredIcons,
+							iconSearchQuery = drawerUiState.iconSearchQuery,
+							onIconSearch = onIconSearch
+						) { icon ->
+							onIconChanged(icon)
+							onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
 						}
 					}
 				}
