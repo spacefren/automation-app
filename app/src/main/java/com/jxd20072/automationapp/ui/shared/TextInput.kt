@@ -56,6 +56,7 @@ fun BaseTextInput(
 	imeAction: ImeAction,
 	icon: Int? = null,
 	focused: Boolean = false,
+	onlyFocusIfEmpty: Boolean = false,
 	modifier: Modifier = Modifier,
 	validateInput: ((text: String) -> TextInputValidationResult)? = null,
 	onTextChanged: ((text: String) -> Unit),
@@ -178,6 +179,7 @@ fun BaseTextInput(
 
 	LaunchedEffect(focused) {
 		if (focused) {
+			if (onlyFocusIfEmpty && text.isNotEmpty()) return@LaunchedEffect
 			focusRequester.requestFocus()
 		} else {
 			focusManager.clearFocus()

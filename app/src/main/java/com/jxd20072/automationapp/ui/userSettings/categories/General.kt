@@ -23,7 +23,7 @@ fun GeneralSettingsCategory(
 		UserSettingsItem(
 			item = userSettingsUiState.settings.autoOpenKeyboard,
 			displayName = "Automatically open keyboard",
-			description = "When navigating to a screen with a text field, automatically show the keyboard.",
+			description = "When navigating to a screen with a text field, automatically show the keyboard",
 			onValueChanged = onAutoOpenKeyboardChanged
 		)
 		UserSettingsItem(

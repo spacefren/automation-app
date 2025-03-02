@@ -73,6 +73,7 @@ fun AddAutomationScreen(
 			}
 			BaseTextInput(placeholderText = "Name",
 				imeAction = ImeAction.Done,
+				onlyFocusIfEmpty = true,
 				focused = if (autoOpenKeyboard) isSheetOpen else false,
 				text = name,
 				validateInput = { text -> validateAutomationName(text) }) { text ->
