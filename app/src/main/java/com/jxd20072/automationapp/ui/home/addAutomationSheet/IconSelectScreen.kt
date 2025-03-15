@@ -61,7 +61,7 @@ fun IconSelectScreen(
 						horizontalArrangement = Arrangement.spacedBy(8.dp),
 						modifier = Modifier.fillMaxWidth()
 					) {
-						filteredIcons[category]!!.forEach() { icon ->
+						filteredIcons[category]!!.forEach { icon ->
 							IconButton(
 								color = LocalTheme.colorScheme.surface,
 								iconColor = LocalTheme.colorScheme.onSurface,
@@ -75,6 +75,7 @@ fun IconSelectScreen(
 				}
 				Spacer(modifier = Modifier.height(15.dp))
 			}
+			item { Spacer(modifier = Modifier.height(15.dp)) }
 		}
 	}
 }

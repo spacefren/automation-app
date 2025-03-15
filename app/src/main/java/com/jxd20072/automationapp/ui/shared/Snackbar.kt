@@ -47,7 +47,9 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Timer
 import java.util.UUID
+import kotlin.concurrent.timerTask
 
 enum class SnackbarType {
 	INFO, WARNING, ERROR
@@ -66,7 +68,7 @@ data class SnackbarData(
 		SnackbarType.WARNING -> R.drawable.round_warning_24
 		SnackbarType.ERROR -> R.drawable.round_error_24
 	},
-	val duration: Long = 10L,
+	val duration: Long = 10000L,
 	val id: String = UUID.randomUUID().toString(),
 	val action: SnackbarActionData? = null
 )
@@ -74,10 +76,11 @@ data class SnackbarData(
 class SnackbarHostState() {
 	var activeSnackbars by mutableStateOf(emptyList<SnackbarData>())
 
-	suspend fun showSnackbar(toastData: SnackbarData) {
-		activeSnackbars = activeSnackbars + toastData
-		delay(toastData.duration)
-		dismissSnackbar(toastData.id)
+	fun showSnackbar(snackbarData: SnackbarData) {
+		activeSnackbars = activeSnackbars + snackbarData
+		Timer().schedule(timerTask {
+			dismissSnackbar(snackbarData.id)
+		}, snackbarData.duration)
 	}
 
 	fun dismissSnackbar(id: String) {

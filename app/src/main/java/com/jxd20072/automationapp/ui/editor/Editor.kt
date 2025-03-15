@@ -10,9 +10,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.shared.LocalSnackbarState
+import com.jxd20072.automationapp.ui.shared.SnackbarActionData
+import com.jxd20072.automationapp.ui.shared.SnackbarData
+import com.jxd20072.automationapp.ui.shared.SnackbarType
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -21,6 +26,7 @@ fun AutomationEditor(
 	editorViewModel: EditorViewModel = hiltViewModel(),
 	returnHome: (saveChanges: Boolean) -> Unit
 ) {
+	val localSnackbarState = LocalSnackbarState.current
 	val currentTime by editorViewModel.currentTime.collectAsState()
 	val editorUiState by editorViewModel.editorUiState.collectAsState()
 
@@ -47,7 +53,18 @@ fun AutomationEditor(
 					currentTime = currentTime,
 					returnHome = returnHome,
 					saveAutomation = { editorViewModel.trySaveAutomation(true) },
-					runAutomation = { },
+					runAutomation = {
+						localSnackbarState.showSnackbar(
+							SnackbarData(
+							text = "This is a test",
+							type = SnackbarType.INFO,
+							icon = R.drawable.round_play_arrow_24,
+							action = SnackbarActionData(
+								name = "This is a button",
+								onClick = { }
+							)
+						))
+					},
 				)
 				EditorNodeTree(
 					automationDraft = automationDraft,
