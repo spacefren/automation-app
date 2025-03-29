@@ -23,7 +23,7 @@ fun FloatingNewButton(
 		cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 		padding = 15.dp,
 		modifier = modifier.offset(-(20).dp, -(30).dp),
-		iconSize = 25.dp,
+		iconSize = 20.dp,
 		onClick = onClick
 	)
 }

@@ -122,7 +122,7 @@ fun AutomationCard(
 					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
 					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = editAutomation,
-					modifier = Modifier.size(45.dp)
+					size = 45.dp,
 				)
 
 				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
@@ -134,7 +134,7 @@ fun AutomationCard(
 					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
 					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = runAutomation,
-					modifier = Modifier.size(45.dp)
+					size = 45.dp,
 				)
 			}
 		}

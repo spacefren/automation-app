@@ -34,7 +34,7 @@ val LoggerNode = ActionNodesEntry(
 		name = "log",
 		editorActionDescription = { input -> listOf("Log", "*${input["text"] as String}") },
 		description = "Append a message to the logs screen",
-		icon = R.drawable.baseline_format_align_left_24,
+		icon = R.drawable.round_align_left_24,
 		inputDefinitions = mapOf(
 			"text" to NodeInput.TEXT(
 				name = "Text",

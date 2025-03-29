@@ -6,14 +6,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,13 +24,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.ui.shared.IconButton
+import com.jxd20072.automationapp.ui.shared.Button
 import com.jxd20072.automationapp.ui.shared.IconLabelButton
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
@@ -81,6 +86,7 @@ fun EditorFloatingAddButton(
 ) {
 	var showSubButtons by remember { mutableStateOf(false) }
 	val backgroundAlpha by animateFloatAsState(if (showSubButtons) .5f else 0f)
+	val rotation by animateFloatAsState(if (showSubButtons) 45f else 0f)
 
 	Box(
 		modifier = Modifier
@@ -125,16 +131,33 @@ fun EditorFloatingAddButton(
 						showSubButtons = false
 					}
 				)
-				IconButton(
+				Button(
 					color = LocalTheme.colorScheme.secondary,
-					iconColor = LocalTheme.colorScheme.onSecondary,
-					drawableRes = R.drawable.round_add_24,
 					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-					padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-					modifier = Modifier.height(50.dp)
+					onClick = {
+						showSubButtons = !showSubButtons
+					}
 				) {
-					showSubButtons = !showSubButtons
+					Image(
+						painter = painterResource(R.drawable.round_add_24),
+						contentDescription = "new node",
+						colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onSecondary),
+						modifier = Modifier
+							.size(45.dp)
+							.rotate(rotation)
+							.padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
+					)
 				}
+//				IconButton(
+//					color = LocalTheme.colorScheme.secondary,
+//					iconColor = LocalTheme.colorScheme.onSecondary,
+//					drawableRes = R.drawable.round_add_24,
+//					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+//					padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
+//					size = 45.dp,
+//				) {
+//					showSubButtons = !showSubButtons
+//				}
 			}
 		}
 	}

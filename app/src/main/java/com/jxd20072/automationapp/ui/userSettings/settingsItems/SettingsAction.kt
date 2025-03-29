@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.userSettings.settingsItems
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,8 +25,7 @@ fun UserSettingsItem(
 			drawableRes = R.drawable.round_open_in_new_24,
 			cornerRadius = 8.dp,
 			padding = 6.dp,
-			modifier = Modifier
-				.size(42.dp),
+			size = 45.dp,
 			onClick = onActivate,
 		)
 	}

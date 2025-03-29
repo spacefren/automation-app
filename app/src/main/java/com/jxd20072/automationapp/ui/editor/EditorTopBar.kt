@@ -103,10 +103,9 @@ fun EditorTopBar(
 					color = LocalTheme.colorScheme.tertiary,
 					iconColor = LocalTheme.colorScheme.onSurface,
 					padding = 6.dp,
-					cornerRadius = 5.dp,
+					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 					onClick = saveAutomation,
-					modifier = Modifier
-						.size(45.dp),
+					size = 45.dp,
 				)
 
 				IconButton(
@@ -114,10 +113,9 @@ fun EditorTopBar(
 					color = LocalTheme.colorScheme.secondary,
 					iconColor = LocalTheme.colorScheme.onPrimary,
 					padding = 6.dp,
-					cornerRadius = 5.dp,
+					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 					onClick = runAutomation,
-					modifier = Modifier
-						.size(45.dp)
+					size = 45.dp,
 				)
 			}
 		}
@@ -147,7 +145,7 @@ fun EditorTopBar(
 			IconLabelButton(
 				label = "Logs",
 				fontSize = 15.sp,
-				drawableRes = R.drawable.baseline_format_align_left_24,
+				drawableRes = R.drawable.round_align_left_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5.dp,

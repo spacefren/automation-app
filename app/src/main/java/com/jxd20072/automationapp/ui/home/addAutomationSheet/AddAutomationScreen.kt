@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,7 +50,7 @@ fun AddAutomationScreen(
 				drawableRes = R.drawable.round_check_24,
 				cornerRadius = 8.dp,
 				padding = 5.dp,
-				modifier = Modifier.size(45.dp)
+				size = 45.dp,
 			) {
 				if (validateAutomationName(name) is TextInputValidationResult.Success) {
 					onCreateAutomation()
@@ -67,16 +66,18 @@ fun AddAutomationScreen(
 				iconName = selectedIcon,
 				cornerRadius = 8.dp,
 				padding = 8.dp,
-				modifier = Modifier.size(45.dp)
+				size = 45.dp
 			) {
 				onIconChangeRequest()
 			}
-			BaseTextInput(placeholderText = "Name",
+			BaseTextInput(
+				placeholderText = "Name",
 				imeAction = ImeAction.Done,
 				onlyFocusIfEmpty = true,
 				focused = if (autoOpenKeyboard) isSheetOpen else false,
 				text = name,
-				validateInput = { text -> validateAutomationName(text) }) { text ->
+				validateInput = { text -> validateAutomationName(text) }
+			) { text ->
 				onNameChanged(text)
 			}
 		}

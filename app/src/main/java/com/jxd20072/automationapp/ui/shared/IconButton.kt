@@ -6,9 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -71,13 +71,14 @@ fun IconButton(
 	cornerRadius: Dp,
 	padding: Dp,
 	modifier: Modifier = Modifier,
+	size: Dp,
 	onClick: () -> Unit,
 ) {
 	Button(
 		color = color,
 		cornerRadius = cornerRadius,
 		onClick = onClick,
-		modifier = modifier.aspectRatio(1f)
+		modifier = modifier.size(size)
 	) {
 		Icon(
 			painter = painterResource(drawableRes),
@@ -97,16 +98,15 @@ fun IconButton(
 	iconName: String,
 	cornerRadius: Dp,
 	padding: Dp,
+	size: Dp,
 	modifier: Modifier = Modifier,
 	onClick: () -> Unit,
 ) {
 	Button(
 		color = color,
 		cornerRadius = cornerRadius,
-		onClick = {
-			onClick()
-		},
-		modifier = modifier.aspectRatio(1f)
+		onClick = onClick,
+		modifier = modifier.size(size)
 	) {
 		Image(
 			painter = getAutomationIconPainter(iconName),
