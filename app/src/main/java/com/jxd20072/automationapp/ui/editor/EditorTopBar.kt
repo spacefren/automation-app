@@ -111,7 +111,7 @@ fun EditorTopBar(
 
 				IconButton(
 					drawableRes = R.drawable.round_play_arrow_24,
-					color = LocalTheme.colorScheme.primary,
+					color = LocalTheme.colorScheme.secondary,
 					iconColor = LocalTheme.colorScheme.onPrimary,
 					padding = 6.dp,
 					cornerRadius = 5.dp,
@@ -126,38 +126,32 @@ fun EditorTopBar(
 		) {
 			IconLabelButton(
 				label = "Triggers",
-				fontSize = 15,
+				fontSize = 15.sp,
 				drawableRes = R.drawable.round_electric_bolt_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
-				cornerRadius = 5,
-				elevation = 8,
-				padding = 8,
-				height = 18
+				cornerRadius = 5.dp,
+				iconSize = 20.dp
 			) { }
 
 			IconLabelButton(
 				label = "Variables",
-				fontSize = 15,
+				fontSize = 15.sp,
 				drawableRes = R.drawable.round_data_object_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
-				cornerRadius = 5,
-				elevation = 8,
-				padding = 8,
-				height = 18
+				cornerRadius = 5.dp,
+				iconSize = 20.dp
 			) { }
 
 			IconLabelButton(
 				label = "Logs",
-				fontSize = 15,
+				fontSize = 15.sp,
 				drawableRes = R.drawable.baseline_format_align_left_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
-				cornerRadius = 5,
-				elevation = 8,
-				padding = 8,
-				height = 18
+				cornerRadius = 5.dp,
+				iconSize = 20.dp
 			) { }
 		}
 		Spacer(modifier = Modifier.height(5.dp))

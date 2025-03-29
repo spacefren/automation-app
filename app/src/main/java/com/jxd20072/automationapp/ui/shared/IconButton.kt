@@ -1,8 +1,9 @@
 package com.jxd20072.automationapp.ui.shared
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
@@ -10,12 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import com.jxd20072.automationapp.ui.home.getAutomationIconPainter
@@ -29,10 +35,29 @@ fun Button(
 	modifier: Modifier = Modifier,
 	content: @Composable BoxScope.() -> Unit
 ) {
+	var isPressed by remember { mutableStateOf(false) }
+	val scale by animateFloatAsState(if (isPressed) .9f else 1f)
+
 	Box(
 		modifier = modifier
+			.graphicsLayer(
+				scaleX = scale,
+				scaleY = scale
+			)
 			.shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
-			.clickable(interactionSource = null, indication = ripple(), onClick = onClick)
+			.pointerInput(Unit) {
+				detectTapGestures(
+					onTap = { onClick() },
+					onPress = {
+						isPressed = true
+						try {
+							awaitRelease()
+						} finally {
+							isPressed = false
+						}
+					}
+				)
+			}
 			.background(color),
 		content = content
 	)

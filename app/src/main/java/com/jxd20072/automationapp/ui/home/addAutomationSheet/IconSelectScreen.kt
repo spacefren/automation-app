@@ -24,6 +24,8 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IconSelectScreen(
+	autoOpenKeyboard: Boolean,
+	isSheetOpen: Boolean,
 	filteredIcons: Map<String, List<String>>,
 	iconSearchQuery: String,
 	onIconSearch: (query: String) -> Unit,
@@ -36,7 +38,11 @@ fun IconSelectScreen(
 			fontSize = 27.sp,
 		)
 
-		SearchBar(searchText = "Search icons", queryText = iconSearchQuery) { query ->
+		SearchBar(
+			searchText = "Search icons",
+			queryText = iconSearchQuery,
+			focused = if (autoOpenKeyboard) isSheetOpen else false
+		) { query ->
 			onIconSearch(query)
 		}
 

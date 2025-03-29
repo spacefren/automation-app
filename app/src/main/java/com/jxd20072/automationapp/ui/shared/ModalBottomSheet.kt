@@ -144,7 +144,9 @@ fun ModalBottomSheet(
 				}
 				Box(
 					content = content,
-					modifier = Modifier.padding(top = 45.dp)
+					modifier = Modifier
+						.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+						.padding(top = 25.dp)
 				)
 			}
 		}

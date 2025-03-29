@@ -140,6 +140,7 @@ fun NodeHeader(
 							.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
 							.background(LocalTheme.colorScheme.surface)
 							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+							.padding(end = 3.dp) // To account for italic text
 					) {
 						Text(
 							text = piece.removePrefix("*"),

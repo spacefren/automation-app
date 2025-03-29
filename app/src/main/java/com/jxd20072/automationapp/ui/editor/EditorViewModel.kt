@@ -10,6 +10,7 @@ import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDra
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.FunctionNodeDraft
+import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import com.jxd20072.automationapp.ui.utils.reorderElementInList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,13 +48,41 @@ sealed interface EditorNodeDropData {
 }
 
 @Immutable
+enum class EditorBottomSheetScreen {
+	NODE_SELECT, NODE_EDIT
+}
+
+@Immutable
+data class NodeListEntry(
+	val matchesSearch: Boolean,
+	val data: ActionNodeData,
+)
+
+@Immutable
+data class CategoryListEntry(
+	val categoryName: String,
+	val nodes: List<NodeListEntry>,
+)
+
+@Immutable
+data class EditorBottomSheetState(
+	val isOpen: Boolean = false,
+	val currentScreen: EditorBottomSheetScreen = EditorBottomSheetScreen.NODE_SELECT,
+
+	val nodeSearchQuery: String = "",
+	val nodes: List<CategoryListEntry> = emptyList(),
+	val filteredNodes: List<CategoryListEntry> = nodes
+)
+
+@Immutable
 sealed interface EditorUiState {
 	data object Loading : EditorUiState
 	data class Success(
 		val automationId: String,
 		val automationData: AutomationsMapEntry,
 		val automationDraft: AutomationDraft,
-		val draggingData: EditorNodeDragData
+		val draggingData: EditorNodeDragData,
+		val bottomSheetState: EditorBottomSheetState
 	) : EditorUiState
 }
 
@@ -68,6 +97,18 @@ class EditorViewModel @Inject constructor(
 	private val timeManager = TimeManager(viewModelScope, 10000L)
 	val currentTime = timeManager.currentTime
 
+	init {
+		viewModelScope.launch {
+			automationsRepository.automationsDataFlow.collect { automationData ->
+				_editorUiState.update { uiState ->
+					if (uiState !is EditorUiState.Success) return@update uiState
+					val newData = automationData.automationsMap[uiState.automationId] ?: return@update uiState
+					uiState.copy(automationData = newData)
+				}
+			}
+		}
+	}
+
 	fun loadAutomation(id: String) {
 		viewModelScope.launch {
 			val automation = automationsRepository.getAutomationDraft(id)
@@ -78,20 +119,9 @@ class EditorViewModel @Inject constructor(
 						automationId = id,
 						automationData = automationData,
 						automationDraft = automation,
-						draggingData = EditorNodeDragData.NotDragging
+						draggingData = EditorNodeDragData.NotDragging,
+						bottomSheetState = EditorBottomSheetState()
 					)
-				}
-			}
-		}
-	}
-
-	init {
-		viewModelScope.launch {
-			automationsRepository.automationsDataFlow.collect { automationData ->
-				_editorUiState.update { uiState ->
-					if (uiState !is EditorUiState.Success) return@update uiState
-					val newData = automationData.automationsMap[uiState.automationId] ?: return@update uiState
-					uiState.copy(automationData = newData)
 				}
 			}
 		}
@@ -106,6 +136,67 @@ class EditorViewModel @Inject constructor(
 				}
 			}
 		}
+	}
+
+	fun onBottomSheetDismissed() {
+		_editorUiState.update { uiState ->
+			uiState as EditorUiState.Success
+			uiState.copy(
+				bottomSheetState = EditorBottomSheetState()
+			)
+		}
+	}
+
+	fun startNodeCreationFlow() {
+		_editorUiState.update { uiState ->
+			uiState as EditorUiState.Success
+			uiState.copy(
+				bottomSheetState = uiState.bottomSheetState.copy(
+					isOpen = true,
+					currentScreen = EditorBottomSheetScreen.NODE_SELECT
+				)
+			)
+		}
+	}
+
+	fun filterNodes() {
+		_editorUiState.update { uiState ->
+			uiState as EditorUiState.Success
+			val searchQuery = uiState.bottomSheetState.nodeSearchQuery
+
+			uiState.copy(
+				bottomSheetState = uiState.bottomSheetState.copy(
+					filteredNodes = uiState.bottomSheetState.nodes
+						.map { categoryListEntry ->
+							categoryListEntry.copy(
+								nodes = categoryListEntry.nodes.map { nodeListEntry ->
+									nodeListEntry.copy(
+										matchesSearch = nodeListEntry.data.name
+											.lowercase()
+											.contains(searchQuery.lowercase())
+									)
+								}
+							)
+						}
+						.filter { categoryListEntry ->
+							categoryListEntry.categoryName.lowercase().contains(searchQuery.lowercase())
+								|| categoryListEntry.nodes.any { it.matchesSearch }
+						}
+				)
+			)
+		}
+	}
+
+	fun changeNodeSearchQuery(query: String) {
+		_editorUiState.update { uiState ->
+			uiState as EditorUiState.Success
+			uiState.copy(
+				bottomSheetState = uiState.bottomSheetState.copy(
+					nodeSearchQuery = query
+				)
+			)
+		}
+		filterNodes()
 	}
 
 	fun onNodeDrag(

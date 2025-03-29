@@ -122,7 +122,6 @@ fun HomeScreen(
 	runAutomation: (id: String) -> Unit,
 	editAutomation: (id: String) -> Unit,
 ) {
-	val sidePadding = PaddingValues(horizontal = 20.dp)
 	val homeUiState by homeViewModel.homeUiState.collectAsState()
 	val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
 	val currentTime by homeViewModel.currentTime.collectAsState()
@@ -138,22 +137,23 @@ fun HomeScreen(
 		) {
 			TopBar(
 				openSettings = openSettings,
-				modifier = Modifier.padding(sidePadding)
+				modifier = Modifier.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			)
 
 			SearchBar(
-				searchText = "Search for automations",
+				searchText = "Search automations",
 				queryText = homeUiState.searchQuery,
 				onSearch = { query -> homeViewModel.changeSearchQuery(query) },
+				focused = false,
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
-					.padding(sidePadding)
+					.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			)
 
 			FilterChips(
 				filters = homeUiState.filters,
-				sidePadding = sidePadding,
+				sidePadding = PaddingValues(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
 				onFilterChange = { filter, enabled ->
 					homeViewModel.changeFilter(filter, enabled)
 				},
@@ -164,7 +164,7 @@ fun HomeScreen(
 				currentTime = currentTime,
 				runAutomation = runAutomation,
 				editAutomation = editAutomation,
-				modifier = Modifier.padding(sidePadding)
+				modifier = Modifier.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			)
 		}
 
@@ -180,7 +180,6 @@ fun HomeScreen(
 			onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
 			onNameChanged = homeViewModel::changeAddAutomationDrawerName,
 			onIconSearch = homeViewModel::changeIconSelectorSearchQuery,
-			modifier = Modifier.padding(sidePadding)
 		) {
 			homeViewModel.addAutomation(
 				name = homeUiState.addAutomationDrawerState.selectedName,

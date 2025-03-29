@@ -9,12 +9,14 @@ import com.jxd20072.automationapp.R
 fun SearchBar(
 	searchText: String,
 	queryText: String,
+	focused: Boolean,
 	modifier: Modifier = Modifier,
 	onSearch: (String) -> Unit
 ) {
 	BaseTextInput(
 		placeholderText = searchText,
 		text = queryText,
+		focused = focused,
 		imeAction = ImeAction.Search,
 		icon = R.drawable.round_search_24,
 		modifier = modifier,

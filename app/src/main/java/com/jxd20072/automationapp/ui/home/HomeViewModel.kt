@@ -152,8 +152,6 @@ class HomeViewModel @Inject constructor(
 	}
 
 	fun changeAddAutomationDrawerVisibility(open: Boolean) {
-
-
 		_homeUiState.update { currentState ->
 			currentState.copy(
 				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(isDrawerOpen = open)

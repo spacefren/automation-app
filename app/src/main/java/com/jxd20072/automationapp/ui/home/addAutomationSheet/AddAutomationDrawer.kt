@@ -62,7 +62,9 @@ fun AddAutomationDrawer(
 						IconSelectScreen(
 							filteredIcons = drawerUiState.filteredIcons,
 							iconSearchQuery = drawerUiState.iconSearchQuery,
-							onIconSearch = onIconSearch
+							onIconSearch = onIconSearch,
+							isSheetOpen = drawerUiState.isDrawerOpen,
+							autoOpenKeyboard = autoOpenKeyboard
 						) { icon ->
 							onIconChanged(icon)
 							onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
