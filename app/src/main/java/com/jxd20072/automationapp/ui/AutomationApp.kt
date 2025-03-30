@@ -89,6 +89,7 @@ fun AutomationApp(
 		) {
 			AutomationEditor(
 				editorViewModel = editorViewModel,
+				settingsViewModel = settingsViewModel,
 				returnHome = { navController.popBackStack() }
 			)
 		}

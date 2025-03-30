@@ -32,7 +32,8 @@ fun EditorBottomSheet(
 						onNodeSearch = onNodeSearch,
 						nodeSearchQuery = bottomSheetState.nodeSearchQuery,
 						isSheetOpen = bottomSheetState.isOpen,
-						autoOpenKeyboard = autoOpenKeyboard
+						autoOpenKeyboard = autoOpenKeyboard,
+						nodes = bottomSheetState.filteredNodes
 					)
 				}
 

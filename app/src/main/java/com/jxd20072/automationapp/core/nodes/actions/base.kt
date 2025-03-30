@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.nodes.props.NodeInput
 data class ActionNodeData(
 	val displayName: String,
 	val name: String,
+	val category: String,
 	val editorActionDescription: (input: Map<String, String>) -> List<String>,
 	val description: String,
 	val icon: Int,

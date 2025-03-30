@@ -10,6 +10,7 @@ import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDra
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.FunctionNodeDraft
+import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import com.jxd20072.automationapp.ui.utils.reorderElementInList
@@ -70,7 +71,22 @@ data class EditorBottomSheetState(
 	val currentScreen: EditorBottomSheetScreen = EditorBottomSheetScreen.NODE_SELECT,
 
 	val nodeSearchQuery: String = "",
-	val nodes: List<CategoryListEntry> = emptyList(),
+	val nodes: List<CategoryListEntry> = actionNodes.values
+		.map { it.data.category }
+		.distinct()
+		.map { categoryName ->
+			CategoryListEntry(
+				categoryName = categoryName,
+				nodes = actionNodes.values
+					.filter { node -> node.data.category == categoryName }
+					.map { node ->
+						NodeListEntry(
+							matchesSearch = false,
+							data = node.data
+						)
+					}
+			)
+		},
 	val filteredNodes: List<CategoryListEntry> = nodes
 )
 

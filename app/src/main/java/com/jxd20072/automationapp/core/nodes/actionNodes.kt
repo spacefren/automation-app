@@ -10,7 +10,9 @@ data class ActionNodesEntry(
 )
 
 val actionNodes = mapOf(
-	"log" to LoggerNode
+	"log" to LoggerNode,
+	"log2" to LoggerNode,
+	"log3" to LoggerNode,
 )
 
 /*

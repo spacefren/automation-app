@@ -4,6 +4,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -35,32 +37,43 @@ fun Button(
 	modifier: Modifier = Modifier,
 	content: @Composable BoxScope.() -> Unit
 ) {
-	var isPressed by remember { mutableStateOf(false) }
-	val scale by animateFloatAsState(if (isPressed) .9f else 1f)
-
 	Box(
 		modifier = modifier
-			.graphicsLayer(
-				scaleX = scale,
-				scaleY = scale
-			)
+			.clickableWithIndication(onClick)
 			.shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
-			.pointerInput(Unit) {
-				detectTapGestures(
-					onTap = { onClick() },
-					onPress = {
-						isPressed = true
-						try {
-							awaitRelease()
-						} finally {
-							isPressed = false
-						}
-					}
-				)
-			}
 			.background(color),
 		content = content
 	)
+}
+
+@Composable
+fun Modifier.clickableWithIndication(onClick: () -> Unit): Modifier {
+	var isPressed by remember { mutableStateOf(false) }
+	val scale by animateFloatAsState(if (isPressed) .9f else 1f)
+
+	return this then Modifier
+		.pointerInput(Unit) {
+			detectTapGestures(
+				onTap = { onClick() },
+				onPress = {
+					isPressed = true
+					try {
+						awaitRelease()
+					} finally {
+						isPressed = false
+					}
+				}
+			)
+		}
+		.scale(scaleX = scale, scaleY = scale)
+}
+
+@Composable
+fun Modifier.shrinkOnHover(interactionSource: MutableInteractionSource): Modifier {
+	val isPressed = interactionSource.collectIsPressedAsState()
+	val scale by animateFloatAsState(if (isPressed.value) .9f else 1f)
+
+	return this then Modifier.scale(scaleX = scale, scaleY = scale)
 }
 
 @Composable
