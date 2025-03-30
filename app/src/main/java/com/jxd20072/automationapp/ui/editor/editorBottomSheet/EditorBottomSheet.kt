@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
 
@@ -25,19 +26,21 @@ fun EditorBottomSheet(
 			true
 		}
 	) {
-		AnimatedContent(bottomSheetState.currentScreen) { currentScreen ->
-			when (currentScreen) {
-				EditorBottomSheetScreen.NODE_SELECT -> {
-					EditorNodeSelectScreen(
-						onNodeSearch = onNodeSearch,
-						nodeSearchQuery = bottomSheetState.nodeSearchQuery,
-						isSheetOpen = bottomSheetState.isOpen,
-						autoOpenKeyboard = autoOpenKeyboard,
-						nodes = bottomSheetState.filteredNodes
-					)
-				}
+		Layer {
+			AnimatedContent(bottomSheetState.currentScreen) { currentScreen ->
+				when (currentScreen) {
+					EditorBottomSheetScreen.NODE_SELECT -> {
+						EditorNodeSelectScreen(
+							onNodeSearch = onNodeSearch,
+							nodeSearchQuery = bottomSheetState.nodeSearchQuery,
+							isSheetOpen = bottomSheetState.isOpen,
+							autoOpenKeyboard = autoOpenKeyboard,
+							nodes = bottomSheetState.filteredNodes
+						)
+					}
 
-				else -> {}
+					else -> {}
+				}
 			}
 		}
 	}
