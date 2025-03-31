@@ -69,13 +69,13 @@ data class TriggerDef(
 @Serializable
 data class FunctionNodeDef(
 	val name: String,
-	val input: Map<String, String>,
+	val input: List<VariableDef>,
 	val content: List<ActionNodeDef>,
-	val output: Map<String, String>
+	val output: List<VariableDef>
 )
 
 @Serializable
 data class ActionNodeDef(
-	val input: Map<String, String>,
+	val input: List<VariableDef>,
 	val name: String,
 )

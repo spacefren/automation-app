@@ -101,7 +101,7 @@ fun NodeHeaderIcons(
 			tint = LocalTheme.colorScheme.onBackground,
 			contentDescription = "dragIndicator",
 			modifier = Modifier
-				.size(26.dp)
+				.size(22.dp)
 				.aspectRatio(.7f)
 		)
 	}

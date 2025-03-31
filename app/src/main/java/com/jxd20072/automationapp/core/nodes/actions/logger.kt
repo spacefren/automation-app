@@ -2,9 +2,10 @@ package com.jxd20072.automationapp.core.nodes.actions
 
 import android.util.Log
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.VariableDefType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
-import com.jxd20072.automationapp.core.nodes.props.NodeInput
+import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 private const val TAG = "APP_LoggerNode"
 
@@ -19,7 +20,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
 		super.execute(context)
 
-		val text = this.input["text"] as String
+		val text = this.input.find { it.name == "test" }?.value!!
 		Log.d(TAG, processText(text, context))
 		Log.d(
 			TAG,
@@ -30,16 +31,22 @@ class LoggerAction(id: String) : ActionNode(id) {
 
 val LoggerNode = ActionNodesEntry(
 	data = ActionNodeData(
-		displayName = "Log",
+		displayName = "Log message",
 		name = "log",
 		category = "debug",
-		editorActionDescription = { input -> listOf("Log", "*${input["text"] as String}") },
+		editorActionDescription = { input ->
+			listOf(
+				"Log",
+				"*${input.find { it.name == "Text" }?.value}"
+			)
+		},
 		description = "Append a message to the logs screen",
 		icon = R.drawable.round_align_left_24,
-		inputDefinitions = mapOf(
-			"text" to NodeInput.TEXT(
+		inputDefinitions = listOf(
+			NodeInputDefinition(
 				name = "Text",
 				description = "The text to display",
+				type = VariableDefType.TEXT,
 				validate = { true },
 				defaultValue = "placeholder"
 			)

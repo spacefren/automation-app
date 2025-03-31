@@ -31,22 +31,16 @@ class ExecutionFlow(
 			val action = actionNodeEntry.factory.invoke(actionNodeDraft.id)
 			val actionData = actionNodeEntry.data
 
-			actionNodeDraft.input.forEach { nodeDefInputEntry ->
-				val actionNodeInput = actionData.inputDefinitions[nodeDefInputEntry.key]
-					?: throw Exception(
-						"Input ${nodeDefInputEntry.key} not found in ${actionNodeDraft.name}"
-					)
-
-				val newVar = linkInput(
-					actionNodeInput.type,
-					nodeDefInputEntry.value,
-					context
+			val actionInput = actionData.inputDefinitions.map { inputDef ->
+				actionNodeDraft.input.find { it.name == inputDef.name } ?: VariableDef.withType(
+					name = inputDef.name,
+					value = inputDef.defaultValue,
+					type = inputDef.type
 				)
-
-				if (newVar != null) {
-					action.input[nodeDefInputEntry.key] = newVar
-				}
 			}
+
+			action.input = actionInput
+
 			action
 		}
 	}

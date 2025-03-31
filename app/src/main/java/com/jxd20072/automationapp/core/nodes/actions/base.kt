@@ -1,19 +1,20 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
+import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
-import com.jxd20072.automationapp.core.nodes.props.NodeInput
+import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 data class ActionNodeData(
 	val displayName: String,
 	val name: String,
 	val category: String,
-	val editorActionDescription: (input: Map<String, String>) -> List<String>,
+	val editorActionDescription: (input: List<VariableDef>) -> List<String>,
 	val description: String,
 	val icon: Int,
-	val inputDefinitions: Map<String, NodeInput<*>>
+	val inputDefinitions: List<NodeInputDefinition>
 )
 
 open class ActionNode(val id: String) {
-	var input = mutableMapOf<String, Any>()
+	var input: List<VariableDef> = emptyList()
 	open fun execute(context: ExecutionFlowContext) {}
 }

@@ -3,6 +3,9 @@ package com.jxd20072.automationapp.ui.shared
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -43,6 +46,7 @@ import kotlinx.coroutines.launch
 
 class ModalBottomSheetState {
 	var isOpen by mutableStateOf(false)
+	var isCollapsed by mutableStateOf(false)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -53,10 +57,12 @@ fun ModalBottomSheet(
 	content: @Composable BoxScope.() -> Unit
 ) {
 	val localConfiguration = LocalConfiguration.current
-	val screenHeightFloat = localConfiguration.screenHeightDp.toFloat()
+	val screenHeight = localConfiguration.screenHeightDp
 	val localFocusManager = LocalFocusManager.current
 	val coroutineScope = rememberCoroutineScope()
-	val draggingPos = remember { Animatable(screenHeightFloat) }
+	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
+
+	val extraTopOffset by animateDpAsState(if (state.isCollapsed) screenHeight.dp - 200.dp else 30.dp)
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -73,15 +79,15 @@ fun ModalBottomSheet(
 
 	LaunchedEffect(state.isOpen) {
 		if (!state.isOpen) {
-			draggingPos.animateTo(screenHeightFloat)
+			draggingPos.animateTo(screenHeight.toFloat(), spring(stiffness = Spring.StiffnessMediumLow))
 		} else {
-			draggingPos.animateTo(0f)
+			draggingPos.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
 		}
 	}
 
 	Box(modifier = Modifier.zIndex(10f)) {
 		AnimatedVisibility(
-			visible = state.isOpen,
+			visible = state.isOpen && !state.isCollapsed,
 			enter = fadeIn(),
 			exit = fadeOut()
 		) {
@@ -98,14 +104,12 @@ fun ModalBottomSheet(
 		Box(
 			modifier = Modifier
 				.fillMaxSize()
-				.offset(x = 0.dp, y = max(0.dp, draggingPos.value.dp))
-				.padding(top = 30.dp)
+				.offset(y = extraTopOffset + max(0.dp, draggingPos.value.dp))
 				.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			Box(
 				modifier = Modifier
 					.align(Alignment.BottomCenter)
-					.clickable(interactionSource = null, indication = null) { }
 					.fillMaxWidth()
 					.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
 					.background(LocalTheme.colorScheme.background)

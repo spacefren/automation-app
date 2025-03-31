@@ -1,10 +1,12 @@
 package com.jxd20072.automationapp.ui.editor
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
+import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
@@ -49,11 +51,6 @@ sealed interface EditorNodeDropData {
 }
 
 @Immutable
-enum class EditorBottomSheetScreen {
-	NODE_SELECT, NODE_EDIT
-}
-
-@Immutable
 data class NodeListEntry(
 	val matchesSearch: Boolean,
 	val data: ActionNodeData,
@@ -66,29 +63,34 @@ data class CategoryListEntry(
 )
 
 @Immutable
-data class EditorBottomSheetState(
-	val isOpen: Boolean = false,
-	val currentScreen: EditorBottomSheetScreen = EditorBottomSheetScreen.NODE_SELECT,
+sealed interface EditorBottomSheetState {
+	data object Closed : EditorBottomSheetState
+	data class NodeSelect(
+		val isCollapsed: Boolean = false,
+		val nodeSearchQuery: String = "",
+		val nodes: List<CategoryListEntry> = actionNodes.values
+			.map { it.data.category }
+			.distinct()
+			.map { categoryName ->
+				CategoryListEntry(
+					categoryName = categoryName,
+					nodes = actionNodes.values
+						.filter { node -> node.data.category == categoryName }
+						.map { node ->
+							NodeListEntry(
+								matchesSearch = false,
+								data = node.data
+							)
+						}
+				)
+			},
+		val filteredNodes: List<CategoryListEntry> = nodes
+	) : EditorBottomSheetState
 
-	val nodeSearchQuery: String = "",
-	val nodes: List<CategoryListEntry> = actionNodes.values
-		.map { it.data.category }
-		.distinct()
-		.map { categoryName ->
-			CategoryListEntry(
-				categoryName = categoryName,
-				nodes = actionNodes.values
-					.filter { node -> node.data.category == categoryName }
-					.map { node ->
-						NodeListEntry(
-							matchesSearch = false,
-							data = node.data
-						)
-					}
-			)
-		},
-	val filteredNodes: List<CategoryListEntry> = nodes
-)
+	data class NodeEdit(
+		val editingNodeId: String
+	) : EditorBottomSheetState
+}
 
 @Immutable
 sealed interface EditorUiState {
@@ -136,7 +138,7 @@ class EditorViewModel @Inject constructor(
 						automationData = automationData,
 						automationDraft = automation,
 						draggingData = EditorNodeDragData.NotDragging,
-						bottomSheetState = EditorBottomSheetState()
+						bottomSheetState = EditorBottomSheetState.Closed
 					)
 				}
 			}
@@ -158,7 +160,7 @@ class EditorViewModel @Inject constructor(
 		_editorUiState.update { uiState ->
 			uiState as EditorUiState.Success
 			uiState.copy(
-				bottomSheetState = EditorBottomSheetState()
+				bottomSheetState = EditorBottomSheetState.Closed
 			)
 		}
 	}
@@ -167,10 +169,7 @@ class EditorViewModel @Inject constructor(
 		_editorUiState.update { uiState ->
 			uiState as EditorUiState.Success
 			uiState.copy(
-				bottomSheetState = uiState.bottomSheetState.copy(
-					isOpen = true,
-					currentScreen = EditorBottomSheetScreen.NODE_SELECT
-				)
+				bottomSheetState = EditorBottomSheetState.NodeSelect()
 			)
 		}
 	}
@@ -178,6 +177,7 @@ class EditorViewModel @Inject constructor(
 	fun filterNodes() {
 		_editorUiState.update { uiState ->
 			uiState as EditorUiState.Success
+			uiState.bottomSheetState as EditorBottomSheetState.NodeSelect
 			val searchQuery = uiState.bottomSheetState.nodeSearchQuery
 
 			uiState.copy(
@@ -206,6 +206,7 @@ class EditorViewModel @Inject constructor(
 	fun changeNodeSearchQuery(query: String) {
 		_editorUiState.update { uiState ->
 			uiState as EditorUiState.Success
+			uiState.bottomSheetState as EditorBottomSheetState.NodeSelect
 			uiState.copy(
 				bottomSheetState = uiState.bottomSheetState.copy(
 					nodeSearchQuery = query
@@ -213,6 +214,80 @@ class EditorViewModel @Inject constructor(
 			)
 		}
 		filterNodes()
+	}
+
+	fun onNodeCreateDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
+		_editorUiState.update { currentState ->
+			currentState as EditorUiState.Success
+			currentState.bottomSheetState as EditorBottomSheetState.NodeSelect
+
+			val actionNode = ActionNodeDraft(
+				name = nodeData.name,
+				input = nodeData.inputDefinitions.map { inputDef ->
+					VariableDef.withType(
+						name = inputDef.name,
+						type = inputDef.type,
+						value = inputDef.defaultValue
+					)
+				}
+			)
+
+			currentState.copy(
+				draggingData = EditorNodeDragData.Dragging(
+					scope = EditorDraggableScope.ACTION,
+					nodePosition = nodePosition,
+					inputOffset = pressedPosition - nodePosition,
+					draggingAction = actionNode,
+					draggingFunction = null,
+					dropData = EditorNodeDropData.NotDropping
+				),
+				bottomSheetState = currentState.bottomSheetState.copy(
+					isCollapsed = true,
+				)
+			)
+		}
+	}
+
+	fun onStopNodeCreateDrag() {
+		_editorUiState.update { currentState ->
+			Log.d("APP_A", "ONSTOPDRAG!!!!");
+			val automationDraft = (currentState as EditorUiState.Success).automationDraft
+			currentState.bottomSheetState as EditorBottomSheetState.NodeSelect
+
+			var newState = currentState.copy(
+				bottomSheetState = currentState.bottomSheetState.copy(
+					isCollapsed = false
+				),
+				draggingData = EditorNodeDragData.NotDragging,
+			)
+
+			val draggingData = currentState.draggingData
+			if (draggingData !is EditorNodeDragData.Dragging) return@update newState
+			if (draggingData.draggingAction == null) return@update newState
+
+			val dropData = draggingData.dropData
+			if (dropData !is EditorNodeDropData.Dropping) return@update newState
+
+			val parentIndex = automationDraft.functions.indexOfFirst { it.id == dropData.parentId }
+
+			newState = newState.copy(
+				automationDraft = automationDraft.copy(
+					functions = automationDraft.functions.toMutableList().also { functions ->
+						functions[parentIndex] = functions[parentIndex].copy(
+							content = functions[parentIndex].content.toMutableList().also { content ->
+								content.add(dropData.targetIndex, draggingData.draggingAction)
+							}
+						)
+					}
+				),
+				bottomSheetState = EditorBottomSheetState.NodeEdit(
+					editingNodeId = draggingData.draggingAction.id
+				)
+			)
+
+			newState
+		}
+		trySaveAutomation()
 	}
 
 	fun onNodeDrag(

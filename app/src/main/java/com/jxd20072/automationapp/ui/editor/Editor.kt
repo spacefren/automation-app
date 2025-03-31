@@ -50,9 +50,6 @@ fun AutomationEditor(
 				.fillMaxSize()
 				.background(LocalTheme.colorScheme.background)
 		) {
-			DraggingNode(
-				draggingData = draggingData
-			)
 			Column {
 				EditorTopBar(
 					automationData = automationData,
@@ -83,6 +80,9 @@ fun AutomationEditor(
 				)
 			}
 		}
+		DraggingNode(
+			draggingData = draggingData
+		)
 		EditorFloatingAddButton(
 			onCreateNodePressed = editorViewModel::startNodeCreationFlow,
 			onCreateFunctionPressed = { }
@@ -91,6 +91,10 @@ fun AutomationEditor(
 			onDismiss = editorViewModel::onBottomSheetDismissed,
 			bottomSheetState = bottomSheetState,
 			onNodeSearch = editorViewModel::changeNodeSearchQuery,
+			isDragging = draggingData is EditorNodeDragData.Dragging,
+			onStartDrag = editorViewModel::onNodeCreateDrag,
+			onStopDrag = editorViewModel::onStopNodeCreateDrag,
+			draggableState = draggableState,
 			autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
 				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 		)

@@ -18,15 +18,15 @@ data class AutomationDraft(
 data class ActionNodeDraft(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, String>,
+	val input: List<VariableDef>,
 )
 
 data class FunctionNodeDraft(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, String>,
+	val input: List<VariableDef>,
 	val content: List<ActionNodeDraft>,
-	val output: Map<String, String>
+	val output: List<VariableDef>
 )
 
 data class TriggerDraft(
