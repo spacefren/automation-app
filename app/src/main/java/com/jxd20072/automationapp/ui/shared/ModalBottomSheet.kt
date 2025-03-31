@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -62,7 +63,7 @@ fun ModalBottomSheet(
 	val coroutineScope = rememberCoroutineScope()
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
 
-	val extraTopOffset by animateDpAsState(if (state.isCollapsed) screenHeight.dp - 200.dp else 30.dp)
+	val maxHeight by animateDpAsState(if (state.isCollapsed) 200.dp else screenHeight.dp - 30.dp)
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -93,7 +94,6 @@ fun ModalBottomSheet(
 		) {
 			Box(
 				modifier = Modifier
-					.zIndex(10f)
 					.fillMaxSize()
 					.background(Color.hsv(0f, 0f, 0f, .6f))
 					.clickable(interactionSource = null, indication = null) {
@@ -104,15 +104,17 @@ fun ModalBottomSheet(
 		Box(
 			modifier = Modifier
 				.fillMaxSize()
-				.offset(y = extraTopOffset + max(0.dp, draggingPos.value.dp))
+				.offset(y = max(0.dp, draggingPos.value.dp))
 				.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			Box(
 				modifier = Modifier
 					.align(Alignment.BottomCenter)
 					.fillMaxWidth()
+					.heightIn(max = maxHeight)
 					.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
 					.background(LocalTheme.colorScheme.background)
+					.clickable(interactionSource = null, indication = null) {}
 			) {
 				Box(
 					modifier = Modifier
@@ -149,7 +151,6 @@ fun ModalBottomSheet(
 				Box(
 					content = content,
 					modifier = Modifier
-						.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 						.padding(top = 25.dp)
 				)
 			}

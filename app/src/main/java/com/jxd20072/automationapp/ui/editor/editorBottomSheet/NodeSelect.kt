@@ -223,7 +223,7 @@ fun EditorNodeSelectScreen(
 		verticalArrangement = Arrangement.spacedBy(15.dp),
 		modifier = Modifier
 			.imePadding()
-			.padding(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Text(
 			text = "Select action",
