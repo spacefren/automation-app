@@ -81,12 +81,14 @@ fun FloatingSubButton(
 
 @Composable
 fun EditorFloatingAddButton(
+	hidden: Boolean,
 	onCreateNodePressed: () -> Unit,
 	onCreateFunctionPressed: () -> Unit
 ) {
 	var showSubButtons by remember { mutableStateOf(false) }
 	val backgroundAlpha by animateFloatAsState(if (showSubButtons) .5f else 0f)
 	val rotation by animateFloatAsState(if (showSubButtons) 45f else 0f)
+	val extraOffset by animateFloatAsState(if (hidden) 75f else 0f)
 
 	Box(
 		modifier = Modifier
@@ -103,7 +105,7 @@ fun EditorFloatingAddButton(
 		Box(
 			modifier = Modifier
 				.align(Alignment.BottomEnd)
-				.offset(x = (-20).dp, y = (-30).dp)
+				.offset(x = (-20).dp, y = (-30 + extraOffset).dp)
 		) {
 			Column(
 				horizontalAlignment = Alignment.End,
@@ -148,16 +150,6 @@ fun EditorFloatingAddButton(
 							.padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
 					)
 				}
-//				IconButton(
-//					color = LocalTheme.colorScheme.secondary,
-//					iconColor = LocalTheme.colorScheme.onSecondary,
-//					drawableRes = R.drawable.round_add_24,
-//					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-//					padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-//					size = 45.dp,
-//				) {
-//					showSubButtons = !showSubButtons
-//				}
 			}
 		}
 	}

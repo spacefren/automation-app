@@ -63,7 +63,9 @@ fun ModalBottomSheet(
 	val coroutineScope = rememberCoroutineScope()
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
 
-	val maxHeight by animateDpAsState(if (state.isCollapsed) 200.dp else screenHeight.dp - 30.dp)
+	val maxHeight by animateDpAsState(
+		if (state.isCollapsed) 50.dp else screenHeight.dp
+	)
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -104,6 +106,7 @@ fun ModalBottomSheet(
 		Box(
 			modifier = Modifier
 				.fillMaxSize()
+				.padding(top = 10.dp)
 				.offset(y = max(0.dp, draggingPos.value.dp))
 				.windowInsetsPadding(WindowInsets.statusBars)
 		) {

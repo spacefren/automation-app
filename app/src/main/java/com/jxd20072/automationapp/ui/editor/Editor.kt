@@ -84,6 +84,7 @@ fun AutomationEditor(
 			draggingData = draggingData
 		)
 		EditorFloatingAddButton(
+			hidden = draggingData is EditorNodeDragData.Dragging,
 			onCreateNodePressed = editorViewModel::startNodeCreationFlow,
 			onCreateFunctionPressed = { }
 		)
