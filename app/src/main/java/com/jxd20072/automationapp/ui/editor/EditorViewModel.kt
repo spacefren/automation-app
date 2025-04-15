@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.editor
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
@@ -250,7 +249,6 @@ class EditorViewModel @Inject constructor(
 
 	fun onStopNodeCreateDrag() {
 		_editorUiState.update { currentState ->
-			Log.d("APP_A", "ONSTOPDRAG!!!!");
 			val automationDraft = (currentState as EditorUiState.Success).automationDraft
 			currentState.bottomSheetState as EditorBottomSheetState.NodeSelect
 

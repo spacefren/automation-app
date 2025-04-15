@@ -214,6 +214,7 @@ fun EditorNodeSelectScreen(
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
+	isDragging: Boolean,
 	onStopDrag: () -> Unit,
 	draggableState: Draggable2DState,
 	nodes: List<CategoryListEntry>,

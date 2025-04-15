@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.shared
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,10 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.zIndex
@@ -55,6 +62,7 @@ class ModalBottomSheetState {
 fun ModalBottomSheet(
 	state: ModalBottomSheetState,
 	onDismissRequest: () -> Boolean?,
+	collapsedContent: (@Composable () -> Unit)? = null,
 	content: @Composable BoxScope.() -> Unit
 ) {
 	val localConfiguration = LocalConfiguration.current
@@ -62,10 +70,14 @@ fun ModalBottomSheet(
 	val localFocusManager = LocalFocusManager.current
 	val coroutineScope = rememberCoroutineScope()
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
+	var mainContentHeight by remember { mutableIntStateOf(0) }
+	var collapsedContentHeight by remember { mutableIntStateOf(0) }
 
 	val maxHeight by animateDpAsState(
-		if (state.isCollapsed) 50.dp else screenHeight.dp
+		if (state.isCollapsed) 0.dp else screenHeight.dp
 	)
+	Log.d("APP_MAXHEIGHT", maxHeight.value.toString());
+
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -88,73 +100,93 @@ fun ModalBottomSheet(
 		}
 	}
 
-	Box(modifier = Modifier.zIndex(10f)) {
+	Box(
+		modifier = Modifier
+			.zIndex(10f)
+			.fillMaxSize()
+			.padding(top = 10.dp)
+			.offset(y = max(0.dp, draggingPos.value.dp))
+			.windowInsetsPadding(WindowInsets.statusBars)
+	) {
 		AnimatedVisibility(
-			visible = state.isOpen && !state.isCollapsed,
+			visible = state.isOpen,
 			enter = fadeIn(),
 			exit = fadeOut()
 		) {
 			Box(
 				modifier = Modifier
 					.fillMaxSize()
-					.background(Color.hsv(0f, 0f, 0f, .6f))
 					.clickable(interactionSource = null, indication = null) {
 						tryCloseSheet()
 					}
+					.offset { IntOffset(0, -mainContentHeight + 50) }
+					.background(
+						Brush.verticalGradient(
+							Pair(0f, Color(0f, 0f, 0f, 0f)),
+							Pair(1f, Color(0f, 0f, 0f, .6f))
+						)
+					)
 			)
 		}
 		Box(
 			modifier = Modifier
-				.fillMaxSize()
-				.padding(top = 10.dp)
-				.offset(y = max(0.dp, draggingPos.value.dp))
-				.windowInsetsPadding(WindowInsets.statusBars)
+				.fillMaxWidth()
+				.onSizeChanged { mainContentHeight = it.height }
+				.align(Alignment.BottomCenter)
+				.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+				.background(LocalTheme.colorScheme.background)
+				.clickable(interactionSource = null, indication = null) {}
 		) {
 			Box(
 				modifier = Modifier
-					.align(Alignment.BottomCenter)
 					.fillMaxWidth()
-					.heightIn(max = maxHeight)
-					.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-					.background(LocalTheme.colorScheme.background)
-					.clickable(interactionSource = null, indication = null) {}
+					.pointerInput(Unit) {
+						detectDragGestures(
+							onDrag = { inp, off ->
+								inp.consume()
+								coroutineScope.launch {
+									draggingPos.snapTo(draggingPos.value + off.y.toDp().value)
+								}
+							},
+							onDragEnd = {
+								if (draggingPos.value < 75 || !tryCloseSheet()) {
+									coroutineScope.launch {
+										draggingPos.animateTo(0f)
+									}
+								}
+							}
+						)
+					}
 			) {
 				Box(
 					modifier = Modifier
-						.height(15.dp)
-						.fillMaxWidth()
-						.pointerInput(Unit) {
-							detectDragGestures(
-								onDrag = { inp, off ->
-									inp.consume()
-									coroutineScope.launch {
-										draggingPos.snapTo(draggingPos.value + off.y.toDp().value)
-									}
-								},
-								onDragEnd = {
-									if (draggingPos.value < 75 || !tryCloseSheet()) {
-										coroutineScope.launch {
-											draggingPos.animateTo(0f)
-										}
-									}
-								}
-							)
-						}
-				) {
-					Box(
-						modifier = Modifier
-							.padding(top = 10.dp)
-							.align(Alignment.TopCenter)
-							.clip(RoundedCornerShape(5.dp))
-							.width(50.dp)
-							.height(5.dp)
-							.background(LocalTheme.colorScheme.surface)
-					)
+						.padding(vertical = 10.dp)
+						.align(Alignment.TopCenter)
+						.clip(RoundedCornerShape(5.dp))
+						.width(50.dp)
+						.height(5.dp)
+						.background(LocalTheme.colorScheme.surface)
+				)
+			}
+			Column(
+				modifier = Modifier
+					.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			) {
+				SubcomposeLayout { constraints ->
+					val contentPlaceable = subcompose(null) {
+						collapsedContent?.invoke() ?: Box { }
+					}.map { it.measure(constraints) }.first()
+
+					collapsedContentHeight = contentPlaceable.height
+
+					layout(contentPlaceable.width, contentPlaceable.height) {
+						contentPlaceable.placeRelative(0, 0)
+					}
 				}
 				Box(
 					content = content,
 					modifier = Modifier
-						.padding(top = 25.dp)
+						.heightIn(max = maxHeight)
 				)
 			}
 		}

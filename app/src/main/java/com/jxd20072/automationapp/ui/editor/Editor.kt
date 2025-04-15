@@ -92,7 +92,7 @@ fun AutomationEditor(
 			onDismiss = editorViewModel::onBottomSheetDismissed,
 			bottomSheetState = bottomSheetState,
 			onNodeSearch = editorViewModel::changeNodeSearchQuery,
-			isDragging = draggingData is EditorNodeDragData.Dragging,
+			dragData = draggingData,
 			onStartDrag = editorViewModel::onNodeCreateDrag,
 			onStopDrag = editorViewModel::onStopNodeCreateDrag,
 			draggableState = draggableState,

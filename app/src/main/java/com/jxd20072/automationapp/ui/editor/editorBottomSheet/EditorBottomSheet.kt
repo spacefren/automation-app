@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
@@ -25,7 +26,7 @@ fun EditorBottomSheet(
 	onDismiss: () -> Unit,
 	onNodeSearch: (String) -> Unit,
 	bottomSheetState: EditorBottomSheetState,
-	isDragging: Boolean,
+	dragData: EditorNodeDragData,
 	draggableState: Draggable2DState,
 	onStartDrag: (
 		nodeData: ActionNodeData,
@@ -45,6 +46,11 @@ fun EditorBottomSheet(
 		onDismissRequest = {
 			onDismiss()
 			true
+		},
+		collapsedContent = {
+			NodeDropDelete(
+				dragData = dragData
+			)
 		}
 	) {
 		Layer {
@@ -60,6 +66,7 @@ fun EditorBottomSheet(
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
+							isDragging = dragData is EditorNodeDragData.Dragging,
 							draggableState = draggableState,
 							nodes = state.filteredNodes
 						)
