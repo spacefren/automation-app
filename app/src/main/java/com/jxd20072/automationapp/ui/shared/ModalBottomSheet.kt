@@ -1,11 +1,11 @@
 package com.jxd20072.automationapp.ui.shared
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -76,8 +76,9 @@ fun ModalBottomSheet(
 	val maxHeight by animateDpAsState(
 		if (state.isCollapsed) 0.dp else screenHeight.dp
 	)
-	Log.d("APP_MAXHEIGHT", maxHeight.value.toString());
-
+	val gradientSize by animateFloatAsState(
+		if (state.isCollapsed) .9f else 0f
+	)
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -122,7 +123,7 @@ fun ModalBottomSheet(
 					.offset { IntOffset(0, -mainContentHeight + 50) }
 					.background(
 						Brush.verticalGradient(
-							Pair(0f, Color(0f, 0f, 0f, 0f)),
+							Pair(gradientSize, Color(0f, 0f, 0f, 0f)),
 							Pair(1f, Color(0f, 0f, 0f, .6f))
 						)
 					)
@@ -160,7 +161,7 @@ fun ModalBottomSheet(
 			) {
 				Box(
 					modifier = Modifier
-						.padding(vertical = 10.dp)
+						.padding(vertical = 7.5.dp)
 						.align(Alignment.TopCenter)
 						.clip(RoundedCornerShape(5.dp))
 						.width(50.dp)
@@ -172,15 +173,17 @@ fun ModalBottomSheet(
 				modifier = Modifier
 					.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			) {
-				SubcomposeLayout { constraints ->
-					val contentPlaceable = subcompose(null) {
-						collapsedContent?.invoke() ?: Box { }
-					}.map { it.measure(constraints) }.first()
+				AnimatedVisibility(state.isCollapsed) {
+					SubcomposeLayout { constraints ->
+						val contentPlaceable = subcompose(null) {
+							collapsedContent?.invoke() ?: Box { }
+						}.map { it.measure(constraints) }.first()
 
-					collapsedContentHeight = contentPlaceable.height
+						collapsedContentHeight = contentPlaceable.height
 
-					layout(contentPlaceable.width, contentPlaceable.height) {
-						contentPlaceable.placeRelative(0, 0)
+						layout(contentPlaceable.width, contentPlaceable.height) {
+							contentPlaceable.placeRelative(0, 0)
+						}
 					}
 				}
 				Box(

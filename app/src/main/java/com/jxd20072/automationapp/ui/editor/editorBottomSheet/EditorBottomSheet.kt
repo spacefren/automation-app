@@ -48,7 +48,7 @@ fun EditorBottomSheet(
 			true
 		},
 		collapsedContent = {
-			NodeDropDelete(
+			EditorBottomSheetCollapsedContent(
 				dragData = dragData
 			)
 		}
