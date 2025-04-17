@@ -28,6 +28,8 @@ fun EditorBottomSheet(
 	bottomSheetState: EditorBottomSheetState,
 	dragData: EditorNodeDragData,
 	draggableState: Draggable2DState,
+	onDeleteZoneEnter: () -> Unit,
+	onDeleteZoneExit: () -> Unit,
 	onStartDrag: (
 		nodeData: ActionNodeData,
 		startedPosition: Offset,
@@ -49,7 +51,9 @@ fun EditorBottomSheet(
 		},
 		collapsedContent = {
 			EditorBottomSheetCollapsedContent(
-				dragData = dragData
+				dragData = dragData,
+				onDeleteZoneEnter = onDeleteZoneEnter,
+				onDeleteZoneExit = onDeleteZoneExit
 			)
 		}
 	) {

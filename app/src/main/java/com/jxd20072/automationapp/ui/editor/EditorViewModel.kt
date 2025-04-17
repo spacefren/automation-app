@@ -47,6 +47,7 @@ sealed interface EditorNodeDropData {
 		val targetIndex: Int,
 		val parentId: String? = null,
 	) : EditorNodeDropData
+	data object Deleting : EditorNodeDropData
 }
 
 @Immutable
@@ -119,7 +120,8 @@ class EditorViewModel @Inject constructor(
 			automationsRepository.automationsDataFlow.collect { automationData ->
 				_editorUiState.update { uiState ->
 					if (uiState !is EditorUiState.Success) return@update uiState
-					val newData = automationData.automationsMap[uiState.automationId] ?: return@update uiState
+					val newData =
+						automationData.automationsMap[uiState.automationId] ?: return@update uiState
 					uiState.copy(automationData = newData)
 				}
 			}
@@ -321,6 +323,9 @@ class EditorViewModel @Inject constructor(
 					draggingAction = actionNode,
 					draggingFunction = functionNode,
 					dropData = EditorNodeDropData.NotDropping
+				),
+				bottomSheetState = EditorBottomSheetState.NodeSelect(
+					isCollapsed = true
 				)
 			)
 		}
@@ -347,9 +352,13 @@ class EditorViewModel @Inject constructor(
 			val draggingData = currentState.draggingData
 			if (draggingData !is EditorNodeDragData.Dragging) return
 
-			var newState = currentState.copy(draggingData = EditorNodeDragData.NotDragging)
+			var newState = currentState.copy(
+				draggingData = EditorNodeDragData.NotDragging,
+				bottomSheetState = EditorBottomSheetState.Closed
+			)
 
 			val dropData = draggingData.dropData
+			if (dropData is EditorNodeDropData.Deleting) return@update newState
 			if (dropData !is EditorNodeDropData.Dropping) return@update newState
 
 			if (draggingData.draggingAction != null) {
@@ -409,7 +418,10 @@ class EditorViewModel @Inject constructor(
 	fun onNodeDropZoneEnter(targetIndex: Int, parentId: String?) {
 		_editorUiState.update { currentState ->
 			currentState as EditorUiState.Success
-			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
+
+			if (currentState.draggingData !is EditorNodeDragData.Dragging
+				|| currentState.draggingData.dropData is EditorNodeDropData.Deleting
+			) {
 				return
 			}
 
@@ -425,6 +437,38 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onNodeDropZoneExit() {
+		_editorUiState.update { currentState ->
+			currentState as EditorUiState.Success
+			if (currentState.draggingData !is EditorNodeDragData.Dragging
+				|| currentState.draggingData.dropData !is EditorNodeDropData.Dropping
+			) {
+				return
+			}
+
+			currentState.copy(
+				draggingData = currentState.draggingData.copy(
+					dropData = EditorNodeDropData.NotDropping
+				)
+			)
+		}
+	}
+
+	fun onNodeDeleteZoneEnter() {
+		_editorUiState.update { currentState ->
+			currentState as EditorUiState.Success
+			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
+				return
+			}
+
+			currentState.copy(
+				draggingData = currentState.draggingData.copy(
+					dropData = EditorNodeDropData.Deleting
+				)
+			)
+		}
+	}
+
+	fun onNodeDeleteZoneExit() {
 		_editorUiState.update { currentState ->
 			currentState as EditorUiState.Success
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {

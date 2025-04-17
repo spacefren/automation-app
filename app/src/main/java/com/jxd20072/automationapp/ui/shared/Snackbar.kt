@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -93,12 +95,18 @@ val LocalSnackbarState = compositionLocalOf { SnackbarHostState() }
 @Composable
 fun SnackbarHost() {
 	val localSnackbarState = LocalSnackbarState.current
+	val backgroundAlpha by animateFloatAsState(
+		if (localSnackbarState.activeSnackbars.isNotEmpty()) .5f else 0f
+	)
 
 	Box(
 		modifier = Modifier
 			.zIndex(100f)
-			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.fillMaxSize()
+			.background(
+				Brush.verticalGradient(listOf(Color.Transparent, Color(0f, 0f, 0f, backgroundAlpha)))
+			)
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.windowInsetsPadding(WindowInsets.safeDrawing)
 	) {
 		LazyColumn(

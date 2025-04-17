@@ -42,7 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.IntOffset
@@ -77,7 +77,7 @@ fun ModalBottomSheet(
 		if (state.isCollapsed) 0.dp else screenHeight.dp
 	)
 	val gradientSize by animateFloatAsState(
-		if (state.isCollapsed) .9f else 0f
+		if (state.isCollapsed) .92f else 0f
 	)
 
 	fun tryCloseSheet(): Boolean {
@@ -124,7 +124,7 @@ fun ModalBottomSheet(
 					.background(
 						Brush.verticalGradient(
 							Pair(gradientSize, Color(0f, 0f, 0f, 0f)),
-							Pair(1f, Color(0f, 0f, 0f, .6f))
+							Pair(1f, Color(0f, 0f, 0f, .4f))
 						)
 					)
 			)
@@ -132,7 +132,16 @@ fun ModalBottomSheet(
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.onSizeChanged { mainContentHeight = it.height }
+				.layout { measurable, contraints ->
+					val placeable = measurable.measure(contraints)
+					mainContentHeight = placeable.height
+					layout(
+						width = placeable.width,
+						height = placeable.height
+					) {
+						placeable.placeRelative(0, 0)
+					}
+				}
 				.align(Alignment.BottomCenter)
 				.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
 				.background(LocalTheme.colorScheme.background)

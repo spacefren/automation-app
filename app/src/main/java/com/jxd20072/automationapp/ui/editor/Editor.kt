@@ -96,6 +96,8 @@ fun AutomationEditor(
 			onStartDrag = editorViewModel::onNodeCreateDrag,
 			onStopDrag = editorViewModel::onStopNodeCreateDrag,
 			draggableState = draggableState,
+			onDeleteZoneEnter = editorViewModel::onNodeDeleteZoneEnter,
+			onDeleteZoneExit = editorViewModel::onNodeDeleteZoneExit,
 			autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
 				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 		)
