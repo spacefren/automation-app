@@ -38,7 +38,7 @@ fun AddAutomationDrawer(
 			modifier = modifier
 		) {
 			AnimatedContent(
-				targetState = drawerUiState.screen, label = "",
+				targetState = drawerUiState.screen
 			) { targetState ->
 				when (targetState) {
 					AddAutomationDrawerScreen.AUTOMATION_ADD -> {

@@ -33,6 +33,7 @@ sealed interface EditorNodeDragData {
 	data class Dragging(
 		val draggingAction: ActionNodeDraft? = null,
 		val draggingFunction: FunctionNodeDraft? = null,
+		val isCreatingNode: Boolean = false,
 		val nodePosition: Offset,
 		val inputOffset: Offset,
 		val scope: EditorDraggableScope,
@@ -43,11 +44,12 @@ sealed interface EditorNodeDragData {
 @Immutable
 sealed interface EditorNodeDropData {
 	data object NotDropping : EditorNodeDropData
-	data class Dropping(
+	data class Moving(
 		val targetIndex: Int,
 		val parentId: String? = null,
 	) : EditorNodeDropData
 	data object Deleting : EditorNodeDropData
+	data object Cancelling : EditorNodeDropData
 }
 
 @Immutable
@@ -64,7 +66,16 @@ data class CategoryListEntry(
 
 @Immutable
 sealed interface EditorBottomSheetState {
+	data class Open(
+		val collapsedScreen: EditorBottomSheetCollapsedScreen,
+		val screen: EditorBottomSheetScreen,
+	) : EditorBottomSheetState
 	data object Closed : EditorBottomSheetState
+}
+
+@Immutable
+sealed interface EditorBottomSheetScreen {
+	data object Empty : EditorBottomSheetScreen
 	data class NodeSelect(
 		val isCollapsed: Boolean = false,
 		val nodeSearchQuery: String = "",
@@ -85,11 +96,18 @@ sealed interface EditorBottomSheetState {
 				)
 			},
 		val filteredNodes: List<CategoryListEntry> = nodes
-	) : EditorBottomSheetState
-
+	) : EditorBottomSheetScreen
 	data class NodeEdit(
-		val editingNodeId: String
-	) : EditorBottomSheetState
+		val editingNodeId: String,
+	) : EditorBottomSheetScreen
+}
+
+@Immutable
+sealed interface EditorBottomSheetCollapsedScreen {
+	data object Empty : EditorBottomSheetCollapsedScreen
+	data class DropPanels(
+		val showDelete: Boolean = false,
+	) : EditorBottomSheetCollapsedScreen
 }
 
 @Immutable
@@ -128,6 +146,13 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
+	fun tryUpdateUiState(transform: (EditorUiState.Success) -> EditorUiState) {
+		return _editorUiState.update { state ->
+			state as EditorUiState.Success
+			transform(state)
+		}
+	}
+
 	fun loadAutomation(id: String) {
 		viewModelScope.launch {
 			val automation = automationsRepository.getAutomationDraft(id)
@@ -158,8 +183,7 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onBottomSheetDismissed() {
-		_editorUiState.update { uiState ->
-			uiState as EditorUiState.Success
+		tryUpdateUiState { uiState ->
 			uiState.copy(
 				bottomSheetState = EditorBottomSheetState.Closed
 			)
@@ -167,60 +191,66 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun startNodeCreationFlow() {
-		_editorUiState.update { uiState ->
-			uiState as EditorUiState.Success
+		tryUpdateUiState { uiState ->
 			uiState.copy(
-				bottomSheetState = EditorBottomSheetState.NodeSelect()
+				bottomSheetState = EditorBottomSheetState.Open(
+					screen = EditorBottomSheetScreen.NodeSelect(),
+					collapsedScreen = EditorBottomSheetCollapsedScreen.Empty
+				)
 			)
 		}
 	}
 
 	fun filterNodes() {
-		_editorUiState.update { uiState ->
-			uiState as EditorUiState.Success
-			uiState.bottomSheetState as EditorBottomSheetState.NodeSelect
-			val searchQuery = uiState.bottomSheetState.nodeSearchQuery
+		tryUpdateUiState { uiState ->
+			uiState.bottomSheetState as EditorBottomSheetState.Open
+			uiState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
+			val searchQuery = uiState.bottomSheetState.screen.nodeSearchQuery
 
 			uiState.copy(
 				bottomSheetState = uiState.bottomSheetState.copy(
-					filteredNodes = uiState.bottomSheetState.nodes
-						.map { categoryListEntry ->
-							categoryListEntry.copy(
-								nodes = categoryListEntry.nodes.map { nodeListEntry ->
-									nodeListEntry.copy(
-										matchesSearch = nodeListEntry.data.name
-											.lowercase()
-											.contains(searchQuery.lowercase())
-									)
-								}
-							)
-						}
-						.filter { categoryListEntry ->
-							categoryListEntry.categoryName.lowercase().contains(searchQuery.lowercase())
-								|| categoryListEntry.nodes.any { it.matchesSearch }
-						}
+					screen = uiState.bottomSheetState.screen.copy(
+						filteredNodes = uiState.bottomSheetState.screen.nodes
+							.map { categoryListEntry ->
+								categoryListEntry.copy(
+									nodes = categoryListEntry.nodes.map { nodeListEntry ->
+										nodeListEntry.copy(
+											matchesSearch = nodeListEntry.data.name
+												.lowercase()
+												.contains(searchQuery.lowercase())
+										)
+									}
+								)
+							}
+							.filter { categoryListEntry ->
+								categoryListEntry.categoryName.lowercase().contains(searchQuery.lowercase())
+									|| categoryListEntry.nodes.any { it.matchesSearch }
+							}
+					),
 				)
 			)
 		}
 	}
 
 	fun changeNodeSearchQuery(query: String) {
-		_editorUiState.update { uiState ->
-			uiState as EditorUiState.Success
-			uiState.bottomSheetState as EditorBottomSheetState.NodeSelect
+		tryUpdateUiState { uiState ->
+			uiState.bottomSheetState as EditorBottomSheetState.Open
+			uiState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
 			uiState.copy(
 				bottomSheetState = uiState.bottomSheetState.copy(
-					nodeSearchQuery = query
+					screen = uiState.bottomSheetState.screen.copy(
+						nodeSearchQuery = query
+					),
 				)
 			)
 		}
 		filterNodes()
 	}
 
-	fun onNodeCreateDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
-			currentState.bottomSheetState as EditorBottomSheetState.NodeSelect
+	fun onActionCreateDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
+		tryUpdateUiState { currentState ->
+			currentState.bottomSheetState as EditorBottomSheetState.Open
+			currentState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
 
 			val actionNode = ActionNodeDraft(
 				name = nodeData.name,
@@ -238,53 +268,61 @@ class EditorViewModel @Inject constructor(
 					scope = EditorDraggableScope.ACTION,
 					nodePosition = nodePosition,
 					inputOffset = pressedPosition - nodePosition,
+					isCreatingNode = true,
 					draggingAction = actionNode,
 					draggingFunction = null,
 					dropData = EditorNodeDropData.NotDropping
 				),
 				bottomSheetState = currentState.bottomSheetState.copy(
-					isCollapsed = true,
+					collapsedScreen = EditorBottomSheetCollapsedScreen.DropPanels(
+						showDelete = false
+					),
 				)
 			)
 		}
 	}
 
-	fun onStopNodeCreateDrag() {
-		_editorUiState.update { currentState ->
-			val automationDraft = (currentState as EditorUiState.Success).automationDraft
-			currentState.bottomSheetState as EditorBottomSheetState.NodeSelect
+	fun onStopActionCreateDrag() {
+		tryUpdateUiState { currentState ->
+			val automationDraft = currentState.automationDraft
+			currentState.bottomSheetState as EditorBottomSheetState.Open
+			currentState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
 
-			var newState = currentState.copy(
-				bottomSheetState = currentState.bottomSheetState.copy(
-					isCollapsed = false
-				),
-				draggingData = EditorNodeDragData.NotDragging,
-			)
-
-			val draggingData = currentState.draggingData
-			if (draggingData !is EditorNodeDragData.Dragging) return@update newState
-			if (draggingData.draggingAction == null) return@update newState
+			val draggingData = currentState.draggingData as EditorNodeDragData.Dragging
+			draggingData.draggingAction as ActionNodeDraft
 
 			val dropData = draggingData.dropData
-			if (dropData !is EditorNodeDropData.Dropping) return@update newState
+			val newState = when {
+				dropData is EditorNodeDropData.Moving -> {
+					val parentIndex = automationDraft.functions.indexOfFirst { it.id == dropData.parentId }
 
-			val parentIndex = automationDraft.functions.indexOfFirst { it.id == dropData.parentId }
-
-			newState = newState.copy(
-				automationDraft = automationDraft.copy(
-					functions = automationDraft.functions.toMutableList().also { functions ->
-						functions[parentIndex] = functions[parentIndex].copy(
-							content = functions[parentIndex].content.toMutableList().also { content ->
-								content.add(dropData.targetIndex, draggingData.draggingAction)
+					currentState.copy(
+						automationDraft = automationDraft.copy(
+							functions = automationDraft.functions.toMutableList().also { functions ->
+								functions[parentIndex] = functions[parentIndex].copy(
+									content = functions[parentIndex].content.toMutableList().also { content ->
+										content.add(dropData.targetIndex, draggingData.draggingAction)
+									}
+								)
 							}
-						)
-					}
-				),
-				bottomSheetState = EditorBottomSheetState.NodeEdit(
-					editingNodeId = draggingData.draggingAction.id
-				)
-			)
+						),
+						bottomSheetState = EditorBottomSheetState.Open(
+							collapsedScreen = EditorBottomSheetCollapsedScreen.Empty,
+							screen = EditorBottomSheetScreen.NodeEdit(
+								editingNodeId = draggingData.draggingAction.id
+							),
+						),
+						draggingData = EditorNodeDragData.NotDragging,
+					)
+				}
 
+				else -> {
+					currentState.copy(
+						bottomSheetState = EditorBottomSheetState.Closed,
+						draggingData = EditorNodeDragData.NotDragging,
+					)
+				}
+			}
 			newState
 		}
 		trySaveAutomation()
@@ -296,9 +334,7 @@ class EditorViewModel @Inject constructor(
 		pressedPosition: Offset,
 		scope: EditorDraggableScope
 	) {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
-
+		tryUpdateUiState { currentState ->
 			val actionNode = when (scope) {
 				EditorDraggableScope.ACTION ->
 					currentState.automationDraft.functions
@@ -324,18 +360,20 @@ class EditorViewModel @Inject constructor(
 					draggingFunction = functionNode,
 					dropData = EditorNodeDropData.NotDropping
 				),
-				bottomSheetState = EditorBottomSheetState.NodeSelect(
-					isCollapsed = true
+				bottomSheetState = EditorBottomSheetState.Open(
+					screen = EditorBottomSheetScreen.Empty,
+					collapsedScreen = EditorBottomSheetCollapsedScreen.DropPanels(
+						showDelete = true
+					)
 				)
 			)
 		}
 	}
 
 	fun changeDraggingPosition(delta: Offset) {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
+		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
-				return
+				return@tryUpdateUiState currentState
 			}
 
 			currentState.copy(
@@ -346,88 +384,142 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun onStopDrag() {
-		_editorUiState.update { currentState ->
-			val automationDraft = (currentState as EditorUiState.Success).automationDraft
-			val draggingData = currentState.draggingData
-			if (draggingData !is EditorNodeDragData.Dragging) return
+	fun onNodeMoveRequestTransform(currentState: EditorUiState.Success): EditorUiState {
+		val automationDraft = currentState.automationDraft
+		val draggingData = currentState.draggingData
+		if (draggingData !is EditorNodeDragData.Dragging) return currentState
 
-			var newState = currentState.copy(
-				draggingData = EditorNodeDragData.NotDragging,
-				bottomSheetState = EditorBottomSheetState.Closed
+		var newState = currentState
+		val dropData = draggingData.dropData as EditorNodeDropData.Moving
+
+		if (draggingData.draggingAction != null) {
+			val previousParent = automationDraft.functions
+				.find { it.content.contains(draggingData.draggingAction) }!!
+			val previousParentIndex = automationDraft.functions.indexOf(previousParent)
+			val newParent = automationDraft.functions.find { it.id == dropData.parentId }!!
+			val newParentIndex = automationDraft.functions.indexOf(newParent)
+			val previousItemIndex =
+				previousParent.content.indexOf(draggingData.draggingAction)
+
+			newState = newState.copy(
+				automationDraft = automationDraft.copy(
+					functions = automationDraft.functions
+						.toMutableList().also { functions ->
+							functions[previousParentIndex] = functions[previousParentIndex].copy(
+								content = functions[previousParentIndex].content
+									.toMutableList().also { previousParentContent ->
+										previousParentContent.removeAt(previousItemIndex)
+									}
+							)
+							functions[newParentIndex] = functions[newParentIndex].copy(
+								content = functions[newParentIndex].content
+									.toMutableList().also { newParentContent ->
+										newParentContent.add(
+											dropData.targetIndex - if (previousParent == newParent
+												&& previousItemIndex < dropData.targetIndex
+											) 1 else 0,
+											draggingData.draggingAction
+										)
+									}
+							)
+						}
+				)
 			)
 
-			val dropData = draggingData.dropData
-			if (dropData is EditorNodeDropData.Deleting) return@update newState
-			if (dropData !is EditorNodeDropData.Dropping) return@update newState
+		} else if (draggingData.draggingFunction != null) {
 
-			if (draggingData.draggingAction != null) {
-				val previousParent = automationDraft.functions
-					.find { it.content.contains(draggingData.draggingAction) }!!
-				val previousParentIndex = automationDraft.functions.indexOf(previousParent)
-				val newParent = automationDraft.functions.find { it.id == dropData.parentId }!!
-				val newParentIndex = automationDraft.functions.indexOf(newParent)
-				val previousItemIndex =
-					previousParent.content.indexOf(draggingData.draggingAction)
+			val previousIndex = automationDraft.functions.indexOf(draggingData.draggingFunction)
 
-				newState = newState.copy(
-					automationDraft = automationDraft.copy(
-						functions = automationDraft.functions
-							.toMutableList().also { functions ->
-								functions[previousParentIndex] = functions[previousParentIndex].copy(
-									content = functions[previousParentIndex].content
-										.toMutableList().also { previousParentContent ->
-											previousParentContent.removeAt(previousItemIndex)
-										}
-								)
-								functions[newParentIndex] = functions[newParentIndex].copy(
-									content = functions[newParentIndex].content
-										.toMutableList().also { newParentContent ->
-											newParentContent.add(
-												dropData.targetIndex - if (previousParent == newParent
-														&& previousItemIndex < dropData.targetIndex
-												) 1 else 0,
-												draggingData.draggingAction
-											)
-										}
-								)
-							}
+			newState = newState.copy(
+				automationDraft = automationDraft.copy(
+					functions = reorderElementInList(
+						automationDraft.functions,
+						previousIndex,
+						dropData.targetIndex
 					)
 				)
+			)
+		}
 
-			} else if (draggingData.draggingFunction != null) {
+		return newState.copy(
+			bottomSheetState = EditorBottomSheetState.Closed
+		)
+	}
 
-				val previousIndex = automationDraft.functions.indexOf(draggingData.draggingFunction)
+	fun onNodeDeleteRequestTransform(currentState: EditorUiState.Success): EditorUiState {
+		val automationDraft = currentState.automationDraft
+		val draggingData = currentState.draggingData
+		if (draggingData !is EditorNodeDragData.Dragging) return currentState
 
-				newState = newState.copy(
-					automationDraft = automationDraft.copy(
-						functions = reorderElementInList(
-							automationDraft.functions,
-							previousIndex,
-							dropData.targetIndex
-						)
-					)
+		var newState = currentState
+
+		if (draggingData.draggingAction != null) {
+			newState = newState.copy(
+				automationDraft = automationDraft.copy(
+					functions = automationDraft.functions
+						.toMutableList()
+						.map { function ->
+							function.copy(
+								content = function.content.filter { it.id != draggingData.draggingAction.id }
+							)
+						}
 				)
-			} else return@update newState
+			)
+		} else if (draggingData.draggingFunction != null) {
+			newState = newState.copy(
+				automationDraft = automationDraft.copy(
+					functions = automationDraft.functions.filter { it.id != draggingData.draggingFunction.id }
+				)
+			)
+		}
 
-			newState
+		return newState.copy(
+			bottomSheetState = EditorBottomSheetState.Closed
+		)
+	}
+
+	fun onStopNodeDrag() {
+		tryUpdateUiState { currentState ->
+			val newState = when {
+				currentState.draggingData !is EditorNodeDragData.Dragging -> {
+					currentState
+				}
+
+				currentState.draggingData.dropData is EditorNodeDropData.Moving -> {
+					onNodeMoveRequestTransform(currentState)
+				}
+
+				currentState.draggingData.dropData is EditorNodeDropData.Deleting -> {
+					onNodeDeleteRequestTransform(currentState)
+				}
+
+				else -> {
+					currentState.copy(
+						bottomSheetState = EditorBottomSheetState.Closed
+					)
+				}
+			} as EditorUiState.Success
+
+			newState.copy(
+				draggingData = EditorNodeDragData.NotDragging
+			)
 		}
 		trySaveAutomation()
 	}
 
 	fun onNodeDropZoneEnter(targetIndex: Int, parentId: String?) {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
+		tryUpdateUiState { currentState ->
 
 			if (currentState.draggingData !is EditorNodeDragData.Dragging
 				|| currentState.draggingData.dropData is EditorNodeDropData.Deleting
+				|| currentState.draggingData.dropData is EditorNodeDropData.Cancelling
 			) {
-				return
+				return@tryUpdateUiState currentState
 			}
 
 			currentState.copy(
 				draggingData = currentState.draggingData.copy(
-					dropData = EditorNodeDropData.Dropping(
+					dropData = EditorNodeDropData.Moving(
 						targetIndex = targetIndex,
 						parentId = parentId
 					)
@@ -437,12 +529,12 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onNodeDropZoneExit() {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
+		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging
-				|| currentState.draggingData.dropData !is EditorNodeDropData.Dropping
+				|| currentState.draggingData.dropData is EditorNodeDropData.Deleting
+				|| currentState.draggingData.dropData is EditorNodeDropData.Cancelling
 			) {
-				return
+				return@tryUpdateUiState currentState
 			}
 
 			currentState.copy(
@@ -454,10 +546,9 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onNodeDeleteZoneEnter() {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
+		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
-				return
+				return@tryUpdateUiState currentState
 			}
 
 			currentState.copy(
@@ -469,10 +560,9 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onNodeDeleteZoneExit() {
-		_editorUiState.update { currentState ->
-			currentState as EditorUiState.Success
+		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
-				return
+				return@tryUpdateUiState currentState
 			}
 
 			currentState.copy(

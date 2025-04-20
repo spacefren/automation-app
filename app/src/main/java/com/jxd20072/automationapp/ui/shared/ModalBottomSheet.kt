@@ -1,11 +1,10 @@
 package com.jxd20072.automationapp.ui.shared
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -73,12 +72,18 @@ fun ModalBottomSheet(
 	var mainContentHeight by remember { mutableIntStateOf(0) }
 	var collapsedContentHeight by remember { mutableIntStateOf(0) }
 
-	val maxHeight by animateDpAsState(
-		if (state.isCollapsed) 0.dp else screenHeight.dp
-	)
-	val gradientSize by animateFloatAsState(
-		if (state.isCollapsed) .92f else 0f
-	)
+	Log.d("APP_A", "${state.isOpen}, ${state.isCollapsed}");
+
+	val maxHeight = remember { Animatable(screenHeight.toFloat()) }
+	val gradientSize = remember { Animatable(0f) }
+
+	LaunchedEffect(state.isCollapsed, state.isOpen) {
+		if (state.isOpen) {
+			maxHeight.animateTo(if (state.isCollapsed) 0f else screenHeight.toFloat())
+			gradientSize.animateTo(if (state.isCollapsed) .92f else 0f)
+		}
+	}
+
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -123,7 +128,7 @@ fun ModalBottomSheet(
 					.offset { IntOffset(0, -mainContentHeight + 50) }
 					.background(
 						Brush.verticalGradient(
-							Pair(gradientSize, Color(0f, 0f, 0f, 0f)),
+							Pair(gradientSize.value, Color(0f, 0f, 0f, 0f)),
 							Pair(1f, Color(0f, 0f, 0f, .4f))
 						)
 					)
@@ -198,7 +203,7 @@ fun ModalBottomSheet(
 				Box(
 					content = content,
 					modifier = Modifier
-						.heightIn(max = maxHeight)
+						.heightIn(max = maxHeight.value.dp)
 				)
 			}
 		}

@@ -6,13 +6,18 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.ui.editor.EditorBottomSheetCollapsedScreen
+import com.jxd20072.automationapp.ui.editor.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.shared.Layer
@@ -38,10 +43,15 @@ fun EditorBottomSheet(
 	onStopDrag: () -> Unit,
 	autoOpenKeyboard: Boolean,
 ) {
+	var lastScreen by remember { mutableStateOf<EditorBottomSheetScreen>(EditorBottomSheetScreen.Empty) }
 	val state = remember { ModalBottomSheetState() }
 	state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
-	state.isCollapsed = bottomSheetState is EditorBottomSheetState.NodeSelect
-		&& bottomSheetState.isCollapsed
+	state.isCollapsed = bottomSheetState is EditorBottomSheetState.Open
+		&& bottomSheetState.collapsedScreen != EditorBottomSheetCollapsedScreen.Empty
+
+	if (bottomSheetState is EditorBottomSheetState.Open) {
+		lastScreen = bottomSheetState.screen
+	}
 
 	ModalBottomSheet(
 		state = state,
@@ -59,11 +69,10 @@ fun EditorBottomSheet(
 	) {
 		Layer {
 			AnimatedContent(
-				targetState = bottomSheetState,
-				contentKey = { it::class },
+				targetState = lastScreen,
 			) { state ->
 				when (state) {
-					is EditorBottomSheetState.NodeSelect -> {
+					is EditorBottomSheetScreen.NodeSelect -> {
 						EditorNodeSelectScreen(
 							onNodeSearch = onNodeSearch,
 							nodeSearchQuery = state.nodeSearchQuery,
@@ -76,10 +85,12 @@ fun EditorBottomSheet(
 						)
 					}
 
-					else -> {
+					is EditorBottomSheetScreen.NodeEdit -> {
 						Text("Edit node", fontSize = 20.sp, color = LocalTheme.colorScheme.onBackground)
 						Spacer(modifier = Modifier.height(200.dp))
 					}
+
+					else -> {}
 				}
 			}
 		}
