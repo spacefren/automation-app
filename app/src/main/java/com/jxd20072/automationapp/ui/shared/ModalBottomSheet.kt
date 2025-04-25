@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.shared
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -49,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ModalBottomSheetState {
@@ -72,14 +72,14 @@ fun ModalBottomSheet(
 	var mainContentHeight by remember { mutableIntStateOf(0) }
 	var collapsedContentHeight by remember { mutableIntStateOf(0) }
 
-	Log.d("APP_A", "${state.isOpen}, ${state.isCollapsed}");
-
 	val maxHeight = remember { Animatable(screenHeight.toFloat()) }
 	val gradientSize = remember { Animatable(0f) }
 
 	LaunchedEffect(state.isCollapsed, state.isOpen) {
 		if (state.isOpen) {
-			maxHeight.animateTo(if (state.isCollapsed) 0f else screenHeight.toFloat())
+			async {
+				maxHeight.animateTo(if (state.isCollapsed) 0f else screenHeight.toFloat())
+			}
 			gradientSize.animateTo(if (state.isCollapsed) .92f else 0f)
 		}
 	}

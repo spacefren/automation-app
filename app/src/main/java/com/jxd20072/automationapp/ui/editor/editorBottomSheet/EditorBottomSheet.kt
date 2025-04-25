@@ -20,6 +20,7 @@ import com.jxd20072.automationapp.ui.editor.EditorBottomSheetCollapsedScreen
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.EditorNodeDropData
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
@@ -33,8 +34,8 @@ fun EditorBottomSheet(
 	bottomSheetState: EditorBottomSheetState,
 	dragData: EditorNodeDragData,
 	draggableState: Draggable2DState,
-	onDeleteZoneEnter: () -> Unit,
-	onDeleteZoneExit: () -> Unit,
+	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
+	onDropZoneExit: () -> Unit,
 	onStartDrag: (
 		nodeData: ActionNodeData,
 		startedPosition: Offset,
@@ -62,8 +63,8 @@ fun EditorBottomSheet(
 		collapsedContent = {
 			EditorBottomSheetCollapsedContent(
 				dragData = dragData,
-				onDeleteZoneEnter = onDeleteZoneEnter,
-				onDeleteZoneExit = onDeleteZoneExit
+				onDropZoneEnter = onDropZoneEnter,
+				onDropZoneExit = onDropZoneExit
 			)
 		}
 	) {

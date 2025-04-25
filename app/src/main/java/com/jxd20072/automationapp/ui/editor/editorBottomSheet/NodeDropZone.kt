@@ -44,8 +44,8 @@ import kotlin.math.abs
 @Composable
 fun NodeDropZone(
 	dragData: EditorNodeDragData,
-	onDeleteZoneEnter: () -> Unit,
-	onDeleteZoneExit: () -> Unit,
+	onDropZoneEnter: () -> Unit,
+	onDropZoneExit: () -> Unit,
 	mainColor: Color,
 	accentColor: Color,
 	text: String,
@@ -85,9 +85,9 @@ fun NodeDropZone(
 
 	LaunchedEffect(isInWidth && isInHeight) {
 		if (isInWidth && isInHeight) {
-			onDeleteZoneEnter()
+			onDropZoneEnter()
 		} else {
-			onDeleteZoneExit()
+			onDropZoneExit()
 		}
 	}
 

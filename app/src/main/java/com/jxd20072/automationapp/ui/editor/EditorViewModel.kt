@@ -507,7 +507,7 @@ class EditorViewModel @Inject constructor(
 		trySaveAutomation()
 	}
 
-	fun onNodeDropZoneEnter(targetIndex: Int, parentId: String?) {
+	fun onNodeDropLineEnter(targetIndex: Int, parentId: String?) {
 		tryUpdateUiState { currentState ->
 
 			if (currentState.draggingData !is EditorNodeDragData.Dragging
@@ -528,7 +528,7 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun onNodeDropZoneExit() {
+	fun onNodeDropLineExit() {
 		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging
 				|| currentState.draggingData.dropData is EditorNodeDropData.Deleting
@@ -545,7 +545,7 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun onNodeDeleteZoneEnter() {
+	fun onNodeDropZoneEnter(dropData: EditorNodeDropData) {
 		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
 				return@tryUpdateUiState currentState
@@ -553,13 +553,13 @@ class EditorViewModel @Inject constructor(
 
 			currentState.copy(
 				draggingData = currentState.draggingData.copy(
-					dropData = EditorNodeDropData.Deleting
+					dropData = dropData
 				)
 			)
 		}
 	}
 
-	fun onNodeDeleteZoneExit() {
+	fun onNodeDropZoneExit() {
 		tryUpdateUiState { currentState ->
 			if (currentState.draggingData !is EditorNodeDragData.Dragging) {
 				return@tryUpdateUiState currentState

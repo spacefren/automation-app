@@ -75,8 +75,8 @@ fun AutomationEditor(
 					onStopDrag = editorViewModel::onStopNodeDrag,
 					draggableState = draggableState,
 					draggingData = draggingData,
-					onDropZoneEnter = editorViewModel::onNodeDropZoneEnter,
-					onDropZoneExit = editorViewModel::onNodeDropZoneExit
+					onDropZoneEnter = editorViewModel::onNodeDropLineEnter,
+					onDropZoneExit = editorViewModel::onNodeDropLineExit
 				)
 			}
 		}
@@ -96,8 +96,8 @@ fun AutomationEditor(
 			onStartDrag = editorViewModel::onActionCreateDrag,
 			onStopDrag = editorViewModel::onStopActionCreateDrag,
 			draggableState = draggableState,
-			onDeleteZoneEnter = editorViewModel::onNodeDeleteZoneEnter,
-			onDeleteZoneExit = editorViewModel::onNodeDeleteZoneExit,
+			onDropZoneEnter = editorViewModel::onNodeDropZoneEnter,
+			onDropZoneExit = editorViewModel::onNodeDropZoneExit,
 			autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
 				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 		)

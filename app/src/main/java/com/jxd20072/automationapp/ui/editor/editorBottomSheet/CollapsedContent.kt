@@ -12,13 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.EditorNodeDropData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorBottomSheetCollapsedContent(
 	dragData: EditorNodeDragData,
-	onDeleteZoneEnter: () -> Unit,
-	onDeleteZoneExit: () -> Unit,
+	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
+	onDropZoneExit: () -> Unit,
 ) {
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -29,8 +30,8 @@ fun EditorBottomSheetCollapsedContent(
 	) {
 		NodeDropZone(
 			dragData = dragData,
-			onDeleteZoneEnter = onDeleteZoneEnter,
-			onDeleteZoneExit = onDeleteZoneExit,
+			onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Cancelling) },
+			onDropZoneExit = onDropZoneExit,
 			mainColor = LocalTheme.colorScheme.surface,
 			accentColor = LocalTheme.colorScheme.secondary,
 			text = "Drop here to cancel",
@@ -40,8 +41,8 @@ fun EditorBottomSheetCollapsedContent(
 		)
 		NodeDropZone(
 			dragData = dragData,
-			onDeleteZoneEnter = onDeleteZoneEnter,
-			onDeleteZoneExit = onDeleteZoneExit,
+			onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },
+			onDropZoneExit = onDropZoneExit,
 			mainColor = LocalTheme.colorScheme.errorContainer,
 			accentColor = LocalTheme.colorScheme.error,
 			text = "Drop here to delete",
