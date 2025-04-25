@@ -1,14 +1,12 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,13 +30,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 import com.jxd20072.automationapp.ui.utils.dashedBorder
-import kotlin.math.abs
 
 @Composable
 fun NodeDropZone(
@@ -52,39 +49,27 @@ fun NodeDropZone(
 	icon: Int,
 	modifier: Modifier = Modifier
 ) {
-	val maxHeightDp = 75.dp
+	var isHovering by remember { mutableStateOf(false) }
 
-	var isInHeight by remember { mutableStateOf(false) }
-	var isInWidth by remember { mutableStateOf(false) }
-
-	val scale by animateFloatAsState(if (isInWidth) 1f else .95f)
-	var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) } // Measures from baseline
-	var width by remember { mutableIntStateOf(0) }
-	val height by animateDpAsState(if (isInHeight) maxHeightDp else 0.dp)
+	val scale by animateFloatAsState(if (isHovering) 1f else .95f)
+	var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }
+	var size by remember { mutableStateOf(IntSize(0, 0)) }
 	var textWidth by remember { mutableFloatStateOf(0f) }
 
-	val checkIsInHeight = @Composable { position: Offset ->
-		if (dragData is EditorNodeDragData.Dragging) {
-			val dragPos = dragData.nodePosition
-			val offset = dragData.inputOffset
-			val maxHeight = with(LocalDensity.current) { maxHeightDp.toPx() }
-			abs(dragPos.y + offset.y - position.y) < maxHeight / (if (isInHeight) 1f else 2f)
+	@Composable
+	fun checkHovering(): Boolean {
+		return if (dragData is EditorNodeDragData.Dragging) {
+			val dragPos = dragData.nodePosition + dragData.inputOffset
+
+			dragPos.y > positionInRoot.y && dragPos.y < positionInRoot.y + size.height
+				&& dragPos.x > positionInRoot.x && dragPos.x < positionInRoot.x + size.width
 		} else false
 	}
 
-	val checkIsInWidth = @Composable { position: Offset ->
-		if (dragData is EditorNodeDragData.Dragging) {
-			val dragPos = dragData.nodePosition
-			val offset = dragData.inputOffset
-			abs(dragPos.x + offset.x - (position.x + width / 2)) < width / 2
-		} else false
-	}
+	isHovering = checkHovering()
 
-	isInWidth = checkIsInWidth(positionInRoot)
-	isInHeight = checkIsInHeight(positionInRoot)
-
-	LaunchedEffect(isInWidth && isInHeight) {
-		if (isInWidth && isInHeight) {
+	LaunchedEffect(isHovering) {
+		if (isHovering) {
 			onDropZoneEnter()
 		} else {
 			onDropZoneExit()
@@ -96,12 +81,11 @@ fun NodeDropZone(
 		verticalAlignment = Alignment.CenterVertically,
 		modifier = modifier
 			.graphicsLayer(scaleX = scale, scaleY = scale)
-			.fillMaxWidth()
-			.height(height)
+			.fillMaxSize()
 			.onGloballyPositioned { layout ->
 				val rootPos = layout.positionInRoot()
-				positionInRoot = Offset(rootPos.x, rootPos.y + layout.size.height)
-				width = layout.size.width
+				positionInRoot = Offset(rootPos.x, rootPos.y)
+				size = layout.size
 			}
 			.shadow(
 				LocalTheme.layoutSystem.shadows.primary,
