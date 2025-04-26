@@ -62,14 +62,14 @@ fun NodeCard(
 	draggableState: Draggable2DState,
 	onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: () -> Unit,
+	onClick: (nodeData: ActionNodeData) -> Unit,
 ) {
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 		modifier = Modifier
-			.clickableWithIndication(onClick)
+			.clickableWithIndication { onClick(nodeData) }
 			.size(size)
 			.shadow(
 				LocalTheme.layoutSystem.shadows.secondary,
@@ -122,6 +122,7 @@ fun NodeCategoryContainer(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
+	onClick: (nodeData: ActionNodeData) -> Unit,
 	modifier: Modifier = Modifier
 ) {
 	var expanded by remember { mutableStateOf(false) }
@@ -196,7 +197,7 @@ fun NodeCategoryContainer(
 							onStartDrag(node.data, startedPosition, offset)
 						},
 						onStopDrag = onStopDrag,
-						onClick = {}
+						onClick = onClick
 					)
 				}
 			}
@@ -215,6 +216,7 @@ fun EditorNodeSelectScreen(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
+	onClick: (nodeData: ActionNodeData) -> Unit,
 	draggableState: Draggable2DState,
 	nodes: List<CategoryListEntry>,
 	onNodeSearch: (query: String) -> Unit
@@ -248,6 +250,7 @@ fun EditorNodeSelectScreen(
 					onStartDrag = onStartDrag,
 					onStopDrag = onStopDrag,
 					draggableState = draggableState,
+					onClick = onClick,
 					modifier = Modifier.animateItem()
 				)
 			}

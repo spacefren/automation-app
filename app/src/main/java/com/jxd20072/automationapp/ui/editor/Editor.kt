@@ -95,6 +95,7 @@ fun AutomationEditor(
 			dragData = draggingData,
 			onStartDrag = editorViewModel::onActionCreateDrag,
 			onStopDrag = editorViewModel::onStopActionCreateDrag,
+			onClick = editorViewModel::onActionCreateClick,
 			draggableState = draggableState,
 			onDropZoneEnter = editorViewModel::onNodeDropZoneEnter,
 			onDropZoneExit = editorViewModel::onNodeDropZoneExit,

@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,8 +34,9 @@ fun IconSelectScreen(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(15.dp),
 		modifier = Modifier
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.fillMaxSize()
+			.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Text(
 			text = "Change icon",
@@ -52,7 +56,10 @@ fun IconSelectScreen(
 			columns = GridCells.FixedSize(43.dp),
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			contentPadding = PaddingValues(
+				bottom = LocalTheme.layoutSystem.spacing.paddingLevel1
+					+ WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+			)
 		) {
 			items(filteredIcons, { it }) { icon ->
 				IconButton(

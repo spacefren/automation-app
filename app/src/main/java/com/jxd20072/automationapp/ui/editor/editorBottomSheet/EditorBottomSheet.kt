@@ -42,6 +42,7 @@ fun EditorBottomSheet(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
+	onClick: (nodeData: ActionNodeData) -> Unit,
 	autoOpenKeyboard: Boolean,
 ) {
 	var lastScreen by remember { mutableStateOf<EditorBottomSheetScreen>(EditorBottomSheetScreen.Empty) }
@@ -81,6 +82,7 @@ fun EditorBottomSheet(
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
+							onClick = onClick,
 							draggableState = draggableState,
 							nodes = state.filteredNodes
 						)

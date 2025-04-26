@@ -289,21 +289,23 @@ class EditorViewModel @Inject constructor(
 		filterNodes()
 	}
 
+	fun createActionNode(nodeData: ActionNodeData): ActionNodeDraft {
+		return ActionNodeDraft(
+			name = nodeData.name,
+			input = nodeData.inputDefinitions.map { inputDef ->
+				VariableDef.withType(
+					name = inputDef.name,
+					type = inputDef.type,
+					value = inputDef.defaultValue
+				)
+			}
+		)
+	}
+
 	fun onActionCreateDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
 		tryUpdateUiState { currentState ->
 			currentState.bottomSheetState as EditorBottomSheetState.Open
 			currentState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
-
-			val actionNode = ActionNodeDraft(
-				name = nodeData.name,
-				input = nodeData.inputDefinitions.map { inputDef ->
-					VariableDef.withType(
-						name = inputDef.name,
-						type = inputDef.type,
-						value = inputDef.defaultValue
-					)
-				}
-			)
 
 			currentState.copy(
 				draggingData = EditorNodeDragData.Dragging(
@@ -311,7 +313,7 @@ class EditorViewModel @Inject constructor(
 					nodePosition = nodePosition,
 					inputOffset = pressedPosition - nodePosition,
 					isCreatingNode = true,
-					draggingAction = actionNode,
+					draggingAction = createActionNode(nodeData),
 					draggingFunction = null,
 					dropData = EditorNodeDropData.NotDropping
 				),
@@ -319,6 +321,40 @@ class EditorViewModel @Inject constructor(
 					collapsedScreen = EditorBottomSheetCollapsedScreen.DropPanels(
 						showDelete = false
 					),
+				)
+			)
+		}
+	}
+
+	fun onActionCreateClick(nodeData: ActionNodeData) {
+		tryUpdateUiState { currentState ->
+			currentState.bottomSheetState as EditorBottomSheetState.Open
+			currentState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
+
+			currentState.copy(
+				bottomSheetState = EditorBottomSheetState.Closed,
+				automationDraft = currentState.automationDraft.copy(
+					functions = currentState.automationDraft.functions
+						.toMutableList()
+						.also { functions ->
+							val onStartFuncIndex = functions.indexOfFirst { it.name == "OnStart" }
+
+							if (onStartFuncIndex != -1) {
+								val onStartFunc = functions[onStartFuncIndex]
+								functions[onStartFuncIndex] = onStartFunc.copy(
+									content = onStartFunc.content + createActionNode(nodeData)
+								)
+							} else {
+								functions.add(
+									FunctionNodeDraft(
+										name = "OnStart",
+										content = listOf(createActionNode(nodeData)),
+										input = emptyList(),
+										output = emptyList()
+									)
+								)
+							}
+						}
 				)
 			)
 		}
