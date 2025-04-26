@@ -219,13 +219,13 @@ class EditorViewModel @Inject constructor(
 				return@tryUpdateUiState uiState.copy(
 					bottomSheetState = uiState.bottomSheetState.copy(
 						screen = uiState.bottomSheetState.screen.copy(
-							filteredNodes = defaultNodeList
+							filteredNodes = uiState.bottomSheetState.screen.nodes
 						),
 					)
 				)
 			}
 
-			val filteredNodes = defaultNodeList
+			val filteredNodes = uiState.bottomSheetState.screen.nodes
 
 				// Search nodes
 				.map { categoryListEntry ->
