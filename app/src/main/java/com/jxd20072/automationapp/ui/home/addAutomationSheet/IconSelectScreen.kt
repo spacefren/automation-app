@@ -1,17 +1,14 @@
 package com.jxd20072.automationapp.ui.home.addAutomationSheet
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,14 +23,16 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun IconSelectScreen(
 	autoOpenKeyboard: Boolean,
 	isSheetOpen: Boolean,
-	filteredIcons: Map<String, List<String>>,
+	filteredIcons: List<String>,
 	iconSearchQuery: String,
 	onIconSearch: (query: String) -> Unit,
 	onIconSelected: (icon: String) -> Unit
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(15.dp),
-		modifier = Modifier.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+		modifier = Modifier
+			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+			.fillMaxSize()
 	) {
 		Text(
 			text = "Change icon",
@@ -49,42 +48,24 @@ fun IconSelectScreen(
 			onIconSearch(query)
 		}
 
-		LazyColumn(
-			verticalArrangement = Arrangement.spacedBy(20.dp),
+		LazyVerticalGrid(
+			columns = GridCells.FixedSize(43.dp),
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1)
 		) {
-			items(filteredIcons.keys.toList(), key = { it }) { category ->
-				Column(
-					modifier = Modifier.animateItem(
-						fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
-						fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
-					)
-				) {
-					Text(
-						text = category,
-						color = LocalTheme.colorScheme.onSecondary,
-						fontSize = 17.sp
-					)
-					Spacer(modifier = Modifier.height(8.dp))
-					FlowRow(
-						verticalArrangement = Arrangement.spacedBy(8.dp),
-						horizontalArrangement = Arrangement.spacedBy(8.dp),
-						modifier = Modifier.fillMaxWidth()
-					) {
-						filteredIcons[category]!!.forEach { icon ->
-							IconButton(
-								color = LocalTheme.colorScheme.surface,
-								iconColor = LocalTheme.colorScheme.onSurface,
-								iconName = icon,
-								cornerRadius = 8.dp,
-								padding = 8.dp,
-								size = 43.dp
-							) { onIconSelected(icon) }
-						}
-					}
-				}
-				Spacer(modifier = Modifier.height(15.dp))
+			items(filteredIcons, { it }) { icon ->
+				IconButton(
+					color = LocalTheme.colorScheme.surface,
+					iconColor = LocalTheme.colorScheme.onSurface,
+					iconName = icon,
+					cornerRadius = 8.dp,
+					padding = 8.dp,
+					size = 43.dp,
+					modifier = Modifier
+						.animateItem()
+				) { onIconSelected(icon) }
 			}
-			item { Spacer(modifier = Modifier.height(15.dp)) }
 		}
 	}
 }

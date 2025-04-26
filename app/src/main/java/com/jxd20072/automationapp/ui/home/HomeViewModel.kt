@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
-import com.jxd20072.automationapp.ui.home.addAutomationSheet.iconCategories
+import com.jxd20072.automationapp.ui.home.addAutomationSheet.automationIcons
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.xdrop.fuzzywuzzy.FuzzySearch
 import java.time.Instant
 import javax.inject.Inject
 
@@ -28,8 +29,8 @@ data class AddAutomationDrawerUiState(
 	val selectedName: String = "",
 	val selectedIcon: String = "wave-square",
 
-	val icons: Map<String, List<String>> = iconCategories,
-	val filteredIcons: Map<String, List<String>> = icons,
+	val icons: List<String> = automationIcons,
+	val filteredIcons: List<String> = icons,
 	val iconSearchQuery: String = "",
 )
 
@@ -176,7 +177,7 @@ class HomeViewModel @Inject constructor(
 
 	fun validateAddAutomationDrawerName(text: String): TextInputValidationResult {
 		return when {
-			text == "" -> TextInputValidationResult.Error("Name cannot be empty.")
+			text.isBlank() -> TextInputValidationResult.Error("Name cannot be empty.")
 			text.length > 20 -> TextInputValidationResult.Error("Name is too long.")
 			homeUiState.value.automations.any { it.name.trim() == text.trim() } ->
 				TextInputValidationResult.Error("Name is already taken by an automation.")
@@ -215,11 +216,20 @@ class HomeViewModel @Inject constructor(
 	private fun filterIcons() {
 		_homeUiState.update { currentState ->
 			val searchQuery = currentState.addAutomationDrawerState.iconSearchQuery.lowercase()
+
+			if (searchQuery.isBlank()) {
+				return@update currentState.copy(
+					addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+						filteredIcons = automationIcons
+					)
+				)
+			}
+
 			currentState.copy(
 				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
-					filteredIcons = currentState.addAutomationDrawerState.icons.mapValues { entry ->
-						entry.value.filter { icon -> icon.lowercase().contains(searchQuery) }
-					}.filter { entry -> entry.value.isNotEmpty() }
+					filteredIcons = FuzzySearch.extractSorted(
+						searchQuery, automationIcons, 75
+					).map { it.string }
 				)
 			)
 		}
