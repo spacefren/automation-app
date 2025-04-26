@@ -71,6 +71,7 @@ fun EditorBottomSheet(
 		Layer {
 			AnimatedContent(
 				targetState = lastScreen,
+				contentKey = { it::class }
 			) { state ->
 				when (state) {
 					is EditorBottomSheetScreen.NodeSelect -> {
@@ -80,7 +81,6 @@ fun EditorBottomSheet(
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
-							isDragging = dragData is EditorNodeDragData.Dragging,
 							draggableState = draggableState,
 							nodes = state.filteredNodes
 						)

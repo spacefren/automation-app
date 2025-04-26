@@ -111,6 +111,9 @@ dependencies {
 	implementation(libs.coil.compose)
 	implementation(libs.coil.svg.v304)
 	implementation(libs.kotlin.reflect)
+
+	// Extra
+	implementation(libs.fuzzywuzzy)
 }
 
 androidComponents {

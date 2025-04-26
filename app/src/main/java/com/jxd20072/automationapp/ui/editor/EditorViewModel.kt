@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.editor
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.xdrop.fuzzywuzzy.FuzzySearch
 import javax.inject.Inject
 
 @Immutable
@@ -54,14 +56,15 @@ sealed interface EditorNodeDropData {
 
 @Immutable
 data class NodeListEntry(
-	val matchesSearch: Boolean,
 	val data: ActionNodeData,
+	val searchMatchRatio: Int,
 )
 
 @Immutable
 data class CategoryListEntry(
 	val categoryName: String,
 	val nodes: List<NodeListEntry>,
+	val searchMatchRatio: Int
 )
 
 @Immutable
@@ -73,28 +76,31 @@ sealed interface EditorBottomSheetState {
 	data object Closed : EditorBottomSheetState
 }
 
+val defaultNodeList = actionNodes.values
+	.map { it.data.category }
+	.distinct()
+	.map { categoryName ->
+		CategoryListEntry(
+			categoryName = categoryName,
+			nodes = actionNodes.values
+				.filter { node -> node.data.category == categoryName }
+				.map { node ->
+					NodeListEntry(
+						searchMatchRatio = 0,
+						data = node.data
+					)
+				},
+			searchMatchRatio = 0
+		)
+	}
+
 @Immutable
 sealed interface EditorBottomSheetScreen {
 	data object Empty : EditorBottomSheetScreen
 	data class NodeSelect(
 		val isCollapsed: Boolean = false,
 		val nodeSearchQuery: String = "",
-		val nodes: List<CategoryListEntry> = actionNodes.values
-			.map { it.data.category }
-			.distinct()
-			.map { categoryName ->
-				CategoryListEntry(
-					categoryName = categoryName,
-					nodes = actionNodes.values
-						.filter { node -> node.data.category == categoryName }
-						.map { node ->
-							NodeListEntry(
-								matchesSearch = false,
-								data = node.data
-							)
-						}
-				)
-			},
+		val nodes: List<CategoryListEntry> = defaultNodeList,
 		val filteredNodes: List<CategoryListEntry> = nodes
 	) : EditorBottomSheetScreen
 	data class NodeEdit(
@@ -199,33 +205,69 @@ class EditorViewModel @Inject constructor(
 				)
 			)
 		}
+		filterNodes()
 	}
 
 	fun filterNodes() {
 		tryUpdateUiState { uiState ->
 			uiState.bottomSheetState as EditorBottomSheetState.Open
 			uiState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
-			val searchQuery = uiState.bottomSheetState.screen.nodeSearchQuery
+			val searchQuery = uiState.bottomSheetState.screen.nodeSearchQuery.lowercase()
+
+			if (searchQuery.isBlank()) {
+				Log.d("APP_FUZZ", "wha-");
+				return@tryUpdateUiState uiState.copy(
+					bottomSheetState = uiState.bottomSheetState.copy(
+						screen = uiState.bottomSheetState.screen.copy(
+							filteredNodes = defaultNodeList
+						),
+					)
+				)
+			}
+
+			val filteredNodes = defaultNodeList
+
+				// Search nodes
+				.map { categoryListEntry ->
+					categoryListEntry.copy(
+						nodes = categoryListEntry.nodes.map { nodeListEntry ->
+							nodeListEntry.copy(
+								searchMatchRatio = FuzzySearch.partialRatio(
+									searchQuery,
+									nodeListEntry.data.displayName.lowercase()
+								)
+							)
+						}
+					)
+				}
+
+				// Search categories
+				.map { categoryListEntry ->
+					categoryListEntry.copy(
+						searchMatchRatio = FuzzySearch.partialRatio(
+							searchQuery,
+							categoryListEntry.categoryName.lowercase()
+						)
+					)
+				}
+
+				// Filter
+				.map { categoryListEntry ->
+					categoryListEntry.copy(
+						nodes = categoryListEntry.nodes.filter { it.searchMatchRatio > 75 }
+					)
+				}
+
+				.filter { categoryListEntry ->
+					categoryListEntry.searchMatchRatio > 75 || categoryListEntry.nodes.isNotEmpty()
+				}
+
+			Log.d("APP_FUZZY", filteredNodes.toString())
 
 			uiState.copy(
 				bottomSheetState = uiState.bottomSheetState.copy(
 					screen = uiState.bottomSheetState.screen.copy(
-						filteredNodes = uiState.bottomSheetState.screen.nodes
-							.map { categoryListEntry ->
-								categoryListEntry.copy(
-									nodes = categoryListEntry.nodes.map { nodeListEntry ->
-										nodeListEntry.copy(
-											matchesSearch = nodeListEntry.data.name
-												.lowercase()
-												.contains(searchQuery.lowercase())
-										)
-									}
-								)
-							}
-							.filter { categoryListEntry ->
-								categoryListEntry.categoryName.lowercase().contains(searchQuery.lowercase())
-									|| categoryListEntry.nodes.any { it.matchesSearch }
-							}
+						filteredNodes = filteredNodes
 					),
 				)
 			)

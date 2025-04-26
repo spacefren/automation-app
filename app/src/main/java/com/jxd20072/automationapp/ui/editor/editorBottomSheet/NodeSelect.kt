@@ -1,7 +1,9 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +40,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -69,7 +71,7 @@ fun NodeCard(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 		modifier = Modifier
-			.clickableWithIndication {}
+			.clickableWithIndication(onClick)
 			.size(size)
 			.shadow(
 				LocalTheme.layoutSystem.shadows.secondary,
@@ -122,13 +124,13 @@ fun NodeCategoryContainer(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
+	modifier: Modifier = Modifier
 ) {
 	var expanded by remember { mutableStateOf(false) }
 	val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
 
-	val localConfiguration = LocalConfiguration.current
 	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
-	val availableWidth = localConfiguration.screenWidthDp -
+	val availableWidth = LocalWindowInfo.current.containerSize.width -
 		2 * LocalTheme.layoutSystem.spacing.paddingLevel1.value -
 		2 * elementSeparation
 	val elementSize = 90
@@ -142,7 +144,7 @@ fun NodeCategoryContainer(
 	val verticalSpace = rows * (elementSize + elementSeparation) - elementSeparation
 
 	Column(
-		modifier = Modifier
+		modifier = modifier
 			.clickableWithIndication { expanded = !expanded }
 			.shadow(
 				LocalTheme.layoutSystem.shadows.primary,
@@ -214,7 +216,6 @@ fun EditorNodeSelectScreen(
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
-	isDragging: Boolean,
 	onStopDrag: () -> Unit,
 	draggableState: Draggable2DState,
 	nodes: List<CategoryListEntry>,
@@ -240,14 +241,19 @@ fun EditorNodeSelectScreen(
 		}
 		LazyColumn(
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-			modifier = Modifier.fillMaxSize()
+			modifier = Modifier
+				.fillMaxSize()
 		) {
 			items(nodes) {
 				NodeCategoryContainer(
 					categoryListEntry = it,
 					onStartDrag = onStartDrag,
 					onStopDrag = onStopDrag,
-					draggableState = draggableState
+					draggableState = draggableState,
+					modifier = Modifier.animateItem(
+						fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
+						fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
+					)
 				)
 			}
 		}
