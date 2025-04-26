@@ -99,17 +99,23 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	private fun getFilteredAutomations(currentState: HomeScreenUiState) =
-		currentState.automations.filter { automation ->
-			(
+	private fun getFilteredAutomations(currentState: HomeScreenUiState): List<AutomationCardState> {
+		if (currentState.searchQuery.isBlank() && currentState.filters.all { filter -> !filter.value }) {
+			return currentState.automations
+		}
+		return currentState.automations
+			.associateWith {
+				FuzzySearch.partialRatio(currentState.searchQuery.lowercase(), it.name.lowercase())
+			}
+			.toList()
+			.sortedBy { it.second }
+			.filter { it.second > 75 }
+			.map { it.first }
+			.filter { automation ->
 				currentState.filters.all { filter -> !filter.value }
 					|| automation.tags.any { tag -> currentState.filters[tag] == true }
-				) && (
-				currentState.searchQuery == ""
-					|| automation.name.lowercase().contains(currentState.searchQuery.lowercase())
-				)
-
-		}
+			}
+	}
 
 	private fun filterAutomations() {
 		_homeUiState.update { currentState ->

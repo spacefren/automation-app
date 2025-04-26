@@ -60,9 +60,10 @@ fun AutomationCard(
 		backgroundColor1 = LocalTheme.colorScheme.tertiary,
 		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
 		onAction1 = { },
+		modifier = modifier
 	) {
 		Box(
-			modifier = modifier
+			modifier = Modifier
 				.height(65.dp)
 				.fillMaxWidth()
 		) {

@@ -46,6 +46,7 @@ fun SwipeableContainer(
 	onAction1: () -> Unit,
 	onAction2: () -> Unit = onAction1,
 	containerCornerRadius: Dp,
+	modifier: Modifier = Modifier,
 	content: @Composable BoxScope.() -> Unit
 ) {
 	val haptic = LocalHapticFeedback.current
@@ -75,7 +76,7 @@ fun SwipeableContainer(
 	}
 
 	Box(
-		modifier = Modifier
+		modifier = modifier
 			.draggable(
 				state = draggableState,
 				orientation = Orientation.Horizontal,

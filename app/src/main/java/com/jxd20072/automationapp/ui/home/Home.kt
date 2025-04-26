@@ -1,7 +1,5 @@
 package com.jxd20072.automationapp.ui.home
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,12 +81,11 @@ private fun AutomationsList(
 	editAutomation: (id: String) -> Unit
 ) {
 	LazyColumn(
-		modifier = modifier.fillMaxHeight()
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+		contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
+		modifier = modifier
+			.fillMaxHeight()
 	) {
-		item {
-			Spacer(modifier = Modifier.height(2.dp))
-		}
-
 		items(automations, { it.id }) { automation ->
 			AutomationCard(
 				name = automation.name,
@@ -99,16 +95,8 @@ private fun AutomationsList(
 				lastUsed = if (automation.lastUsed != null) {
 					getRelativeTime(automation.lastUsed, currentTime)
 				} else "never",
-				modifier = Modifier.animateItem(
-					fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
-					fadeOutSpec = spring(stiffness = Spring.StiffnessMedium)
-				)
+				modifier = Modifier.animateItem()
 			)
-			Spacer(modifier = Modifier.height(10.dp))
-		}
-
-		item {
-			Spacer(modifier = Modifier.height(300.dp))
 		}
 	}
 }
