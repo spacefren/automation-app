@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -53,7 +54,7 @@ fun IconSelectScreen(
 		}
 
 		LazyVerticalGrid(
-			columns = GridCells.FixedSize(43.dp),
+			columns = GridCells.Fixed(7),
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			contentPadding = PaddingValues(
@@ -70,7 +71,7 @@ fun IconSelectScreen(
 					padding = 8.dp,
 					size = 43.dp,
 					modifier = Modifier
-						.animateItem()
+						.aspectRatio(1f)
 				) { onIconSelected(icon) }
 			}
 		}
