@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.editor
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
@@ -215,7 +214,6 @@ class EditorViewModel @Inject constructor(
 			val searchQuery = uiState.bottomSheetState.screen.nodeSearchQuery.lowercase()
 
 			if (searchQuery.isBlank()) {
-				Log.d("APP_FUZZ", "wha-");
 				return@tryUpdateUiState uiState.copy(
 					bottomSheetState = uiState.bottomSheetState.copy(
 						screen = uiState.bottomSheetState.screen.copy(
@@ -261,8 +259,6 @@ class EditorViewModel @Inject constructor(
 				.filter { categoryListEntry ->
 					categoryListEntry.searchMatchRatio > 75 || categoryListEntry.nodes.isNotEmpty()
 				}
-
-			Log.d("APP_FUZZY", filteredNodes.toString())
 
 			uiState.copy(
 				bottomSheetState = uiState.bottomSheetState.copy(
