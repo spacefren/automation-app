@@ -11,6 +11,7 @@ import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDra
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.FunctionNodeDraft
+import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.utils.TimeManager
@@ -173,6 +174,13 @@ class EditorViewModel @Inject constructor(
 					)
 				}
 			}
+		}
+	}
+
+	fun runAutomation() {
+		val uiState = editorUiState.value
+		if (uiState is EditorUiState.Success) {
+			executeAutomation(uiState.automationDraft)
 		}
 	}
 

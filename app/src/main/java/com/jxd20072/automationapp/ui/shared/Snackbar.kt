@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,11 +89,11 @@ class SnackbarHostState() {
 	}
 }
 
-val LocalSnackbarState = compositionLocalOf { SnackbarHostState() }
+val LocalSnackbarState = SnackbarHostState()
 
 @Composable
 fun SnackbarHost() {
-	val localSnackbarState = LocalSnackbarState.current
+	val localSnackbarState = LocalSnackbarState
 	val backgroundAlpha by animateFloatAsState(
 		if (localSnackbarState.activeSnackbars.isNotEmpty()) .5f else 0f
 	)
@@ -136,7 +135,7 @@ fun Snackbar(
 	modifier: Modifier = Modifier,
 	snackbarData: SnackbarData
 ) {
-	val localSnackbarState = LocalSnackbarState.current
+	val localSnackbarState = LocalSnackbarState
 	val interactionSource = remember { MutableInteractionSource() }
 	val coroutineScope = rememberCoroutineScope()
 

@@ -1,11 +1,13 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
-import android.util.Log
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDefType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
+import com.jxd20072.automationapp.ui.shared.LocalSnackbarState
+import com.jxd20072.automationapp.ui.shared.SnackbarData
+import com.jxd20072.automationapp.ui.shared.SnackbarType
 
 private const val TAG = "APP_LoggerNode"
 
@@ -20,11 +22,19 @@ class LoggerAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
 		super.execute(context)
 
-		val text = this.input.find { it.name == "test" }?.value!!
-		Log.d(TAG, processText(text, context))
-		Log.d(
-			TAG,
-			context.getVariables().map { "${it.name}: ${it.value} (${it.variableType})" }.toString()
+		val text = this.input.find { it.name == "Text" }?.value!!
+
+//		Log.d(
+//			TAG,
+//			context.getVariables().map { "${it.name}: ${it.value} (${it.variableType})" }.toString()
+//		)
+
+		LocalSnackbarState.showSnackbar(
+			SnackbarData(
+				text = processText(text, context),
+				type = SnackbarType.INFO,
+				icon = R.drawable.round_align_left_24
+			)
 		)
 	}
 }
