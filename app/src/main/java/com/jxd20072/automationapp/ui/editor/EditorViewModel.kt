@@ -17,6 +17,8 @@ import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import com.jxd20072.automationapp.ui.utils.reorderElementInList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -178,9 +180,11 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun runAutomation() {
-		val uiState = editorUiState.value
-		if (uiState is EditorUiState.Success) {
-			executeAutomation(uiState.automationDraft)
+		CoroutineScope(Dispatchers.Default).launch {
+			val uiState = editorUiState.value
+			if (uiState is EditorUiState.Success) {
+				executeAutomation(uiState.automationDraft)
+			}
 		}
 	}
 

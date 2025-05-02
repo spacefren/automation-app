@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.core.nodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.core.nodes.actions.LoggerNode
+import com.jxd20072.automationapp.core.nodes.actions.WaitNode
 
 data class ActionNodesEntry(
 	val data: ActionNodeData,
@@ -11,7 +12,7 @@ data class ActionNodesEntry(
 
 val actionNodes = mapOf(
 	"log" to LoggerNode,
-	"log2" to LoggerNode,
+	"wait" to WaitNode,
 	"log3" to LoggerNode,
 )
 
