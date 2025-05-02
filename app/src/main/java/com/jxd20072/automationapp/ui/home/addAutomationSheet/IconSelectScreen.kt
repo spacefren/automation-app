@@ -71,6 +71,7 @@ fun IconSelectScreen(
 					size = 43.dp,
 					modifier = Modifier
 						.aspectRatio(1f)
+						.animateItem()
 				) { onIconSelected(icon) }
 			}
 		}
