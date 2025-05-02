@@ -29,6 +29,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 @Composable
 fun EditorBottomSheetCollapsedContent(
 	dragData: EditorNodeDragData,
+	showDelete: Boolean,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
 ) {
@@ -69,7 +70,7 @@ fun EditorBottomSheetCollapsedContent(
 			modifier = Modifier
 				.weight(1f)
 		)
-		if (dragData is EditorNodeDragData.Dragging && !dragData.isCreatingNode) {
+		if (showDelete) {
 			NodeDropZone(
 				dragData = dragData,
 				onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },

@@ -64,6 +64,9 @@ fun EditorBottomSheet(
 		collapsedContent = {
 			EditorBottomSheetCollapsedContent(
 				dragData = dragData,
+				showDelete = bottomSheetState is EditorBottomSheetState.Open
+					&& bottomSheetState.collapsedScreen is EditorBottomSheetCollapsedScreen.DropPanels
+					&& bottomSheetState.collapsedScreen.showDelete,
 				onDropZoneEnter = onDropZoneEnter,
 				onDropZoneExit = onDropZoneExit
 			)

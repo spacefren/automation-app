@@ -449,7 +449,7 @@ class EditorViewModel @Inject constructor(
 				bottomSheetState = EditorBottomSheetState.Open(
 					screen = EditorBottomSheetScreen.Empty,
 					collapsedScreen = EditorBottomSheetCollapsedScreen.DropPanels(
-						showDelete = true
+						showDelete = functionNode?.name != "OnStart"
 					)
 				)
 			)
