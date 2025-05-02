@@ -9,19 +9,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -40,7 +38,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
@@ -56,9 +53,9 @@ import kotlin.math.truncate
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NodeCard(
-	size: Dp,
 	nodeData: ActionNodeData,
 	draggableState: Draggable2DState,
+	modifier: Modifier = Modifier,
 	onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
 	onStopDrag: () -> Unit,
 	onClick: (nodeData: ActionNodeData) -> Unit,
@@ -67,9 +64,8 @@ fun NodeCard(
 
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-		modifier = Modifier
+		modifier = modifier
 			.clickableWithIndication { onClick(nodeData) }
-			.size(size)
 			.shadow(
 				LocalTheme.layoutSystem.shadows.secondary,
 				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
@@ -105,12 +101,13 @@ fun NodeCard(
 		Text(
 			text = nodeData.displayName,
 			color = LocalTheme.colorScheme.onBackground,
-			style = LocalTheme.typography.header
+			style = LocalTheme.typography.header,
+			maxLines = 2,
 		)
 	}
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun NodeCategoryContainer(
 	categoryListEntry: CategoryListEntry,
@@ -155,6 +152,7 @@ fun NodeCategoryContainer(
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 			modifier = Modifier
+				.fillMaxWidth()
 		) {
 			Image(
 				painter = painterResource(R.drawable.round_arrow_dropdown_24),
@@ -178,25 +176,29 @@ fun NodeCategoryContainer(
 				modifier = Modifier.size(22.dp)
 			)
 		}
-		AnimatedVisibility(expanded) {
-			LazyVerticalGrid(
-				columns = GridCells.Adaptive(elementSize.dp),
+		AnimatedVisibility(
+			visible = expanded,
+			modifier = Modifier.fillMaxWidth()
+		) {
+			FlowRow(
 				horizontalArrangement = Arrangement.spacedBy(elementSeparation.dp),
 				verticalArrangement = Arrangement.spacedBy(elementSeparation.dp),
 				modifier = Modifier
+					.fillMaxWidth()
 					.padding(top = elementSeparation.dp)
-					.height(verticalSpace.dp)
 			) {
-				items(categoryListEntry.nodes) { node ->
+				categoryListEntry.nodes.forEach { node ->
 					NodeCard(
-						size = elementSize.dp,
 						nodeData = node.data,
 						draggableState = draggableState,
 						onDragStart = { startedPosition, offset ->
 							onStartDrag(node.data, startedPosition, offset)
 						},
 						onStopDrag = onStopDrag,
-						onClick = onClick
+						onClick = onClick,
+						modifier = Modifier
+							.weight(1f)
+							.fillMaxRowHeight(1f)
 					)
 				}
 			}
@@ -221,7 +223,7 @@ fun EditorNodeSelectScreen(
 	onNodeSearch: (query: String) -> Unit
 ) {
 	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp),
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 		modifier = Modifier
 			.imePadding()
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
@@ -239,7 +241,7 @@ fun EditorNodeSelectScreen(
 			onNodeSearch(query)
 		}
 		LazyColumn(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			modifier = Modifier
 				.fillMaxSize()
 		) {

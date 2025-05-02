@@ -33,7 +33,7 @@ val WaitNode = ActionNodesEntry(
 	data = ActionNodeData(
 		displayName = "Wait",
 		name = "wait",
-		category = "run flow",
+		category = "debug",
 		editorActionDescription = { input ->
 			listOf(
 				"Wait",
