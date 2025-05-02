@@ -1,7 +1,6 @@
 package com.jxd20072.automationapp.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,12 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.SearchBar
+import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
@@ -46,7 +45,7 @@ fun TopBar(
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = modifier.padding(top = 30.dp)
+		modifier = modifier.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 
 		Row(
@@ -55,9 +54,9 @@ fun TopBar(
 			modifier = Modifier.fillMaxWidth()
 		) {
 			Text(
-				text = "Home",
+				text = "AutomationApp",
 				color = LocalTheme.colorScheme.onBackground,
-				fontSize = 32.sp,
+				style = LocalTheme.typography.title
 			)
 
 			Icon(
@@ -66,7 +65,7 @@ fun TopBar(
 				tint = LocalTheme.colorScheme.onBackground,
 				modifier = Modifier
 					.size(28.dp)
-					.clickable { openSettings() }
+					.clickableWithIndication { openSettings() }
 			)
 		}
 	}
@@ -120,7 +119,7 @@ fun HomeScreen(
 			.background(LocalTheme.colorScheme.background)
 	) {
 		Column(
-			verticalArrangement = Arrangement.spacedBy(15.dp),
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
 		) {
 			TopBar(

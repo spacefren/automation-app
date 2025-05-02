@@ -35,9 +35,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,6 +78,10 @@ fun BaseTextInput(
 		}
 	}
 
+	val iconSize = with(LocalDensity.current) {
+		LocalTheme.typography.header.fontSize.toDp()
+	}
+
 	Column(
 		modifier = modifier
 	) {
@@ -95,7 +99,9 @@ fun BaseTextInput(
 				.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 		) {
 			Row(
-				horizontalArrangement = Arrangement.Start,
+				horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+				verticalAlignment = Alignment.CenterVertically,
+				modifier = Modifier.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 			) {
 				if (icon != null) {
 					Icon(
@@ -103,11 +109,9 @@ fun BaseTextInput(
 						contentDescription = "search",
 						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
-							.size(35.dp)
-							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+							.size(iconSize)
 					)
 				}
-				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
 				Box(
 					modifier = Modifier
 						.weight(1f)
@@ -121,9 +125,8 @@ fun BaseTextInput(
 						singleLine = true,
 						enabled = true,
 						cursorBrush = SolidColor(LocalTheme.colorScheme.onSurface),
-						textStyle = TextStyle(
-							color = LocalTheme.colorScheme.onBackground,
-							fontSize = 17.sp
+						textStyle = LocalTheme.typography.header.copy(
+							color = LocalTheme.colorScheme.onBackground
 						),
 						keyboardOptions = KeyboardOptions(imeAction = imeAction),
 						keyboardActions = KeyboardActions(onAny = {
@@ -139,7 +142,7 @@ fun BaseTextInput(
 						Text(
 							text = placeholderText,
 							color = LocalTheme.colorScheme.onSurface,
-							fontSize = 17.sp,
+							style = LocalTheme.typography.header,
 							modifier = Modifier
 								.fillMaxHeight()
 								.wrapContentHeight(align = Alignment.CenterVertically)
@@ -154,8 +157,7 @@ fun BaseTextInput(
 						contentDescription = "search",
 						tint = LocalTheme.colorScheme.onSurface,
 						modifier = Modifier
-							.size(35.dp)
-							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+							.size(iconSize)
 							.clickable(interactionSource = closeInteractionSource, indication = null) {
 								onTextChanged("")
 								focusManager.clearFocus()

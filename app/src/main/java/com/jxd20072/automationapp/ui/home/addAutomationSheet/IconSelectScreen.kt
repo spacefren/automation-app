@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -42,7 +41,7 @@ fun IconSelectScreen(
 		Text(
 			text = "Change icon",
 			color = LocalTheme.colorScheme.onBackground,
-			fontSize = 27.sp,
+			style = LocalTheme.typography.subTitle
 		)
 
 		SearchBar(
@@ -54,7 +53,7 @@ fun IconSelectScreen(
 		}
 
 		LazyVerticalGrid(
-			columns = GridCells.Fixed(7),
+			columns = GridCells.Fixed(8),
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			contentPadding = PaddingValues(

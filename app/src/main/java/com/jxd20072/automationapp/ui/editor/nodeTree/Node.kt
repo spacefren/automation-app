@@ -39,7 +39,6 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
 import com.jxd20072.automationapp.core.nodes.actionNodes
@@ -140,13 +139,13 @@ fun NodeHeader(
 							.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
 							.background(LocalTheme.colorScheme.surface)
 							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-							.padding(end = 3.dp) // To account for italic text
 					) {
 						Text(
 							text = piece.removePrefix("*"),
 							color = LocalTheme.colorScheme.onBackground,
-							fontStyle = FontStyle.Italic,
-							fontSize = 16.sp,
+							style = LocalTheme.typography.body.copy(
+								fontStyle = FontStyle.Italic
+							),
 						)
 					}
 				} else {
@@ -154,7 +153,7 @@ fun NodeHeader(
 						Text(
 							text = word,
 							color = LocalTheme.colorScheme.onBackground,
-							fontSize = 16.sp,
+							style = LocalTheme.typography.header,
 							modifier = Modifier.align(Alignment.CenterVertically)
 						)
 					}

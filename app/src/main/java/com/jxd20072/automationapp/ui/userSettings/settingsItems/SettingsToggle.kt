@@ -1,17 +1,14 @@
 package com.jxd20072.automationapp.ui.userSettings.settingsItems
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -23,6 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsEntry
@@ -31,33 +32,32 @@ import com.jxd20072.automationapp.ui.userSettings.UserSettingsEntry
 fun UserSettingsItem(
 	item: UserSettingsEntry<Boolean>,
 	displayName: String,
-	description: String,
+	description: String = "",
 	modifier: Modifier = Modifier,
 	onValueChanged: (Boolean) -> Unit
 ) {
 	val enabled = item.value
 	var isPressed by remember { mutableStateOf(false) }
 
-	val padding = LocalTheme.layoutSystem.spacing.paddingLevel3
-	val containerWidth = 65.dp
-	val containerHeight = 35.dp
-	val knobSize = (containerHeight - padding * 2)
+	var containerSize by remember { mutableStateOf(IntSize(0, 0)) }
 
 	val knobScale by animateFloatAsState(
-		if (isPressed) .8f else 1f,
-		animationSpec = spring(stiffness = Spring.StiffnessHigh),
-		label = "settings-toggle-animation-scale",
+		if (isPressed) .8f else 1f
 	)
 
-	val startPadding by animateDpAsState(
-		if (enabled) containerWidth - knobSize - padding else padding,
-		label = "settings-toggle-animation-padding"
-	)
+	@Composable
+	fun calculateExtraPadding(): Dp {
+		val containerWidthDp = with(LocalDensity.current) { containerSize.width.toDp() }
+		val containerHeightDp = with(LocalDensity.current) { containerSize.height.toDp() }
+		val padding = LocalTheme.layoutSystem.spacing.paddingLevel3
+		val knobSize = containerHeightDp - (padding * 2)
+		return if (enabled) containerWidthDp - knobSize - padding * 2 else 0.dp
+	}
+
+	val startPadding by animateDpAsState(calculateExtraPadding())
 
 	val knobColor by animateColorAsState(
-		if (enabled) LocalTheme.colorScheme.secondary
-		else LocalTheme.colorScheme.tertiary,
-		label = "settings-toggle-animation-color"
+		if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.tertiary,
 	)
 
 	UserSettingsItemContainer(
@@ -67,8 +67,11 @@ fun UserSettingsItem(
 	) {
 		Box(
 			modifier = Modifier
-				.width(containerWidth)
-				.height(containerHeight)
+				.onGloballyPositioned {
+					containerSize = it.size
+				}
+				.width(60.dp)
+				.fillMaxHeight()
 				.pointerInput(enabled) {
 					detectTapGestures(
 						onTap = {
@@ -89,24 +92,20 @@ fun UserSettingsItem(
 					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
 				)
 				.background(LocalTheme.colorScheme.surface)
-				.padding(vertical = padding)
+				.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+				.padding(start = startPadding)
 		) {
 			Box(
 				modifier = Modifier
-					.padding(start = startPadding)
-					.size(knobSize)
-			) {
-				Box(
-					modifier = Modifier
-						.fillMaxSize()
-						.scale(knobScale)
-						.shadow(
-							LocalTheme.layoutSystem.shadows.secondary,
-							RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
-						)
-						.background(knobColor)
-				)
-			}
+					.fillMaxHeight()
+					.aspectRatio(1f)
+					.scale(knobScale)
+					.shadow(
+						LocalTheme.layoutSystem.shadows.secondary,
+						RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
+					)
+					.background(knobColor)
+			)
 		}
 	}
 }

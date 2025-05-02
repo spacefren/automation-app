@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -17,12 +15,12 @@ fun SettingsCategory(
 	content: @Composable ColumnScope.() -> Unit
 ) {
 	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp)
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Text(
 			text = name,
-			color = LocalTheme.colorScheme.secondary,
-			fontSize = 18.sp
+			color = LocalTheme.colorScheme.onSurface,
+			style = LocalTheme.typography.header
 		)
 		content()
 	}

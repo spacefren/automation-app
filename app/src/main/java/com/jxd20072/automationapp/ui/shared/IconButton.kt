@@ -93,7 +93,8 @@ fun IconButton(
 		color = color,
 		cornerRadius = cornerRadius,
 		onClick = onClick,
-		modifier = modifier.size(size)
+		modifier = modifier
+			.size(size)
 	) {
 		Icon(
 			painter = painterResource(drawableRes),

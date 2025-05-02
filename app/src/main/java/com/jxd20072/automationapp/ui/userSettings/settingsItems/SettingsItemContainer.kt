@@ -14,13 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun UserSettingsItemContainer(
 	displayName: String,
-	description: String,
+	description: String = "",
 	modifier: Modifier = Modifier,
 	content: @Composable BoxScope.() -> Unit
 ) {
@@ -31,25 +30,27 @@ fun UserSettingsItemContainer(
 			.fillMaxWidth()
 	) {
 		Column(
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 			modifier = Modifier
 				.weight(1f)
 		) {
 			Text(
 				text = displayName,
 				color = LocalTheme.colorScheme.onBackground,
-				fontSize = 18.sp
+				style = LocalTheme.typography.header
 			)
-			Spacer(modifier = Modifier.height(2.dp))
-			Text(
-				text = description,
-				color = LocalTheme.colorScheme.onSurface,
-				fontSize = 14.sp,
-				lineHeight = 20.sp
-			)
+			if (description.isNotEmpty()) {
+				Text(
+					text = description,
+					color = LocalTheme.colorScheme.onSurface,
+					style = LocalTheme.typography.body
+				)
+			}
 		}
-		Spacer(modifier = Modifier.width(20.dp))
+		Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
 		Box(
-			content = content
+			content = content,
+			modifier = modifier.height(35.dp)
 		)
 	}
 }

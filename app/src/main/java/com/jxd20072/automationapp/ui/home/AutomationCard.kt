@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +20,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
@@ -55,6 +53,10 @@ fun AutomationCard(
 	runAutomation: () -> Unit,
 	editAutomation: () -> Unit,
 ) {
+	val iconSize = with(LocalDensity.current) {
+		LocalTheme.typography.header.fontSize.toDp()
+	}
+
 	SwipeableContainer(
 		icon1 = R.drawable.round_archive_24,
 		backgroundColor1 = LocalTheme.colorScheme.tertiary,
@@ -64,57 +66,51 @@ fun AutomationCard(
 	) {
 		Box(
 			modifier = Modifier
-				.height(65.dp)
 				.fillMaxWidth()
 		) {
 			Row(
 				modifier = Modifier
+					.fillMaxSize()
 					.shadow(
 						LocalTheme.layoutSystem.shadows.primary,
 						RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
 					)
 					.background(LocalTheme.colorScheme.surface)
 					.padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
-				horizontalArrangement = Arrangement.End,
+				horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Column(
+					verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 					modifier = Modifier
 						.weight(1f)
 						.fillMaxHeight()
 				) {
 					Row(
-						verticalAlignment = Alignment.Top,
-						modifier = Modifier
-							.fillMaxWidth()
-							.weight(1f)
+						horizontalArrangement =
+							Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
 					) {
 						Image(
 							painter = getAutomationIconPainter(icon),
 							contentDescription = "",
 							colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
 							modifier = Modifier
-								.size(22.dp)
-								.padding(top = 2.dp)
+								.size(iconSize)
+								.padding(1.dp)
 						)
-						Spacer(modifier = Modifier.width(8.dp))
 						Text(
 							text = name,
 							color = LocalTheme.colorScheme.onBackground,
-							fontSize = 18.sp,
-							modifier = Modifier.height(22.dp)
+							style = LocalTheme.typography.header,
 						)
 					}
 					Text(
 						text = "Last ran: $lastUsed",
 						color = LocalTheme.colorScheme.onSurface,
-						fontSize = 13.sp,
-						lineHeight = 13.sp,
-						modifier = Modifier.padding(start = 2.dp) // Align with the icon's live area
+						style = LocalTheme.typography.body
+						//modifier = Modifier.padding(start = 2.dp) // Align with the icon's live area
 					)
 				}
-
-				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 
 				IconButton(
 					color = LocalTheme.colorScheme.tertiary,
@@ -123,10 +119,8 @@ fun AutomationCard(
 					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
 					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = editAutomation,
-					size = 45.dp,
+					size = 42.dp,
 				)
-
-				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 
 				IconButton(
 					color = LocalTheme.colorScheme.secondary,
@@ -135,7 +129,7 @@ fun AutomationCard(
 					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
 					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
 					onClick = runAutomation,
-					size = 45.dp,
+					size = 42.dp,
 				)
 			}
 		}

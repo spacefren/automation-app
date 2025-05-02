@@ -17,7 +17,6 @@ fun GeneralSettingsCategory(
 		UserSettingsItem(
 			item = userSettingsUiState.settings.autoSave,
 			displayName = "Auto-save automations",
-			description = "Automatically save changes to automations",
 			onValueChanged = onAutoSaveChanged
 		)
 		UserSettingsItem(
@@ -28,7 +27,6 @@ fun GeneralSettingsCategory(
 		)
 		UserSettingsItem(
 			displayName = "Open automations folder",
-			description = "Open the automations folder in your device's default file manager",
 			onActivate = openAutomationsFolder
 		)
 	}

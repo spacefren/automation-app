@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.IconLabelButton
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -16,7 +15,7 @@ fun FloatingNewButton(
 ) {
 	IconLabelButton(
 		label = "New",
-		fontSize = 22.sp,
+		textStyle = LocalTheme.typography.subTitle,
 		drawableRes = R.drawable.round_add_24,
 		color = LocalTheme.colorScheme.primary,
 		iconColor = LocalTheme.colorScheme.onPrimary,

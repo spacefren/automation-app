@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.CategoryListEntry
@@ -106,7 +105,7 @@ fun NodeCard(
 		Text(
 			text = nodeData.displayName,
 			color = LocalTheme.colorScheme.onBackground,
-			fontSize = 17.sp
+			style = LocalTheme.typography.header
 		)
 	}
 }
@@ -168,7 +167,7 @@ fun NodeCategoryContainer(
 			Spacer(modifier = Modifier.width(5.dp))
 			Text(
 				text = categoryListEntry.categoryName.replaceFirstChar { it.uppercase() },
-				fontSize = 20.sp,
+				style = LocalTheme.typography.header,
 				color = LocalTheme.colorScheme.onBackground
 			)
 			Spacer(modifier = Modifier.weight(1f))
@@ -230,7 +229,7 @@ fun EditorNodeSelectScreen(
 		Text(
 			text = "Select action",
 			color = LocalTheme.colorScheme.onBackground,
-			fontSize = 27.sp,
+			style = LocalTheme.typography.subTitle
 		)
 		SearchBar(
 			searchText = "Search actions or categories",

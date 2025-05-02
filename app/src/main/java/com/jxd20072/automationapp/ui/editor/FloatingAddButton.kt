@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.Button
 import com.jxd20072.automationapp.ui.shared.IconLabelButton
@@ -67,7 +66,7 @@ fun FloatingSubButton(
 	) {
 		IconLabelButton(
 			label = name,
-			fontSize = 17.sp,
+			textStyle = LocalTheme.typography.header,
 			drawableRes = icon,
 			color = LocalTheme.colorScheme.tertiary,
 			iconColor = LocalTheme.colorScheme.onBackground,

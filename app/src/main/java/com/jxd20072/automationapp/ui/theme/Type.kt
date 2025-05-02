@@ -2,19 +2,30 @@ package com.jxd20072.automationapp.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+val baseTextStyle = TextStyle(
+	fontFamily = FontFamily.Default,
+)
+
 data class Typography(
-	val bodyLarge: TextStyle
+	val title: TextStyle,
+	val subTitle: TextStyle,
+	val header: TextStyle,
+	val body: TextStyle
 )
 
 val defaultTypography = Typography(
-	bodyLarge = TextStyle(
-		fontFamily = FontFamily.Default,
-		fontWeight = FontWeight.Normal,
+	title = baseTextStyle.copy(
+		fontSize = 32.sp,
+	),
+	subTitle = baseTextStyle.copy(
+		fontSize = 22.sp,
+	),
+	header = baseTextStyle.copy(
 		fontSize = 16.sp,
-		lineHeight = 24.sp,
-		letterSpacing = 0.5.sp
+	),
+	body = baseTextStyle.copy(
+		fontSize = 14.sp,
 	),
 )

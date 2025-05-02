@@ -5,10 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -16,9 +14,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
@@ -39,6 +37,9 @@ fun EditorTopBar(
 	saveAutomation: () -> Unit,
 	runAutomation: () -> Unit,
 ) {
+	val iconSize = with(LocalDensity.current) {
+		LocalTheme.typography.subTitle.fontSize.toDp()
+	}
 
 	val elapsedTime =
 		if (automationData.lastSaved != "")
@@ -46,13 +47,12 @@ fun EditorTopBar(
 		else null
 
 	Column(
-		verticalArrangement = Arrangement.spacedBy(10.dp),
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 		modifier = modifier
 			.fillMaxWidth()
 			.background(LocalTheme.colorScheme.surface)
 			.windowInsetsPadding(WindowInsets.statusBars)
-			.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
@@ -61,10 +61,10 @@ fun EditorTopBar(
 				.fillMaxWidth()
 		) {
 			Column(
-				verticalArrangement = Arrangement.spacedBy(5.dp)
+				verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
 			) {
 				Row(
-					horizontalArrangement = Arrangement.spacedBy(10.dp),
+					horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					Icon(
@@ -72,7 +72,7 @@ fun EditorTopBar(
 						contentDescription = "return to home screen",
 						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier
-							.size(22.dp)
+							.size(iconSize)
 							.clickable(interactionSource = null, indication = null) {
 								returnHome(true)
 							}
@@ -81,18 +81,19 @@ fun EditorTopBar(
 						painter = getAutomationIconPainter(automationData.icon),
 						contentDescription = "icon: ${automationData.icon}",
 						tint = LocalTheme.colorScheme.onBackground,
-						modifier = Modifier.size(20.dp)
+						modifier = Modifier
+							.size(iconSize - 2.dp)
 					)
 					Text(
 						text = automationData.name,
 						color = LocalTheme.colorScheme.onBackground,
-						fontSize = 20.sp
+						style = LocalTheme.typography.subTitle
 					)
 				}
 				Text(
 					text = "Last saved: ${elapsedTime ?: "never"}",
 					color = LocalTheme.colorScheme.onSurface,
-					fontSize = 15.sp
+					style = LocalTheme.typography.body
 				)
 			}
 			Row(
@@ -120,11 +121,11 @@ fun EditorTopBar(
 			}
 		}
 		Row(
-			horizontalArrangement = Arrangement.spacedBy(10.dp)
+			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2)
 		) {
 			IconLabelButton(
 				label = "Triggers",
-				fontSize = 15.sp,
+				textStyle = LocalTheme.typography.body,
 				drawableRes = R.drawable.round_electric_bolt_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
@@ -134,7 +135,7 @@ fun EditorTopBar(
 
 			IconLabelButton(
 				label = "Variables",
-				fontSize = 15.sp,
+				textStyle = LocalTheme.typography.body,
 				drawableRes = R.drawable.round_data_object_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
@@ -144,7 +145,7 @@ fun EditorTopBar(
 
 			IconLabelButton(
 				label = "Logs",
-				fontSize = 15.sp,
+				textStyle = LocalTheme.typography.body,
 				drawableRes = R.drawable.round_align_left_24,
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
@@ -152,6 +153,5 @@ fun EditorTopBar(
 				iconSize = 20.dp
 			) { }
 		}
-		Spacer(modifier = Modifier.height(5.dp))
 	}
 }

@@ -3,19 +3,15 @@ package com.jxd20072.automationapp.ui.userSettings
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,11 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.Layer
+import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.categories.GeneralSettingsCategory
 import kotlinx.coroutines.launch
@@ -57,10 +53,11 @@ fun UserSettingsScreen(
 			.background(LocalTheme.colorScheme.background)
 	) {
 		Column(
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier
 				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = 30.dp)
-				.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+				.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+				.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
 		) {
 			Row(
 				verticalAlignment = Alignment.CenterVertically,
@@ -68,7 +65,8 @@ fun UserSettingsScreen(
 				modifier = Modifier.fillMaxWidth()
 			) {
 				Row(
-					verticalAlignment = Alignment.CenterVertically
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2)
 				) {
 					Icon(
 						painter = painterResource(R.drawable.round_arrow_back_24),
@@ -76,13 +74,12 @@ fun UserSettingsScreen(
 						tint = LocalTheme.colorScheme.onBackground,
 						modifier = Modifier
 							.size(28.dp)
-							.clickable { returnHome() }
+							.clickableWithIndication { returnHome() }
 					)
-					Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 					Text(
 						text = "Settings",
 						color = LocalTheme.colorScheme.onBackground,
-						fontSize = 32.sp
+						style = LocalTheme.typography.title
 					)
 				}
 				Icon(
@@ -92,7 +89,7 @@ fun UserSettingsScreen(
 					modifier = Modifier
 						.size(28.dp)
 						.rotate(resetIconRotation.value)
-						.clickable {
+						.clickableWithIndication {
 							userSettingsViewModel.resetSettingsToDefault()
 							coroutineScope.launch {
 								resetIconRotation.animateTo(
@@ -107,7 +104,6 @@ fun UserSettingsScreen(
 						}
 				)
 			}
-			Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel1))
 			if (userSettingsUiState is UserSettingsUiState.Success) {
 				val settings = userSettingsUiState as UserSettingsUiState.Success
 
@@ -115,7 +111,6 @@ fun UserSettingsScreen(
 					verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 					modifier = Modifier
 						.verticalScroll(rememberScrollState(0))
-						.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel2)
 				) {
 					GeneralSettingsCategory(
 						userSettingsUiState = settings,

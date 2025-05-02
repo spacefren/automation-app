@@ -4,20 +4,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
+import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -38,27 +42,28 @@ fun AddAutomationScreen(
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		Row(
-			horizontalArrangement = Arrangement.SpaceAround,
-			verticalAlignment = Alignment.Bottom
+			horizontalArrangement = Arrangement.SpaceBetween,
+			verticalAlignment = Alignment.Bottom,
+			modifier = Modifier
+				.fillMaxWidth()
 		) {
 			Text(
 				text = "New automation",
 				color = LocalTheme.colorScheme.onBackground,
-				fontSize = 27.sp,
-				modifier = Modifier.weight(1f)
+				style = LocalTheme.typography.subTitle,
 			)
-			IconButton(
-				color = LocalTheme.colorScheme.secondary,
-				iconColor = LocalTheme.colorScheme.onSecondary,
-				drawableRes = R.drawable.round_check_24,
-				cornerRadius = 8.dp,
-				padding = 5.dp,
-				size = 45.dp,
-			) {
-				if (validateAutomationName(name) is TextInputValidationResult.Success) {
-					onCreateAutomation()
-				}
-			}
+			Icon(
+				painter = painterResource(R.drawable.round_check_24),
+				contentDescription = "confirm",
+				tint = LocalTheme.colorScheme.onBackground,
+				modifier = Modifier
+					.size(28.dp)
+					.clickableWithIndication {
+						if (validateAutomationName(name) is TextInputValidationResult.Success) {
+							onCreateAutomation()
+						}
+					}
+			)
 		}
 		Row(
 			horizontalArrangement = Arrangement.spacedBy(10.dp)
