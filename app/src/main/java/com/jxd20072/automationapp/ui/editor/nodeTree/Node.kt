@@ -40,7 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
+import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
@@ -235,7 +235,7 @@ fun TopLevelNode(
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
 	modifier: Modifier = Modifier,
-	content: List<ActionNodeDraft>
+	content: List<ActionNodeDef>
 ) {
 	var dragging by remember { mutableStateOf(false) }
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -299,7 +299,7 @@ fun TopLevelNode(
 @Composable
 fun ActionNode(
 	modifier: Modifier = Modifier,
-	actionNode: ActionNodeDraft,
+	actionNode: ActionNodeDef,
 	draggableState: Draggable2DState,
 	onStopDrag: (() -> Unit)? = null,
 	onDragStart: ((

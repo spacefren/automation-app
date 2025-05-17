@@ -1,10 +1,8 @@
 package com.jxd20072.automationapp.core.executor
 
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
-import com.jxd20072.automationapp.core.data.repository.automations.createAutomationDraft
 
-fun executeAutomation(automation: AutomationDraft) {
+fun executeAutomation(automation: AutomationDef) {
 	val entryPoint = automation.functions.find { it.name == "OnStart" }
 	if (entryPoint == null) return
 
@@ -13,8 +11,4 @@ fun executeAutomation(automation: AutomationDraft) {
 		initialVariables = automation.variables
 	)
 	executionFlow.startExecution()
-}
-
-fun executeAutomation(automation: AutomationDef) {
-	executeAutomation(createAutomationDraft(automation))
 }

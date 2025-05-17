@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
-import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
+import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
 import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -20,7 +20,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeTree(
-	automationDraft: AutomationDraft,
+	automationDraft: AutomationDef,
 	draggableState: Draggable2DState,
 	draggingData: EditorNodeDragData,
 	onNodeDrag: (

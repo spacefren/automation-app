@@ -1,10 +1,8 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefType
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
-import com.jxd20072.automationapp.core.executor.readVariable
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import kotlinx.coroutines.delay
@@ -16,12 +14,7 @@ class WaitAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
 		super.execute(context)
 
-		val durationVar = this.input.find { it.name == "Duration" } as VariableDef.NUMBER
-		val duration = readVariable(durationVar)
-
-		if (duration == null) {
-			return
-		}
+		val duration = getInput<NodeInputEntry.NUMBER>("Duration").value
 
 		runBlocking {
 			delay(duration.toLong())
@@ -37,18 +30,16 @@ val WaitNode = ActionNodesEntry(
 		editorActionDescription = { input ->
 			listOf(
 				"Wait",
-				"*${input.find { it.name == "Duration" }?.value}ms"
+				"*${input["Duration"]?.value}ms"
 			)
 		},
 		description = "Pause the execution for a specified duration",
 		icon = R.drawable.round_play_arrow_24,
-		inputDefinitions = listOf(
-			NodeInputDefinition(
-				name = "Duration",
+		inputDefinitions = mapOf(
+			"Duration" to NodeInputDefinition(
 				description = "The duration of the pause, in milliseconds",
-				type = VariableDefType.NUMBER,
-				validate = { true },
-				defaultValue = "1000"
+				defaultValue = NodeInputEntry.NUMBER(1000),
+				validate = { true }
 			)
 		)
 	),

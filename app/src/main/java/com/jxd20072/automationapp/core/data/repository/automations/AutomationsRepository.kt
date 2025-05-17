@@ -10,6 +10,7 @@ import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,19 +32,15 @@ class AutomationsRepository @Inject constructor(
 		metadata = AutomationDefMetadata(
 			version = 0
 		),
-		variables = setOf(
-			VariableDef.TEXT
-				(
-				name = "textVariable",
-				value = "textVariableValue"
-			),
+		variables = mapOf(
+			"test" to VariableDef.TEXT("textVariableValue"),
 		),
 		triggers = emptyList(),
 		functions = listOf(
 			FunctionNodeDef(
 				name = "OnStart",
-				input = emptyList(),
-				output = emptyList(),
+				input = emptyMap(),
+				output = emptyMap(),
 				content = listOf(
 //				ActionNodeDef(
 //					name = "writeVariable",
@@ -51,42 +48,42 @@ class AutomationsRepository @Inject constructor(
 //				),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "first test"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("first test"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "second test"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("second test"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "third test"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("third test"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "fourth test"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("fourth test"))
 					),
 				),
 			),
 			FunctionNodeDef(
 				name = "myFunction",
-				input = emptyList(),
-				output = emptyList(),
+				input = emptyMap(),
+				output = emptyMap(),
 				content = listOf(
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "1"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("1"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "2"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("2"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "3"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("3"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = listOf(VariableDef.TEXT("Text", "4"))
+						input = mapOf("Text" to NodeInputEntry.TEXT("4"))
 					),
 				)
 			),
@@ -118,12 +115,6 @@ class AutomationsRepository @Inject constructor(
 		automationsStore.writeAutomationToFile(
 			name = name,
 			automationDef = testingAutomationDef
-//			automationDef = AutomationDef(
-//				metadata = AutomationDefMetadata(version = 1),
-//				functions = emptyList(),
-//				triggers = emptyList(),
-//				variables = emptySet()
-//			)
 		)
 
 		val entry = AutomationsMapEntry.newBuilder()
@@ -158,18 +149,18 @@ class AutomationsRepository @Inject constructor(
 		return automationsDataStore.data.first().automationsMap[id]
 	}
 
-	suspend fun getAutomationDraft(id: String): AutomationDraft? {
+	suspend fun getAutomationDef(id: String): AutomationDef? {
 		val mapEntry = getAutomationMapEntry(id) ?: return null
 		val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
-		return createAutomationDraft(automationDef)
+		return automationDef
 	}
 
-	fun writeAutomation(id: String, draft: AutomationDraft) {
+	fun writeAutomation(id: String, automation: AutomationDef) {
 		CoroutineScope(Dispatchers.IO).launch {
 			Log.d("APP_A", "saving...");
 			val automationData = getAutomationMapEntry(id) ?: return@launch
 
-			automationsStore.writeAutomationToFile(automationData.name, createAutomationDef(draft))
+			automationsStore.writeAutomationToFile(automationData.name, automation)
 
 			updateAutomationDataMap { automationsData ->
 				automationsData.copy {

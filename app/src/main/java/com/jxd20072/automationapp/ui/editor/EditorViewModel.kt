@@ -5,12 +5,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
-import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.AutomationDef
+import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
-import com.jxd20072.automationapp.core.data.repository.automations.ActionNodeDraft
-import com.jxd20072.automationapp.core.data.repository.automations.AutomationDraft
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
-import com.jxd20072.automationapp.core.data.repository.automations.FunctionNodeDraft
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
@@ -35,8 +34,8 @@ enum class EditorDraggableScope {
 sealed interface EditorNodeDragData {
 	data object NotDragging : EditorNodeDragData
 	data class Dragging(
-		val draggingAction: ActionNodeDraft? = null,
-		val draggingFunction: FunctionNodeDraft? = null,
+		val draggingAction: ActionNodeDef? = null,
+		val draggingFunction: FunctionNodeDef? = null,
 		val isCreatingNode: Boolean = false,
 		val nodePosition: Offset,
 		val inputOffset: Offset,
@@ -124,7 +123,7 @@ sealed interface EditorUiState {
 	data class Success(
 		val automationId: String,
 		val automationData: AutomationsMapEntry,
-		val automationDraft: AutomationDraft,
+		val automationDraft: AutomationDef,
 		val draggingData: EditorNodeDragData,
 		val bottomSheetState: EditorBottomSheetState
 	) : EditorUiState
@@ -163,14 +162,14 @@ class EditorViewModel @Inject constructor(
 
 	fun loadAutomation(id: String) {
 		viewModelScope.launch {
-			val automation = automationsRepository.getAutomationDraft(id)
+			val automation = automationsRepository.getAutomationDef(id)
 			val automationData = automationsRepository.getAutomationMapEntry(id)
 			if (automation != null && automationData != null) {
 				_editorUiState.update {
 					EditorUiState.Success(
 						automationId = id,
 						automationData = automationData,
-						automationDraft = automation,
+						automationDraft = automation.copy(),
 						draggingData = EditorNodeDragData.NotDragging,
 						bottomSheetState = EditorBottomSheetState.Closed
 					)
@@ -297,16 +296,10 @@ class EditorViewModel @Inject constructor(
 		filterNodes()
 	}
 
-	fun createActionNode(nodeData: ActionNodeData): ActionNodeDraft {
-		return ActionNodeDraft(
+	fun createActionNode(nodeData: ActionNodeData): ActionNodeDef {
+		return ActionNodeDef(
 			name = nodeData.name,
-			input = nodeData.inputDefinitions.map { inputDef ->
-				VariableDef.withType(
-					name = inputDef.name,
-					type = inputDef.type,
-					value = inputDef.defaultValue
-				)
-			}
+			input = nodeData.inputDefinitions.mapValues { it.value.defaultValue }
 		)
 	}
 
@@ -354,11 +347,11 @@ class EditorViewModel @Inject constructor(
 								)
 							} else {
 								functions.add(
-									FunctionNodeDraft(
+									FunctionNodeDef(
 										name = "OnStart",
 										content = listOf(createActionNode(nodeData)),
-										input = emptyList(),
-										output = emptyList()
+										input = emptyMap(),
+										output = emptyMap()
 									)
 								)
 							}
@@ -375,7 +368,7 @@ class EditorViewModel @Inject constructor(
 			currentState.bottomSheetState.screen as EditorBottomSheetScreen.NodeSelect
 
 			val draggingData = currentState.draggingData as EditorNodeDragData.Dragging
-			draggingData.draggingAction as ActionNodeDraft
+			draggingData.draggingAction!!
 
 			val dropData = draggingData.dropData
 			val newState = when {

@@ -1,11 +1,9 @@
 package com.jxd20072.automationapp.core.nodes.props
 
-import com.jxd20072.automationapp.core.data.model.VariableDefType
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 
-data class NodeInputDefinition(
-	val name: String,
+data class NodeInputDefinition<T>(
 	val description: String,
-	val type: VariableDefType,
-	val defaultValue: String,
-	val validate: ((String) -> Boolean)? = null,
+	val defaultValue: NodeInputEntry<T>,
+	val validate: ((T) -> Boolean)? = null,
 )

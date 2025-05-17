@@ -96,7 +96,6 @@ fun AutomationCard(
 							colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
 							modifier = Modifier
 								.size(iconSize)
-								.padding(1.dp)
 						)
 						Text(
 							text = name,

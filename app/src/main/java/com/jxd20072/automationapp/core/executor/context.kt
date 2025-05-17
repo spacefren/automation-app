@@ -5,26 +5,24 @@ import java.time.Instant
 
 class ExecutionFlowContext(
 	val scope: String,
-	initialVariables: Set<VariableDef>,
+	initialVariables: Map<String, VariableDef<*>>,
 ) {
-	private val variables = initialVariables.toMutableSet()
+	private val variables = initialVariables.toMutableMap()
 	lateinit var executionStart: Instant
 
-	fun setVariable(name: String, value: String) {
-		val variable = variables.find { it.name == name }
-			?: throw Exception("Variable not found: $name")
-		variable.value = value
+	fun setVariable(name: String, newVar: VariableDef<*>) {
+		variables[name] = newVar
 	}
 
 	fun onStartExecution() {
 		executionStart = Instant.now()
 	}
 
-	fun getVariables(): Set<VariableDef> {
+	fun getVariables(): Map<String, VariableDef<*>> {
 		return variables
 	}
 
-	fun getVariable(name: String): VariableDef? {
-		return variables.find { it.name == name }
+	fun getVariable(name: String): VariableDef<*>? {
+		return variables[name]
 	}
 }
