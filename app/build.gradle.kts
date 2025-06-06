@@ -22,12 +22,12 @@ plugins {
 
 android {
 	namespace = "com.jxd20072.automationapp"
-	compileSdk = 35
+	compileSdk = 36
 
 	defaultConfig {
 		applicationId = "com.jxd20072.automationapp"
 		minSdk = 26
-		targetSdk = 35
+		targetSdk = 36
 		versionCode = 1
 		versionName = "1.0"
 
@@ -74,6 +74,9 @@ dependencies {
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
 	implementation(libs.androidx.compose.material)
+	implementation(libs.navigation3.runtime)
+	implementation(libs.androidx.navigation3.ui)
+	implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -87,8 +90,8 @@ dependencies {
 	implementation(libs.androidx.ui.graphics)
 	implementation(libs.androidx.ui.tooling.preview)
 	implementation(libs.androidx.material3)
+	implementation(libs.androidx.graphics.shapes)
 	implementation(libs.androidx.lifecycle.viewmodel.compose)
-	implementation(libs.androidx.navigation.compose)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 

@@ -56,7 +56,7 @@ fun UserSettingsScreen(
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier
 				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+				.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
 				.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
 		) {
 			Row(

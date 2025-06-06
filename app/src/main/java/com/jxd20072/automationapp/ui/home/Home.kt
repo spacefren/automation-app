@@ -45,9 +45,8 @@ fun TopBar(
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = modifier.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+		modifier = modifier.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
 	) {
-
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceBetween,

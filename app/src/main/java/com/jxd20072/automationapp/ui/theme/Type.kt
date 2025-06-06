@@ -17,7 +17,7 @@ data class Typography(
 
 val defaultTypography = Typography(
 	title = baseTextStyle.copy(
-		fontSize = 32.sp,
+		fontSize = 28.sp,
 	),
 	subTitle = baseTextStyle.copy(
 		fontSize = 22.sp,

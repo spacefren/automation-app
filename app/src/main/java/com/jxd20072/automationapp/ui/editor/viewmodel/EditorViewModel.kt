@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.editor
+package com.jxd20072.automationapp.ui.editor.viewmodel
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset

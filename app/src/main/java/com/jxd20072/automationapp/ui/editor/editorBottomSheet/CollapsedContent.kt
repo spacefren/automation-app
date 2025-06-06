@@ -11,19 +11,19 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
-import com.jxd20072.automationapp.ui.editor.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -33,7 +33,9 @@ fun EditorBottomSheetCollapsedContent(
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
 ) {
-	var edgePosition by remember { mutableFloatStateOf(0f) }
+	val screenHeight = LocalWindowInfo.current.containerSize.height
+	val navBarsHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
+	var edgePosition by remember { mutableIntStateOf(0) }
 	var expanded by remember { mutableStateOf(false) }
 	val maxHeight by animateDpAsState(if (expanded) 75.dp else 0.dp)
 
@@ -55,7 +57,7 @@ fun EditorBottomSheetCollapsedContent(
 			.windowInsetsPadding(WindowInsets.navigationBars)
 			.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1))
 			.onGloballyPositioned {
-				edgePosition = it.positionInRoot().y
+				edgePosition = screenHeight - navBarsHeight - it.size.height
 			}
 			.heightIn(max = maxHeight)
 	) {

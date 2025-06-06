@@ -1,8 +1,9 @@
 [versions]
-agp = "8.9.2"
+agp = "8.10.1"
+androidxGraphicsShapes = "1.0.1"
 coilCompose = "3.1.0"
 coilSvgVersion = "3.1.0"
-datastore = "1.1.5"
+datastore = "1.1.7"
 hiltAndroidGradlePlugin = "2.56.2"
 hiltAndroidVersion = "2.56.2"
 hiltNavigationCompose = "1.2.0"
@@ -14,24 +15,27 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinReflect = "2.1.20"
 kotlinxSerializationJson = "1.8.1"
-lifecycleRuntimeKtx = "2.8.7"
-composeBom = "2025.04.01"
-lifecycleViewmodelCompose = "2.8.7"
-navigationCompose = "2.8.9"
+lifecycleRuntimeKtx = "2.9.1"
+composeBom = "2025.06.00"
+lifecycleViewmodelCompose = "2.9.1"
 protobufJavalite = "4.30.2"
 protobufKotlinLite = "4.30.2"
 composeMaterial = "1.4.1"
-fuzzywuzzyKotlin = "1.0.1"
 fuzzywuzzy = "1.4.0"
+navigation3Runtime = "1.0.0-alpha03"
+navigation3Ui = "1.0.0-alpha03"
+lifecycleViewmodelNavigation3 = "1.0.0-alpha01"
+graphicsShapes = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
-androidx-datastore-core = { module = "androidx.datastore:datastore-core", version = "1.1.5" }
+androidx-datastore-core = { module = "androidx.datastore:datastore-core", version = "1.1.7" }
+androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-coil-svg-v304 = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilSvgVersion" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version = "3.2.0" }
+coil-svg-v304 = { module = "io.coil-kt.coil3:coil-svg", version = "3.2.0" }
 hilt-android-compiler-v252 = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltVersion" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android-v252 = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidVersion" }
@@ -47,16 +51,18 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.8.0" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.8.2" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version = "2.1.21" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
-protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version = "4.31.1" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version = "4.31.1" }
 androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
-fuzzywuzzy-kotlin = { group = "com.github.jens-muenker", name = "fuzzywuzzy-kotlin", version.ref = "fuzzywuzzyKotlin" }
 fuzzywuzzy = { group = "me.xdrop", name = "fuzzywuzzy", version.ref = "fuzzywuzzy" }
+navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
+androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3Ui" }
+androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

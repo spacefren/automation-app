@@ -1,6 +1,8 @@
 package com.jxd20072.automationapp.ui.shared
 
+import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -36,20 +38,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.max
 
 class ModalBottomSheetState {
 	var isOpen by mutableStateOf(false)
@@ -64,26 +70,29 @@ fun ModalBottomSheet(
 	collapsedContent: (@Composable () -> Unit)? = null,
 	content: @Composable BoxScope.() -> Unit
 ) {
-	val localConfiguration = LocalConfiguration.current
-	val screenHeight = localConfiguration.screenHeightDp
+	val screenHeight = LocalWindowInfo.current.containerSize.height
 	val localFocusManager = LocalFocusManager.current
+	val localDensity = LocalDensity.current
 	val coroutineScope = rememberCoroutineScope()
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
 	var mainContentHeight by remember { mutableIntStateOf(0) }
 	var collapsedContentHeight by remember { mutableIntStateOf(0) }
 
 	val maxHeight = remember { Animatable(screenHeight.toFloat()) }
-	val gradientSize = remember { Animatable(0f) }
+	val gradientStart = remember { Animatable(0f) }
+	val predictiveBackProgress = remember { Animatable(0f) }
+
+	val overlayOpacity = .5f
 
 	LaunchedEffect(state.isCollapsed, state.isOpen) {
 		if (state.isOpen) {
 			async {
 				maxHeight.animateTo(if (state.isCollapsed) 0f else screenHeight.toFloat())
 			}
-			gradientSize.animateTo(if (state.isCollapsed) .92f else 0f)
+			predictiveBackProgress.snapTo(0f)
+			gradientStart.animateTo(if (state.isCollapsed) .92f else 0f)
 		}
 	}
-
 
 	fun tryCloseSheet(): Boolean {
 		if (onDismissRequest() == true) {
@@ -98,9 +107,24 @@ fun ModalBottomSheet(
 		tryCloseSheet()
 	}
 
+	PredictiveBackHandler(
+		enabled = state.isOpen
+	) { progress: Flow<BackEventCompat> ->
+		try {
+			progress.collect { backEvent ->
+				predictiveBackProgress.snapTo(backEvent.progress)
+			}
+			if (!tryCloseSheet()) {
+				predictiveBackProgress.animateTo(0f)
+			}
+		} catch (e: CancellationException) {
+			predictiveBackProgress.animateTo(0f)
+		}
+	}
+
 	LaunchedEffect(state.isOpen) {
 		if (!state.isOpen) {
-			draggingPos.animateTo(screenHeight.toFloat(), spring(stiffness = Spring.StiffnessMediumLow))
+			draggingPos.animateTo(screenHeight.toFloat(), spring(stiffness = Spring.StiffnessVeryLow))
 		} else {
 			draggingPos.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
 		}
@@ -110,9 +134,7 @@ fun ModalBottomSheet(
 		modifier = Modifier
 			.zIndex(10f)
 			.fillMaxSize()
-			.padding(top = 10.dp)
-			.offset(y = max(0.dp, draggingPos.value.dp))
-			.windowInsetsPadding(WindowInsets.statusBars)
+			.offset(y = draggingPos.value.dp)
 	) {
 		AnimatedVisibility(
 			visible = state.isOpen,
@@ -122,14 +144,14 @@ fun ModalBottomSheet(
 			Box(
 				modifier = Modifier
 					.fillMaxSize()
+					.offset(y = -with(localDensity) { mainContentHeight.toDp() })
 					.clickable(interactionSource = null, indication = null) {
 						tryCloseSheet()
 					}
-					.offset { IntOffset(0, -mainContentHeight + 50) }
 					.background(
 						Brush.verticalGradient(
-							Pair(gradientSize.value, Color(0f, 0f, 0f, 0f)),
-							Pair(1f, Color(0f, 0f, 0f, .4f))
+							gradientStart.value to Color(0f, 0f, 0f, 0f),
+							1f to Color(0f, 0f, 0f, overlayOpacity),
 						)
 					)
 			)
@@ -137,18 +159,30 @@ fun ModalBottomSheet(
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.layout { measurable, contraints ->
-					val placeable = measurable.measure(contraints)
-					mainContentHeight = placeable.height
-					layout(
-						width = placeable.width,
-						height = placeable.height
-					) {
-						placeable.placeRelative(0, 0)
-					}
-				}
+				.height(with(localDensity) { mainContentHeight.toDp() })
+				.background(Color(0f, 0f, 0f, overlayOpacity))
 				.align(Alignment.BottomCenter)
-				.clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+		)
+		Box(
+			modifier = Modifier
+				.scale((1 - predictiveBackProgress.value / 10))
+				.windowInsetsPadding(WindowInsets.statusBars)
+				.padding(top = 10.dp)
+				.fillMaxWidth()
+				.align(Alignment.BottomCenter)
+				.onPlaced { mainContentHeight = it.size.height }
+				.clip(
+					RoundedCornerShape(
+						topStart = 35.dp,
+						topEnd = 35.dp,
+						bottomStart = lerp(
+							0.dp,
+							35.dp,
+							kotlin.math.min(predictiveBackProgress.value * 10, 1f)
+						),
+						bottomEnd = lerp(0.dp, 35.dp, kotlin.math.min(predictiveBackProgress.value * 10, 1f))
+					)
+				)
 				.background(LocalTheme.colorScheme.background)
 				.clickable(interactionSource = null, indication = null) {}
 		) {
@@ -160,7 +194,7 @@ fun ModalBottomSheet(
 							onDrag = { inp, off ->
 								inp.consume()
 								coroutineScope.launch {
-									draggingPos.snapTo(draggingPos.value + off.y.toDp().value)
+									draggingPos.snapTo(max(0f, draggingPos.value + off.y.toDp().value))
 								}
 							},
 							onDragEnd = {

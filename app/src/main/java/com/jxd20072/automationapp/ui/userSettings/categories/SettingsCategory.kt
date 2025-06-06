@@ -15,7 +15,7 @@ fun SettingsCategory(
 	content: @Composable ColumnScope.() -> Unit
 ) {
 	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1)
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2)
 	) {
 		Text(
 			text = name,

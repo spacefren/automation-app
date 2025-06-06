@@ -11,7 +11,7 @@ data class ShadowSystem(
 data class ShapeSystem(
 	val cornerRadiusLevel1: Dp,
 	val cornerRadiusLevel2: Dp,
-	val cornerRadiusLevel3: Dp
+	val cornerRadiusLevel3: Dp,
 )
 
 data class SpacingSystem(
@@ -32,8 +32,8 @@ val defaultLayoutSystem = LayoutSystem(
 		secondary = 2.dp,
 	),
 	shapes = ShapeSystem(
-		cornerRadiusLevel1 = 8.dp,
-		cornerRadiusLevel2 = 4.dp,
+		cornerRadiusLevel1 = 10.dp,
+		cornerRadiusLevel2 = 5.dp,
 		cornerRadiusLevel3 = 2.dp,
 	),
 	spacing = SpacingSystem(

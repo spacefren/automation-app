@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
-import com.jxd20072.automationapp.ui.editor.EditorBottomSheetCollapsedScreen
-import com.jxd20072.automationapp.ui.editor.EditorBottomSheetScreen
-import com.jxd20072.automationapp.ui.editor.EditorBottomSheetState
-import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
-import com.jxd20072.automationapp.ui.editor.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetCollapsedScreen
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetScreen
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState

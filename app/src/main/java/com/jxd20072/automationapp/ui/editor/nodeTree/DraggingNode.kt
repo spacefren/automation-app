@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDraggableScope
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlin.math.abs
 

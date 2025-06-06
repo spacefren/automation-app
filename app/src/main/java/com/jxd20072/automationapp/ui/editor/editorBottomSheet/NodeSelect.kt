@@ -41,8 +41,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
-import com.jxd20072.automationapp.ui.editor.CategoryListEntry
 import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
+import com.jxd20072.automationapp.ui.editor.viewmodel.CategoryListEntry
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme

@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.ui.editor.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDraggableScope
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)
