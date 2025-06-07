@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 
@@ -224,12 +224,11 @@ fun TopLevelNode(
 	id: String,
 	displayName: List<String>,
 	draggableState: Draggable2DState,
-	draggingData: EditorNodeDragData,
+	draggingData: EditorNodeDragState,
 	onDragStart: (
 		id: String,
 		nodePosition: Offset,
 		pressedPosition: Offset,
-		scope: EditorDraggableScope
 	) -> Unit,
 	onStopDrag: () -> Unit,
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
@@ -264,14 +263,14 @@ fun TopLevelNode(
 				}),
 				onDragStart = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
 					dragging = true
-					onDragStart(id, rootPosition, it, EditorDraggableScope.FUNCTION)
+					onDragStart(id, rootPosition, it)
 				})
 			)
 			content.forEachIndexed { index, actionNode ->
 				EditorNodeDropTarget(
 					gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 					draggingData = draggingData,
-					scope = EditorDraggableScope.ACTION,
+					dragNode = EditorDragNode.Action::class,
 					onEnter = { onDropZoneEnter(index, id) },
 					onExit = onDropZoneExit
 				)
@@ -287,7 +286,7 @@ fun TopLevelNode(
 			EditorNodeDropTarget(
 				gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 				draggingData = draggingData,
-				scope = EditorDraggableScope.ACTION,
+				dragNode = EditorDragNode.Action::class,
 				onEnter = { onDropZoneEnter(content.size, id) },
 				onExit = onDropZoneExit
 			)
@@ -306,7 +305,6 @@ fun ActionNode(
 		id: String,
 		position: Offset,
 		startedOffset: Offset,
-		scope: EditorDraggableScope
 	) -> Unit)? = null,
 ) {
 	var dragging by remember { mutableStateOf(false) }
@@ -333,7 +331,7 @@ fun ActionNode(
 				},
 				onDragStart = {
 					onDragStart
-						?.invoke(actionNode.id, rootPosition, it, EditorDraggableScope.ACTION)
+						?.invoke(actionNode.id, rootPosition, it)
 					dragging = true
 				}
 			)

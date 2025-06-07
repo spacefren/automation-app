@@ -13,8 +13,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorUiState
+import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -29,18 +29,26 @@ fun AutomationEditor(
 	returnHome: (saveChanges: Boolean) -> Unit
 ) {
 	val currentTime by editorViewModel.currentTime.collectAsState()
-	val editorUiState by editorViewModel.editorUiState.collectAsState()
 	val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
 
-	if (editorUiState is EditorUiState.Success) {
-		val automationDraft = (editorUiState as EditorUiState.Success).automationDraft
-		val automationData = (editorUiState as EditorUiState.Success).automationData
-		val draggingData = (editorUiState as EditorUiState.Success).draggingData
-		val bottomSheetState = (editorUiState as EditorUiState.Success).bottomSheetState
+	val automationManager = editorViewModel.automationManager
+	val bottomSheetManager = editorViewModel.bottomSheetManager
+	val collapsedSheetManager = editorViewModel.collapsedSheetManager
+	val nodeSearchManager = bottomSheetManager.nodeSearchManager
+	val nodeEditManager = bottomSheetManager.nodeEditManager
+	val dragManager = editorViewModel.dragManager
 
-		val draggableState = rememberDraggable2DState { delta ->
-			editorViewModel.changeDraggingPosition(delta)
-		}
+	val automationState by automationManager.automationUiState.collectAsState()
+	val draggingData by dragManager.editorNodeDragState.collectAsState()
+	val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
+	val collapsedSheetState by collapsedSheetManager.collapsedScreenState.collectAsState()
+	val nodeSelectState by nodeSearchManager.nodeSelectState.collectAsState()
+	val nodeEditState by nodeEditManager.editingNodeState.collectAsState()
+
+	val draggableState = rememberDraggable2DState { delta ->
+		editorViewModel.dragManager.dragNodeDelta(delta)
+	}
+	if (automationState is AutomationUiState.Success) {
 
 		Layer(
 			modifier = Modifier
@@ -49,20 +57,20 @@ fun AutomationEditor(
 		) {
 			Column {
 				EditorTopBar(
-					automationData = automationData,
+					automationData = (automationState as AutomationUiState.Success).automationData,
 					currentTime = currentTime,
 					returnHome = returnHome,
-					saveAutomation = { editorViewModel.trySaveAutomation(true) },
-					runAutomation = editorViewModel::runAutomation,
+					saveAutomation = { automationManager.trySaveAutomation(true) },
+					runAutomation = automationManager::runAutomation,
 				)
 				EditorNodeTree(
-					automationDraft = automationDraft,
-					onNodeDrag = editorViewModel::onNodeDrag,
-					onStopDrag = editorViewModel::onStopNodeDrag,
+					automationDraft = (automationState as AutomationUiState.Success).automationDraft,
+					onNodeDrag = editorViewModel::onExistingNodeDrag,
+					onStopDrag = editorViewModel::onExistingNodeDrop,
 					draggableState = draggableState,
 					draggingData = draggingData,
-					onDropZoneEnter = editorViewModel::onNodeDropLineEnter,
-					onDropZoneExit = editorViewModel::onNodeDropLineExit
+					onDropLineEnter = dragManager::enterDropLine,
+					onDropLineExit = dragManager::exitDropLine
 				)
 			}
 		}
@@ -70,21 +78,24 @@ fun AutomationEditor(
 			draggingData = draggingData
 		)
 		EditorFloatingAddButton(
-			hidden = draggingData is EditorNodeDragData.Dragging,
-			onCreateNodePressed = editorViewModel::startNodeCreationFlow,
+			hidden = draggingData is EditorNodeDragState.Dragging,
+			onCreateNodePressed = bottomSheetManager::openNodeSelect,
 			onCreateFunctionPressed = { }
 		)
 		EditorBottomSheet(
-			onDismiss = editorViewModel::onBottomSheetDismissed,
+			onDismiss = bottomSheetManager::closeBottomSheet,
 			bottomSheetState = bottomSheetState,
-			onNodeSearch = editorViewModel::changeNodeSearchQuery,
+			collapsedSheetState = collapsedSheetState,
+			nodeSelectState = nodeSelectState,
+			nodeEditScreenState = nodeEditState,
+			onNodeSearch = bottomSheetManager.nodeSearchManager::changeNodeSearchQuery,
 			dragData = draggingData,
-			onStartDrag = editorViewModel::onActionCreateDrag,
-			onStopDrag = editorViewModel::onStopActionCreateDrag,
-			onClick = editorViewModel::onActionCreateClick,
+			onStartDrag = editorViewModel::onCreateNodeDrag,
+			onStopDrag = editorViewModel::onCreateNodeDrop,
+			onClick = nodeSearchManager::addActionClick,
 			draggableState = draggableState,
-			onDropZoneEnter = editorViewModel::onNodeDropZoneEnter,
-			onDropZoneExit = editorViewModel::onNodeDropZoneExit,
+			onDropZoneEnter = dragManager::enterNodeDropZone,
+			onDropZoneExit = dragManager::exitNodeDropZone,
 			autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
 				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 		)

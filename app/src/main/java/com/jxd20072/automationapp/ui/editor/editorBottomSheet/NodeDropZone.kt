@@ -33,14 +33,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 import com.jxd20072.automationapp.ui.utils.dashedBorder
 
 @Composable
 fun NodeDropZone(
-	dragData: EditorNodeDragData,
+	dragData: EditorNodeDragState,
 	onDropZoneEnter: () -> Unit,
 	onDropZoneExit: () -> Unit,
 	mainColor: Color,
@@ -58,7 +58,7 @@ fun NodeDropZone(
 
 	@Composable
 	fun checkHovering(): Boolean {
-		return if (dragData is EditorNodeDragData.Dragging) {
+		return if (dragData is EditorNodeDragState.Dragging) {
 			val dragPos = dragData.nodePosition + dragData.inputOffset
 
 			dragPos.y > positionInRoot.y && dragPos.y < positionInRoot.y + size.height

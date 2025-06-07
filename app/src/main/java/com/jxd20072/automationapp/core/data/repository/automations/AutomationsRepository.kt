@@ -36,38 +36,31 @@ class AutomationsRepository @Inject constructor(
 			"test" to VariableDef.TEXT("textVariableValue"),
 		),
 		triggers = emptyList(),
-		functions = listOf(
-			FunctionNodeDef(
-				name = "OnStart",
-				input = emptyMap(),
-				output = emptyMap(),
-				content = listOf(
+		entryPoint = listOf(
 //				ActionNodeDef(
 //					name = "writeVariable",
 //					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
 //				),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("first test"))
-					),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("second test"))
-					),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("third test"))
-					),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("fourth test"))
-					),
-				),
+			ActionNodeDef(
+				name = "log",
+				input = mapOf("Text" to NodeInputEntry.TEXT("first test"))
 			),
+			ActionNodeDef(
+				name = "log",
+				input = mapOf("Text" to NodeInputEntry.TEXT("second test"))
+			),
+			ActionNodeDef(
+				name = "log",
+				input = mapOf("Text" to NodeInputEntry.TEXT("third test"))
+			),
+			ActionNodeDef(
+				name = "log",
+				input = mapOf("Text" to NodeInputEntry.TEXT("fourth test"))
+			),
+		),
+		functions = listOf(
 			FunctionNodeDef(
 				name = "myFunction",
-				input = emptyMap(),
-				output = emptyMap(),
 				content = listOf(
 					ActionNodeDef(
 						name = "log",

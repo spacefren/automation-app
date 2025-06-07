@@ -6,21 +6,20 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetCollapsedScreen
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetScreen
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorBottomSheetState
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetCollapsedState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
@@ -32,7 +31,10 @@ fun EditorBottomSheet(
 	onDismiss: () -> Unit,
 	onNodeSearch: (String) -> Unit,
 	bottomSheetState: EditorBottomSheetState,
-	dragData: EditorNodeDragData,
+	collapsedSheetState: EditorBottomSheetCollapsedState,
+	nodeSelectState: NodeSelectState,
+	nodeEditScreenState: NodeEditState,
+	dragData: EditorNodeDragState,
 	draggableState: Draggable2DState,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
@@ -45,15 +47,10 @@ fun EditorBottomSheet(
 	onClick: (nodeData: ActionNodeData) -> Unit,
 	autoOpenKeyboard: Boolean,
 ) {
-	var lastScreen by remember { mutableStateOf<EditorBottomSheetScreen>(EditorBottomSheetScreen.Empty) }
 	val state = remember { ModalBottomSheetState() }
 	state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
 	state.isCollapsed = bottomSheetState is EditorBottomSheetState.Open
-		&& bottomSheetState.collapsedScreen != EditorBottomSheetCollapsedScreen.Empty
-
-	if (bottomSheetState is EditorBottomSheetState.Open) {
-		lastScreen = bottomSheetState.screen
-	}
+		&& collapsedSheetState != EditorBottomSheetCollapsedState.Empty
 
 	ModalBottomSheet(
 		state = state,
@@ -65,8 +62,8 @@ fun EditorBottomSheet(
 			EditorBottomSheetCollapsedContent(
 				dragData = dragData,
 				showDelete = bottomSheetState is EditorBottomSheetState.Open
-					&& bottomSheetState.collapsedScreen is EditorBottomSheetCollapsedScreen.DropPanels
-					&& bottomSheetState.collapsedScreen.showDelete,
+					&& collapsedSheetState is EditorBottomSheetCollapsedState.DropPanels
+					&& collapsedSheetState.showDelete,
 				onDropZoneEnter = onDropZoneEnter,
 				onDropZoneExit = onDropZoneExit
 			)
@@ -74,24 +71,26 @@ fun EditorBottomSheet(
 	) {
 		Layer {
 			AnimatedContent(
-				targetState = lastScreen,
+				targetState = bottomSheetState,
 				contentKey = { it::class }
 			) { state ->
-				when (state) {
-					is EditorBottomSheetScreen.NodeSelect -> {
+				when {
+					state !is EditorBottomSheetState.Open -> {}
+
+					state.screen == EditorBottomSheetScreen.NODE_SELECT -> {
 						EditorNodeSelectScreen(
 							onNodeSearch = onNodeSearch,
-							nodeSearchQuery = state.nodeSearchQuery,
+							nodeSearchQuery = nodeSelectState.nodeSearchQuery,
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
 							onClick = onClick,
 							draggableState = draggableState,
-							nodes = state.filteredNodes
+							nodes = nodeSelectState.filteredNodes
 						)
 					}
 
-					is EditorBottomSheetScreen.NodeEdit -> {
+					state.screen == EditorBottomSheetScreen.NODE_EDIT -> {
 						Text("Edit node", fontSize = 20.sp, color = LocalTheme.colorScheme.onBackground)
 						Spacer(modifier = Modifier.height(200.dp))
 					}

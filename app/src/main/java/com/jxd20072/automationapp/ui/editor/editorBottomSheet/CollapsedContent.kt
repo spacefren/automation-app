@@ -22,13 +22,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorBottomSheetCollapsedContent(
-	dragData: EditorNodeDragData,
+	dragData: EditorNodeDragState,
 	showDelete: Boolean,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
@@ -41,7 +41,7 @@ fun EditorBottomSheetCollapsedContent(
 
 	@Composable
 	fun shouldExpand(): Boolean {
-		return if (dragData is EditorNodeDragData.Dragging) {
+		return if (dragData is EditorNodeDragState.Dragging) {
 			val dragPos = dragData.nodePosition + dragData.inputOffset
 			val extraSpace = with(LocalDensity.current) { 25.dp.toPx() }
 			dragPos.y > edgePosition - extraSpace

@@ -101,7 +101,7 @@ fun AutomationApp() {
 					openSettings = { backStack.add(Settings) },
 					runAutomation = {},
 					editAutomation = { id ->
-						editorViewModel.loadAutomation(id)
+						editorViewModel.automationManager.loadAutomation(id)
 						backStack.add(Editor)
 					},
 				)

@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -22,16 +22,15 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun EditorNodeTree(
 	automationDraft: AutomationDef,
 	draggableState: Draggable2DState,
-	draggingData: EditorNodeDragData,
+	draggingData: EditorNodeDragState,
 	onNodeDrag: (
 		id: String,
 		startedPosition: Offset,
 		startedOffset: Offset,
-		scope: EditorDraggableScope
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
-	onDropZoneExit: () -> Unit,
+	onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
+	onDropLineExit: () -> Unit,
 	modifier: Modifier = Modifier
 ) {
 	LazyColumn(
@@ -39,6 +38,23 @@ fun EditorNodeTree(
 		modifier = modifier
 			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
+
+		item { Spacer(modifier = Modifier.height(20.dp)) }
+
+		item {
+			TopLevelNode(
+				type = TopLevelNodeType.ENTRYPOINT,
+				id = "_entrypoint",
+				displayName = listOf("OnStart"),
+				content = automationDraft.entryPoint,
+				onDragStart = onNodeDrag,
+				onStopDrag = onStopDrag,
+				draggableState = draggableState,
+				draggingData = draggingData,
+				onDropZoneEnter = onDropLineEnter,
+				onDropZoneExit = onDropLineExit
+			)
+		}
 
 		itemsIndexed(
 			automationDraft.functions,
@@ -48,9 +64,9 @@ fun EditorNodeTree(
 			EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
-				scope = EditorDraggableScope.FUNCTION,
-				onEnter = { onDropZoneEnter(index, null) },
-				onExit = onDropZoneExit
+				dragNode = EditorDragNode.Action::class,
+				onEnter = { onDropLineEnter(index, null) },
+				onExit = onDropLineExit
 			)
 
 			TopLevelNode(
@@ -62,8 +78,8 @@ fun EditorNodeTree(
 				onStopDrag = onStopDrag,
 				draggableState = draggableState,
 				draggingData = draggingData,
-				onDropZoneEnter = onDropZoneEnter,
-				onDropZoneExit = onDropZoneExit
+				onDropZoneEnter = onDropLineEnter,
+				onDropZoneExit = onDropLineExit
 			)
 		}
 
@@ -71,9 +87,9 @@ fun EditorNodeTree(
 			EditorNodeDropTarget(
 				gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
 				draggingData = draggingData,
-				scope = EditorDraggableScope.FUNCTION,
-				onEnter = { onDropZoneEnter(automationDraft.functions.size, null) },
-				onExit = onDropZoneExit
+				dragNode = EditorDragNode.Function::class,
+				onEnter = { onDropLineEnter(automationDraft.functions.size, null) },
+				onExit = onDropLineExit
 			)
 		}
 

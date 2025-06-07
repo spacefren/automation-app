@@ -22,19 +22,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDraggableScope
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragData
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
+import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlin.math.abs
+import kotlin.reflect.KClass
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DraggingNode(
-	draggingData: EditorNodeDragData,
+	draggingData: EditorNodeDragState,
 	modifier: Modifier = Modifier
 ) {
-	if (draggingData is EditorNodeDragData.Dragging) {
+	if (draggingData is EditorNodeDragState.Dragging) {
 		Box(
 			modifier = modifier
 				.zIndex(40f)
@@ -44,24 +44,15 @@ fun DraggingNode(
 				}
 		) {
 			NodeContainer(
-				level = when (draggingData.scope) {
-					EditorDraggableScope.FUNCTION -> 1
-					EditorDraggableScope.ACTION -> 2
+				level = when (draggingData.draggingNode) {
+					is EditorDragNode.Function -> 1
+					is EditorDragNode.Action -> 2
 				},
 				enabledByDragging = true,
 				onLayout = { _ -> },
 			) {
 				NodeHeaderIcons(
-					icon = when {
-						draggingData.draggingFunction?.name == "OnStart"
-							-> R.drawable.round_play_arrow_24
-
-						draggingData.scope == EditorDraggableScope.FUNCTION
-							-> R.drawable.round_functions_24
-
-						else -> actionNodes[draggingData.draggingAction?.name]?.data?.icon
-							?: R.drawable.round_play_arrow_24
-					},
+					icon = R.drawable.round_functions_24,
 					forceShowDragHandle = true
 				)
 			}
@@ -70,20 +61,20 @@ fun DraggingNode(
 }
 
 @Composable
-fun EditorNodeDropTarget(
+fun <T : EditorDragNode> EditorNodeDropTarget(
 	gap: Dp,
-	draggingData: EditorNodeDragData,
-	scope: EditorDraggableScope,
+	dragNode: KClass<T>,
+	draggingData: EditorNodeDragState,
 	onEnter: () -> Unit,
 	onExit: () -> Unit,
 ) {
 	Spacer(modifier = Modifier.height(gap / 2))
 
-	if (draggingData is EditorNodeDragData.Dragging) {
+	if (draggingData is EditorNodeDragState.Dragging) {
 		val checkHovering = { position: Offset ->
 			val pos = draggingData.nodePosition.y
 			val offset = draggingData.inputOffset.y
-			draggingData.scope == scope && abs(pos + offset - position.y) < 40
+			dragNode.isInstance(draggingData.draggingNode) && abs(pos + offset - position.y) < 40
 		}
 
 		var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }
