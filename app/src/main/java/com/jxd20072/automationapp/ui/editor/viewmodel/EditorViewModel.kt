@@ -46,6 +46,7 @@ class EditorViewModel @Inject constructor(
 
 	fun onCreateNodeDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
 		dragManager.dragCreateAction(nodeData, nodePosition, pressedPosition)
+		bottomSheetManager.openEmpty()
 		collapsedSheetManager.showDropPanels(false)
 	}
 

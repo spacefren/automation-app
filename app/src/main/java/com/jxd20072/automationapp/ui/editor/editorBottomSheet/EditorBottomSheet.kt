@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Draggable2DState
@@ -46,6 +47,8 @@ fun EditorBottomSheet(
 	state.isCollapsed = bottomSheetState is EditorBottomSheetState.Open
 		&& collapsedSheetState != EditorBottomSheetCollapsedState.Empty
 
+	Log.d("APP_A", "open? ${state.isOpen}\ncollapsed? ${state.isCollapsed}");
+	
 	ModalBottomSheet(
 		state = state,
 		onDismissRequest = {

@@ -7,8 +7,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,7 +40,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -76,7 +73,6 @@ fun ModalBottomSheet(
 	val coroutineScope = rememberCoroutineScope()
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
 	var mainContentHeight by remember { mutableIntStateOf(0) }
-	var collapsedContentHeight by remember { mutableIntStateOf(0) }
 
 	val maxHeight = remember { Animatable(screenHeight.toFloat()) }
 	val gradientStart = remember { Animatable(0f) }
@@ -136,26 +132,21 @@ fun ModalBottomSheet(
 			.fillMaxSize()
 			.offset(y = draggingPos.value.dp)
 	) {
-		AnimatedVisibility(
-			visible = state.isOpen,
-			enter = fadeIn(),
-			exit = fadeOut()
-		) {
-			Box(
-				modifier = Modifier
-					.fillMaxSize()
-					.offset(y = -with(localDensity) { mainContentHeight.toDp() })
-					.clickable(interactionSource = null, indication = null) {
-						tryCloseSheet()
-					}
-					.background(
-						Brush.verticalGradient(
-							gradientStart.value to Color(0f, 0f, 0f, 0f),
-							1f to Color(0f, 0f, 0f, overlayOpacity),
-						)
+
+		Box(
+			modifier = Modifier
+				.fillMaxSize()
+				.offset(y = -with(localDensity) { mainContentHeight.toDp() })
+				.clickable(interactionSource = null, indication = null) {
+					tryCloseSheet()
+				}
+				.background(
+					Brush.verticalGradient(
+						gradientStart.value to Color(0f, 0f, 0f, 0f),
+						1f to Color(0f, 0f, 0f, overlayOpacity),
 					)
-			)
-		}
+				)
+		)
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -221,18 +212,8 @@ fun ModalBottomSheet(
 				modifier = Modifier
 					.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			) {
-				AnimatedVisibility(state.isCollapsed) {
-					SubcomposeLayout { constraints ->
-						val contentPlaceable = subcompose(null) {
-							collapsedContent?.invoke() ?: Box { }
-						}.map { it.measure(constraints) }.first()
-
-						collapsedContentHeight = contentPlaceable.height
-
-						layout(contentPlaceable.width, contentPlaceable.height) {
-							contentPlaceable.placeRelative(0, 0)
-						}
-					}
+				AnimatedVisibility(visible = state.isCollapsed) {
+					collapsedContent?.invoke()
 				}
 				Box(
 					content = content,

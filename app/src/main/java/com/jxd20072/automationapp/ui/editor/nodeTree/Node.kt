@@ -48,7 +48,6 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 
 enum class TopLevelNodeType { ENTRYPOINT, FUNCTION }
-enum class ChildNodeType { ACTION }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
