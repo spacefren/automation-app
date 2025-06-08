@@ -15,9 +15,9 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -82,8 +82,9 @@ class AutomationsRepository @Inject constructor(
 			),
 		),
 	)
-	private val _automationsDataFlow = MutableSharedFlow<AutomationsDataMap>(replay = 1)
-	val automationsDataFlow: SharedFlow<AutomationsDataMap> = _automationsDataFlow.asSharedFlow()
+	private val _automationsDataFlow =
+		MutableStateFlow<AutomationsDataMap>(AutomationsDataMap.getDefaultInstance())
+	val automationsDataFlow: StateFlow<AutomationsDataMap> = _automationsDataFlow.asStateFlow()
 
 	private suspend fun startPolling() {
 		while (true) {
@@ -148,17 +149,15 @@ class AutomationsRepository @Inject constructor(
 		return automationDef
 	}
 
-	fun writeAutomation(id: String, automation: AutomationDef) {
-		CoroutineScope(Dispatchers.IO).launch {
-			Log.d("APP_A", "saving...");
-			val automationData = getAutomationMapEntry(id) ?: return@launch
+	suspend fun writeAutomation(id: String, automation: AutomationDef) {
+		Log.d("APP_A", "saving...")
+		val automationData = getAutomationMapEntry(id) ?: return
 
-			automationsStore.writeAutomationToFile(automationData.name, automation)
+		automationsStore.writeAutomationToFile(automationData.name, automation)
 
-			updateAutomationDataMap { automationsData ->
-				automationsData.copy {
-					automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
-				}
+		updateAutomationDataMap { automationsData ->
+			automationsData.copy {
+				automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
 			}
 		}
 	}

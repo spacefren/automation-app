@@ -64,7 +64,7 @@ fun EditorNodeTree(
 			EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
-				dragNode = EditorDragNode.Action::class,
+				dragNode = EditorDragNode.Function::class,
 				onEnter = { onDropLineEnter(index, null) },
 				onExit = onDropLineExit
 			)

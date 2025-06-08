@@ -8,12 +8,15 @@ import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
+import com.jxd20072.automationapp.ui.utils.findAndReplace
 import com.jxd20072.automationapp.ui.utils.insertAt
 import com.jxd20072.automationapp.ui.utils.transformAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,32 +40,22 @@ class AutomationManager @Inject constructor(
 	private val _automationUiState = MutableStateFlow<AutomationUiState>(AutomationUiState.Loading)
 	val automationUiState = _automationUiState.asStateFlow()
 
-	fun observeFileChanges() {
-		CoroutineScope(Dispatchers.Main).launch {
-			automationsRepository.automationsDataFlow.collect { automationData ->
-				_automationUiState.update { uiState ->
-					if (uiState !is AutomationUiState.Success) return@update uiState
-					val newData =
-						automationData.automationsMap[uiState.automationId] ?: return@update uiState
-					uiState.copy(automationData = newData)
-				}
+	suspend fun observeFileChanges() {
+		automationsRepository.automationsDataFlow.collect { automationData ->
+			_automationUiState.update { uiState ->
+				if (uiState !is AutomationUiState.Success) return@update uiState
+				val newData =
+					automationData.automationsMap[uiState.automationId] ?: return@update uiState
+				uiState.copy(automationData = newData)
 			}
 		}
 	}
 
-	fun observeDraftChanges() {
-		CoroutineScope(Dispatchers.Main).launch {
-			automationUiState.collect {
-				val otherLast = automationUiState.replayCache.reversed().getOrNull(2)
-				if (
-					it is AutomationUiState.Success
-					&& otherLast is AutomationUiState.Success
-					&& it.automationDraft != otherLast.automationDraft
-				) {
-					trySaveAutomation(false)
-				}
-			}
-		}
+	suspend fun observeDraftChanges() {
+		automationUiState
+			.map { if (it is AutomationUiState.Success) it.automationDraft else null }
+			.distinctUntilChanged()
+			.collect { trySaveAutomation() }
 	}
 
 	fun runAutomation() {
@@ -102,7 +95,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun findAction(id: String): ActionNodeDef? {
-		val state = automationUiState.value
+		val state = automationUiState.replayCache.last()
 		if (state !is AutomationUiState.Success) return null
 
 		return (state.automationDraft.entryPoint +
@@ -113,7 +106,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun findFunction(id: String): FunctionNodeDef? {
-		val state = automationUiState.value
+		val state = automationUiState.replayCache.last()
 		if (state !is AutomationUiState.Success) return null
 
 		return state.automationDraft.functions.find { it.id == id }
@@ -185,7 +178,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun moveAction(actionID: String, parentID: String?, index: Int) {
-		val state = automationUiState.value
+		val state = automationUiState.replayCache.last()
 		if (state !is AutomationUiState.Success) return
 
 		val action = findAction(actionID)!!
@@ -202,7 +195,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun moveFunction(functionID: String, index: Int) {
-		val state = automationUiState.value
+		val state = automationUiState.replayCache.last()
 		if (state !is AutomationUiState.Success) return
 
 		val function = findFunction(functionID)!!
@@ -212,5 +205,25 @@ class AutomationManager @Inject constructor(
 
 		deleteFunction(functionID)
 		addFunction(function, index + indexCorrection)
+	}
+
+	fun editAction(actionID: String, newData: ActionNodeDef) {
+		_automationUiState.update { data ->
+			if (data !is AutomationUiState.Success) return@update data
+
+			data.copy(
+				automationDraft = data.automationDraft.copy(
+					entryPoint = data.automationDraft.entryPoint.findAndReplace(
+						{ it.id == actionID },
+						newData
+					),
+					functions = data.automationDraft.functions.map { function ->
+						function.copy(
+							content = function.content.findAndReplace({ it.id == actionID }, newData)
+						)
+					}
+				)
+			)
+		}
 	}
 }

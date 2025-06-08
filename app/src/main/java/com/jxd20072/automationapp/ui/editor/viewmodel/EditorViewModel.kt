@@ -8,6 +8,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.BottomSheetMan
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CollapsedSheetManager
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +25,9 @@ class EditorViewModel @Inject constructor(
 
 	init {
 		viewModelScope.launch {
-			automationManager.observeFileChanges()
+			async {
+				automationManager.observeFileChanges()
+			}
 			automationManager.observeDraftChanges()
 		}
 	}
@@ -47,12 +50,12 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onCreateNodeDrop() {
+		collapsedSheetManager.hideCollapsedScreen()
 		val actionID = dragManager.dropCreateAction()
 		if (actionID != null) {
 			bottomSheetManager.openNodeEdit(actionID)
 		} else {
 			bottomSheetManager.closeBottomSheet()
 		}
-		collapsedSheetManager.hideCollapsedScreen()
 	}
 }

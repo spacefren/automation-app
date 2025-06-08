@@ -38,7 +38,7 @@ fun AutomationEditor(
 	val nodeEditManager = bottomSheetManager.nodeEditManager
 	val dragManager = editorViewModel.dragManager
 
-	val automationState by automationManager.automationUiState.collectAsState()
+	val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
 	val draggingData by dragManager.editorNodeDragState.collectAsState()
 	val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
 	val collapsedSheetState by collapsedSheetManager.collapsedScreenState.collectAsState()
@@ -88,6 +88,7 @@ fun AutomationEditor(
 			collapsedSheetState = collapsedSheetState,
 			nodeSelectState = nodeSelectState,
 			nodeEditScreenState = nodeEditState,
+			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
 			onNodeSearch = bottomSheetManager.nodeSearchManager::changeNodeSearchQuery,
 			dragData = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,

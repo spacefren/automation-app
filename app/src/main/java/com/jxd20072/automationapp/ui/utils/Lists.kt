@@ -19,3 +19,7 @@ fun <T> List<T>.transformAt(index: Int, transform: (T) -> T): List<T> {
 		addAll(original.filterIndexed { i, _ -> i > index })
 	}
 }
+
+fun <T> List<T>.findAndReplace(search: (T) -> Boolean, replacement: T): List<T> {
+	return this.map { if (search(it)) replacement else it }
+}
