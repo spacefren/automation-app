@@ -1,14 +1,15 @@
 package com.jxd20072.automationapp.ui.userSettings.categories
 
 import androidx.compose.runtime.Composable
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 
 @Composable
 fun GeneralSettingsCategory(
 	userSettingsUiState: UserSettingsUiState.Success,
-	onAutoSaveChanged: (newVal: Boolean) -> Unit,
-	onAutoOpenKeyboardChanged: (newVal: Boolean) -> Unit,
+	onAutoSaveChanged: (newVal: NodeInputEntry.BOOL) -> Unit,
+	onAutoOpenKeyboardChanged: (newVal: NodeInputEntry.BOOL) -> Unit,
 	openAutomationsFolder: () -> Unit
 ) {
 	SettingsCategory(

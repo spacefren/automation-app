@@ -49,8 +49,13 @@ val LoggerNode = ActionNodesEntry(
 		icon = R.drawable.round_align_left_24,
 		inputDefinitions = mapOf(
 			"Text" to NodeInputDefinition(
-				description = "The text to display",
+				description = "The text to display this is a longer, more complete description",
 				defaultValue = NodeInputEntry.TEXT("default value"),
+				validate = { true },
+			),
+			"OtherOption" to NodeInputDefinition(
+				description = "This is a shorter description.",
+				defaultValue = NodeInputEntry.BOOL(true),
 				validate = { true },
 			)
 		)

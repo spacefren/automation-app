@@ -50,6 +50,7 @@ fun AutomationApp() {
 
 	NavDisplay(
 		backStack = backStack,
+		onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
 		modifier = Modifier.background(LocalTheme.colorScheme.background),
 		transitionSpec = {
 			ContentTransform(
@@ -109,14 +110,14 @@ fun AutomationApp() {
 			entry<Settings> {
 				UserSettingsScreen(
 					userSettingsViewModel = settingsViewModel,
-					returnHome = { backStack.removeLastOrNull() }
+					returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
 				)
 			}
 			entry<Editor> {
 				AutomationEditor(
 					editorViewModel = editorViewModel,
 					settingsViewModel = settingsViewModel,
-					returnHome = { backStack.removeLastOrNull() }
+					returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
 				)
 			}
 		}

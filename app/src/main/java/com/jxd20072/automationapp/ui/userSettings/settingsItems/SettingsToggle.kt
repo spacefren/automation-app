@@ -25,16 +25,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsEntry
 
 @Composable
 fun UserSettingsItem(
-	item: UserSettingsEntry<Boolean>,
+	item: NodeInputEntry.BOOL,
 	displayName: String,
 	description: String = "",
 	modifier: Modifier = Modifier,
-	onValueChanged: (Boolean) -> Unit
+	validate: ((NodeInputEntry.BOOL) -> Boolean)? = null,
+	onValueChanged: (NodeInputEntry.BOOL) -> Unit
 ) {
 	val enabled = item.value
 	var isPressed by remember { mutableStateOf(false) }
@@ -60,7 +61,7 @@ fun UserSettingsItem(
 		if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.tertiary,
 	)
 
-	UserSettingsItemContainer(
+	HorizontalUserSettingsItemContainer(
 		displayName = displayName,
 		description = description,
 		modifier = modifier
@@ -75,7 +76,7 @@ fun UserSettingsItem(
 				.pointerInput(enabled) {
 					detectTapGestures(
 						onTap = {
-							onValueChanged(!enabled)
+							onValueChanged(NodeInputEntry.BOOL(!enabled))
 						},
 						onPress = {
 							isPressed = true

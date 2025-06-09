@@ -9,52 +9,6 @@ data class AutomationDefMetadata(
 )
 
 @Serializable
-enum class VariableDefType {
-	TEXT, BOOL, NUMBER, VARIABLE
-}
-
-//@Serializable
-//sealed class VariableDef(val variableType: VariableDefType) {
-//	abstract val name: String
-//	abstract var value: String
-//
-//	@Serializable
-//	class TEXT(
-//		override val name: String,
-//		override var value: String
-//	) : VariableDef(VariableDefType.TEXT)
-//
-//	@Serializable
-//	class BOOL(
-//		override val name: String,
-//		override var value: String
-//	) : VariableDef(VariableDefType.BOOL)
-//
-//	@Serializable
-//	class NUMBER(
-//		override val name: String,
-//		override var value: String
-//	) : VariableDef(VariableDefType.NUMBER)
-//
-//	@Serializable
-//	class VARIABLE(
-//		override val name: String,
-//		override var value: String
-//	) : VariableDef(VariableDefType.VARIABLE)
-//
-//	companion object {
-//		fun withType(name: String, value: String, type: VariableDefType): VariableDef {
-//			return when (type) {
-//				VariableDefType.TEXT -> TEXT(name, value)
-//				VariableDefType.BOOL -> BOOL(name, value)
-//				VariableDefType.NUMBER -> NUMBER(name, value)
-//				VariableDefType.VARIABLE -> VARIABLE(name, value)
-//			}
-//		}
-//	}
-//}
-
-@Serializable
 sealed interface VariableDef<T> {
 	val value: T
 
@@ -109,27 +63,26 @@ data class ActionNodeDef(
 )
 
 @Serializable
-sealed interface NodeInputEntry<T> {
-	val value: T
+sealed class NodeInputEntry<T> {
+	abstract val value: T
 
 	@Serializable
 	data class TEXT(
 		override val value: String
-	) : NodeInputEntry<String>
+	) : NodeInputEntry<String>()
 
 	@Serializable
 	data class BOOL(
 		override val value: Boolean
-	) : NodeInputEntry<Boolean>
+	) : NodeInputEntry<Boolean>()
 
 	@Serializable
 	data class NUMBER(
 		override val value: Int
-	) : NodeInputEntry<Int>
+	) : NodeInputEntry<Int>()
 
 	@Serializable
 	data class CHOOSE(
-		val choices: Set<String>,
 		override val value: String
-	) : NodeInputEntry<String>
+	) : NodeInputEntry<String>()
 }

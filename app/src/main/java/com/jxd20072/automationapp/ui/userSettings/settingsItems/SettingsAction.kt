@@ -15,7 +15,7 @@ fun UserSettingsItem(
 	modifier: Modifier = Modifier,
 	onActivate: () -> Unit
 ) {
-	UserSettingsItemContainer(
+	HorizontalUserSettingsItemContainer(
 		displayName = displayName,
 		description = description,
 		modifier = modifier

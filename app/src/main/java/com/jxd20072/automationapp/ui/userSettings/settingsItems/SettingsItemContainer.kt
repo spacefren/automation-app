@@ -17,7 +17,32 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsItemContainer(
+fun UserSettingsItemContainerContent(
+	displayName: String,
+	description: String = "",
+	modifier: Modifier = Modifier
+) {
+	Column(
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+		modifier = modifier
+	) {
+		Text(
+			text = displayName,
+			color = LocalTheme.colorScheme.onBackground,
+			style = LocalTheme.typography.header
+		)
+		if (description.isNotEmpty()) {
+			Text(
+				text = description,
+				color = LocalTheme.colorScheme.onSurface,
+				style = LocalTheme.typography.body
+			)
+		}
+	}
+}
+
+@Composable
+fun HorizontalUserSettingsItemContainer(
 	displayName: String,
 	description: String = "",
 	modifier: Modifier = Modifier,
@@ -29,28 +54,39 @@ fun UserSettingsItemContainer(
 		modifier = modifier
 			.fillMaxWidth()
 	) {
-		Column(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
-			modifier = Modifier
-				.weight(1f)
-		) {
-			Text(
-				text = displayName,
-				color = LocalTheme.colorScheme.onBackground,
-				style = LocalTheme.typography.header
-			)
-			if (description.isNotEmpty()) {
-				Text(
-					text = description,
-					color = LocalTheme.colorScheme.onSurface,
-					style = LocalTheme.typography.body
-				)
-			}
-		}
+		UserSettingsItemContainerContent(
+			displayName = displayName,
+			description = description,
+			modifier = Modifier.weight(1f)
+		)
 		Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
 		Box(
 			content = content,
-			modifier = modifier.height(35.dp)
+			modifier = Modifier.height(35.dp)
+		)
+	}
+}
+
+@Composable
+fun VerticalUserSettingsItemContainer(
+	displayName: String,
+	description: String = "",
+	modifier: Modifier = Modifier,
+	content: @Composable BoxScope.() -> Unit
+) {
+	Column(
+		modifier = modifier
+			.fillMaxWidth()
+	) {
+		UserSettingsItemContainerContent(
+			displayName = displayName,
+			description = description,
+		)
+		Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel3))
+		Box(
+			content = content,
+			modifier = Modifier
+				.fillMaxWidth()
 		)
 	}
 }

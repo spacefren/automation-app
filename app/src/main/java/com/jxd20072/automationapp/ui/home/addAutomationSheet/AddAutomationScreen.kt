@@ -74,7 +74,7 @@ fun AddAutomationScreen(
 				iconName = selectedIcon,
 				cornerRadius = 8.dp,
 				padding = 8.dp,
-				size = 45.dp
+				size = 42.dp
 			) {
 				onIconChangeRequest()
 			}
@@ -84,6 +84,7 @@ fun AddAutomationScreen(
 				onlyFocusIfEmpty = true,
 				focused = if (autoOpenKeyboard) isSheetOpen else false,
 				text = name,
+				modifier = Modifier.fillMaxWidth(),
 				validateInput = { text -> validateAutomationName(text) }
 			) { text ->
 				onNameChanged(text)

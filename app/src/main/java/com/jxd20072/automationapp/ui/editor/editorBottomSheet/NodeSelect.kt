@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -236,6 +237,10 @@ fun EditorNodeSelectScreen(
 		spring(stiffness = Spring.StiffnessMediumLow)
 	)
 
+	if (isCollapsed) {
+		LocalFocusManager.current.clearFocus()
+	}
+
 	Box(
 		modifier = Modifier.heightIn(max = maxHeight)
 	) {
@@ -253,6 +258,7 @@ fun EditorNodeSelectScreen(
 			SearchBar(
 				searchText = "Search actions or categories",
 				queryText = nodeSearchQuery,
+				modifier = Modifier.fillMaxWidth(),
 				focused = autoOpenKeyboard
 			) { query ->
 				onNodeSearch(query)

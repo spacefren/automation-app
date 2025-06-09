@@ -7,10 +7,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -82,14 +82,12 @@ fun BaseTextInput(
 		LocalTheme.typography.header.fontSize.toDp()
 	}
 
-	Column(
-		modifier = modifier
-	) {
+	Column(modifier = modifier.width(IntrinsicSize.Max)) {
 		Box(
 			modifier = Modifier
-				.height(45.dp)
+				.fillMaxWidth()
 				.shadow(
-					LocalTheme.layoutSystem.shadows.primary,
+					LocalTheme.layoutSystem.shadows.secondary,
 					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
 				)
 				.background(LocalTheme.colorScheme.surface)
@@ -113,8 +111,7 @@ fun BaseTextInput(
 					)
 				}
 				Box(
-					modifier = Modifier
-						.weight(1f)
+					modifier = Modifier.weight(1f)
 				) {
 					BasicTextField(
 						value = text,
@@ -125,7 +122,7 @@ fun BaseTextInput(
 						singleLine = true,
 						enabled = true,
 						cursorBrush = SolidColor(LocalTheme.colorScheme.onSurface),
-						textStyle = LocalTheme.typography.header.copy(
+						textStyle = LocalTheme.typography.body.copy(
 							color = LocalTheme.colorScheme.onBackground
 						),
 						keyboardOptions = KeyboardOptions(imeAction = imeAction),
@@ -133,7 +130,6 @@ fun BaseTextInput(
 							focusManager.clearFocus()
 						}),
 						modifier = Modifier
-							.fillMaxSize()
 							.wrapContentHeight(align = Alignment.CenterVertically)
 							.focusRequester(focusRequester)
 					)
@@ -142,9 +138,8 @@ fun BaseTextInput(
 						Text(
 							text = placeholderText,
 							color = LocalTheme.colorScheme.onSurface,
-							style = LocalTheme.typography.header,
+							style = LocalTheme.typography.body,
 							modifier = Modifier
-								.fillMaxHeight()
 								.wrapContentHeight(align = Alignment.CenterVertically)
 						)
 					}
@@ -167,8 +162,13 @@ fun BaseTextInput(
 				}
 			}
 		}
-		AnimatedVisibility(errorText !== "") {
-			Column() {
+		AnimatedVisibility(
+			visible = errorText !== "",
+			modifier = modifier.fillMaxWidth()
+		) {
+			Column(
+				modifier = modifier.fillMaxWidth()
+			) {
 				Spacer(modifier = Modifier.height(2.dp))
 				Text(
 					text = errorText,

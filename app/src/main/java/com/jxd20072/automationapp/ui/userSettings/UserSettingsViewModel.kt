@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.userSettings
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -14,26 +15,9 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @Immutable
-enum class UserSettingsType {
-	TOGGLE, TEXT, CHOOSE, ACTION, UNDEFINED
-}
-
-@Immutable
-data class UserSettingsEntry<T>(
-	val value: T,
-	val type: UserSettingsType = when (value) {
-		is Boolean -> UserSettingsType.TOGGLE
-		is String -> UserSettingsType.TEXT
-		is Enum<*> -> UserSettingsType.CHOOSE
-		is Unit -> UserSettingsType.ACTION
-		else -> UserSettingsType.UNDEFINED
-	}
-)
-
-@Immutable
 data class UserEditableSettings(
-	val autoSave: UserSettingsEntry<Boolean>,
-	val autoOpenKeyboard: UserSettingsEntry<Boolean>,
+	val autoSave: NodeInputEntry.BOOL,
+	val autoOpenKeyboard: NodeInputEntry.BOOL,
 )
 
 @Immutable
@@ -70,15 +54,15 @@ class UserSettingsViewModel @Inject constructor(
 		}
 	}
 
-	fun setAutoSaveEnabled(enabled: Boolean) {
+	fun setAutoSaveEnabled(enabled: NodeInputEntry.BOOL) {
 		viewModelScope.launch {
-			userSettingsRepository.setAutoSaveEnabled(enabled)
+			userSettingsRepository.setAutoSaveEnabled(enabled.value)
 		}
 	}
 
-	fun setAutoOpenKeyboard(enabled: Boolean) {
+	fun setAutoOpenKeyboard(enabled: NodeInputEntry.BOOL) {
 		viewModelScope.launch {
-			userSettingsRepository.setAutoOpenKeyboard(enabled)
+			userSettingsRepository.setAutoOpenKeyboard(enabled.value)
 		}
 	}
 
