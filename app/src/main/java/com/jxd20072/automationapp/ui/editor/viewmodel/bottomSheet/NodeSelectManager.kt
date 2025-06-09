@@ -134,4 +134,12 @@ class NodeSelectManager @Inject constructor(
 	fun resetState() {
 		_nodeSelectStateState.update { NodeSelectState() }
 	}
+
+	fun setPageCollapsed(collapsed: Boolean) {
+		_nodeSelectStateState.update { state ->
+			state.copy(
+				isCollapsed = collapsed
+			)
+		}
+	}
 }

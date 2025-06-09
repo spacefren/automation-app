@@ -3,7 +3,6 @@ package com.jxd20072.automationapp.ui.shared
 import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.PredictiveBackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -48,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
@@ -64,7 +61,6 @@ class ModalBottomSheetState {
 fun ModalBottomSheet(
 	state: ModalBottomSheetState,
 	onDismissRequest: () -> Boolean?,
-	collapsedContent: (@Composable () -> Unit)? = null,
 	content: @Composable BoxScope.() -> Unit
 ) {
 	val screenHeight = LocalWindowInfo.current.containerSize.height
@@ -74,17 +70,13 @@ fun ModalBottomSheet(
 	val draggingPos = remember { Animatable(screenHeight.toFloat()) }
 	var mainContentHeight by remember { mutableIntStateOf(0) }
 
-	val maxHeight = remember { Animatable(screenHeight.toFloat()) }
 	val gradientStart = remember { Animatable(0f) }
 	val predictiveBackProgress = remember { Animatable(0f) }
 
 	val overlayOpacity = .5f
 
-	LaunchedEffect(state.isCollapsed, state.isOpen) {
+	LaunchedEffect(state.isOpen, state.isCollapsed) {
 		if (state.isOpen) {
-			async {
-				maxHeight.animateTo(if (state.isCollapsed) 0f else screenHeight.toFloat())
-			}
 			predictiveBackProgress.snapTo(0f)
 			gradientStart.animateTo(if (state.isCollapsed) .92f else 0f)
 		}
@@ -212,13 +204,8 @@ fun ModalBottomSheet(
 				modifier = Modifier
 					.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			) {
-				AnimatedVisibility(visible = state.isCollapsed) {
-					collapsedContent?.invoke()
-				}
 				Box(
-					content = content,
-					modifier = Modifier
-						.heightIn(max = maxHeight.value.dp)
+					content = content
 				)
 			}
 		}

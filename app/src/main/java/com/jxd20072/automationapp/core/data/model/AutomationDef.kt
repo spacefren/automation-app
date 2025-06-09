@@ -59,22 +59,22 @@ sealed interface VariableDef<T> {
 	val value: T
 
 	@Serializable
-	class TEXT(
+	data class TEXT(
 		override val value: String
 	) : VariableDef<String>
 
 	@Serializable
-	class BOOL(
+	data class BOOL(
 		override val value: Boolean
 	) : VariableDef<Boolean>
 
 	@Serializable
-	class NUMBER(
+	data class NUMBER(
 		override val value: Int
 	) : VariableDef<Int>
 
 	@Serializable
-	class VARIABLE(
+	data class VARIABLE(
 		override val value: String
 	) : VariableDef<String>
 }

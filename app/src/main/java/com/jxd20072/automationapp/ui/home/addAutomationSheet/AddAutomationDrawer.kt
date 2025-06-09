@@ -1,6 +1,9 @@
 package com.jxd20072.automationapp.ui.home.addAutomationSheet
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,7 +41,13 @@ fun AddAutomationDrawer(
 			modifier = modifier
 		) {
 			AnimatedContent(
-				targetState = drawerUiState.screen
+				targetState = drawerUiState.screen,
+				transitionSpec = {
+					ContentTransform(
+						targetContentEnter = fadeIn(),
+						initialContentExit = fadeOut(),
+					)
+				}
 			) { targetState ->
 				when (targetState) {
 					AddAutomationDrawerScreen.AUTOMATION_ADD -> {

@@ -71,7 +71,7 @@ class DragManager @Inject constructor(
 				state !is EditorNodeDragState.Dragging
 				|| state.draggingNode !is EditorDragNode.Action
 				|| state.dropData !is EditorNodeDropData.Moving
-			) return null
+			) return@update EditorNodeDragState.NotDragging
 
 			actionID = state.draggingNode.data.id
 

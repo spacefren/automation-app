@@ -1,13 +1,17 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -211,6 +217,7 @@ fun NodeCategoryContainer(
 fun EditorNodeSelectScreen(
 	nodeSearchQuery: String,
 	autoOpenKeyboard: Boolean,
+	isCollapsed: Boolean,
 	onStartDrag: (
 		nodeData: ActionNodeData,
 		startedPosition: Offset,
@@ -222,38 +229,49 @@ fun EditorNodeSelectScreen(
 	nodes: List<CategoryListEntry>,
 	onNodeSearch: (query: String) -> Unit
 ) {
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = Modifier
-			.imePadding()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+	val screenHeight = LocalWindowInfo.current.containerSize.height
+	val screenHeightDp = with(LocalDensity.current) { screenHeight.toDp() }
+	val maxHeight by animateDpAsState(
+		if (isCollapsed) 0.dp else screenHeightDp,
+		spring(stiffness = Spring.StiffnessMediumLow)
+	)
+
+	Box(
+		modifier = Modifier.heightIn(max = maxHeight)
 	) {
-		Text(
-			text = "Select action",
-			color = LocalTheme.colorScheme.onBackground,
-			style = LocalTheme.typography.subTitle
-		)
-		SearchBar(
-			searchText = "Search actions or categories",
-			queryText = nodeSearchQuery,
-			focused = autoOpenKeyboard
-		) { query ->
-			onNodeSearch(query)
-		}
-		LazyColumn(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+		Column(
+			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier
-				.fillMaxSize()
+				.imePadding()
+				.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 		) {
-			items(nodes) {
-				NodeCategoryContainer(
-					categoryListEntry = it,
-					onStartDrag = onStartDrag,
-					onStopDrag = onStopDrag,
-					draggableState = draggableState,
-					onClick = onClick,
-					modifier = Modifier.animateItem()
-				)
+			Text(
+				text = "Select action",
+				color = LocalTheme.colorScheme.onBackground,
+				style = LocalTheme.typography.subTitle
+			)
+			SearchBar(
+				searchText = "Search actions or categories",
+				queryText = nodeSearchQuery,
+				focused = autoOpenKeyboard
+			) { query ->
+				onNodeSearch(query)
+			}
+			LazyColumn(
+				verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+				modifier = Modifier
+					.fillMaxSize()
+			) {
+				items(nodes) {
+					NodeCategoryContainer(
+						categoryListEntry = it,
+						onStartDrag = onStartDrag,
+						onStopDrag = onStopDrag,
+						draggableState = draggableState,
+						onClick = onClick,
+						modifier = Modifier.animateItem()
+					)
+				}
 			}
 		}
 	}

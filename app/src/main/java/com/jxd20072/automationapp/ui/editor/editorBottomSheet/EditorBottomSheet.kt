@@ -1,7 +1,9 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
@@ -10,7 +12,6 @@ import androidx.compose.ui.geometry.Offset
 import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetCollapsedState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
@@ -25,7 +26,6 @@ fun EditorBottomSheet(
 	onDismiss: () -> Unit,
 	onNodeSearch: (String) -> Unit,
 	bottomSheetState: EditorBottomSheetState,
-	collapsedSheetState: EditorBottomSheetCollapsedState,
 	nodeSelectState: NodeSelectState,
 	nodeEditScreenState: NodeEditState,
 	resetDefaultNodeConfig: () -> Unit,
@@ -43,11 +43,11 @@ fun EditorBottomSheet(
 	autoOpenKeyboard: Boolean,
 ) {
 	val state = remember { ModalBottomSheetState() }
-	state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
-	state.isCollapsed = bottomSheetState is EditorBottomSheetState.Open
-		&& collapsedSheetState != EditorBottomSheetCollapsedState.Empty
+	val isCollapsed = bottomSheetState is EditorBottomSheetState.Open
+		&& dragData is EditorNodeDragState.Dragging
 
-	Log.d("APP_A", "open? ${state.isOpen}\ncollapsed? ${state.isCollapsed}");
+	state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
+	state.isCollapsed = isCollapsed
 	
 	ModalBottomSheet(
 		state = state,
@@ -55,20 +55,25 @@ fun EditorBottomSheet(
 			onDismiss()
 			true
 		},
-		collapsedContent = {
-			EditorBottomSheetCollapsedContent(
-				dragData = dragData,
-				showDelete = bottomSheetState is EditorBottomSheetState.Open
-					&& collapsedSheetState is EditorBottomSheetCollapsedState.DropPanels
-					&& collapsedSheetState.showDelete,
-				onDropZoneEnter = onDropZoneEnter,
-				onDropZoneExit = onDropZoneExit
-			)
-		}
 	) {
 		Layer {
+			if (isCollapsed) {
+				EditorBottomSheetCollapsedContent(
+					dragData = dragData,
+					showDelete = !dragData.isCreatingNode,
+					onDropZoneEnter = onDropZoneEnter,
+					onDropZoneExit = onDropZoneExit
+				)
+			}
+
 			AnimatedContent(
 				targetState = bottomSheetState,
+				transitionSpec = {
+					ContentTransform(
+						targetContentEnter = fadeIn(),
+						initialContentExit = fadeOut(),
+					)
+				},
 				contentKey = { it::class }
 			) { state ->
 				when {
@@ -81,6 +86,7 @@ fun EditorBottomSheet(
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
+							isCollapsed = isCollapsed,
 							onClick = onClick,
 							draggableState = draggableState,
 							nodes = nodeSelectState.filteredNodes
