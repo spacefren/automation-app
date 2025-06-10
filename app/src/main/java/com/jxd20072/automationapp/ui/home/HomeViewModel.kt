@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.automationIcons
-import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -181,14 +181,14 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	fun validateAddAutomationDrawerName(text: String): TextInputValidationResult {
+	fun validateAddAutomationDrawerName(text: String): ValidationResult {
 		return when {
-			text.isBlank() -> TextInputValidationResult.Error("Name cannot be empty.")
-			text.length > 20 -> TextInputValidationResult.Error("Name is too long.")
+			text.isBlank() -> ValidationResult.Error("Name cannot be empty.")
+			text.length > 20 -> ValidationResult.Error("Name is too long.")
 			homeUiState.value.automations.any { it.name.trim() == text.trim() } ->
-				TextInputValidationResult.Error("Name is already taken by an automation.")
+				ValidationResult.Error("Name is already taken by an automation.")
 
-			else -> TextInputValidationResult.Success
+			else -> ValidationResult.Success
 		}
 	}
 

@@ -153,11 +153,6 @@ class AutomationsRepository @Inject constructor(
 		if (getAutomationDef(id) == automation) return
 		val automationData = getAutomationMapEntry(id) ?: return
 
-		Log.d("APP_A", "SAVED DEF: ${getAutomationDef(id)}")
-		Log.d("APP_A", "NEW DEF: $automation")
-		Log.d("APP_A", "EQUAL?: ${getAutomationDef(id) == automation}")
-		Log.d("APP_A", "EQUALS?: ${getAutomationDef(id)?.equals(automation)}")
-
 		Log.d("APP_A", "saving...")
 
 		automationsStore.writeAutomationToFile(automationData.name, automation)

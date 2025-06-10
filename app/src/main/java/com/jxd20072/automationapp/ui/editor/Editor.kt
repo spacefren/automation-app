@@ -10,12 +10,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
@@ -46,6 +50,16 @@ fun AutomationEditor(
 	val draggableState = rememberDraggable2DState { delta ->
 		editorViewModel.dragManager.dragNodeDelta(delta)
 	}
+
+	var editingActionNode: ActionNodeDef? = null
+	var editingActionNodeData: ActionNodeData? = null
+	if (nodeEditState is NodeEditState.Editing) {
+		editingActionNode = automationManager.findAction((nodeEditState as NodeEditState.Editing).nodeID)
+		if (editingActionNode != null) {
+			editingActionNodeData = actionNodes[editingActionNode.name]?.data
+		}
+	}
+
 	if (automationState is AutomationUiState.Success) {
 
 		Layer(
@@ -85,6 +99,9 @@ fun AutomationEditor(
 			bottomSheetState = bottomSheetState,
 			nodeSelectState = nodeSelectState,
 			nodeEditScreenState = nodeEditState,
+			editingNode = editingActionNode,
+			editingNodeData = editingActionNodeData,
+			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
 			onNodeSearch = bottomSheetManager.nodeSearchManager::changeNodeSearchQuery,
 			dragData = draggingData,

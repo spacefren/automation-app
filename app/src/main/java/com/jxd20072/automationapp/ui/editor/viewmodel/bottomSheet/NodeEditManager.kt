@@ -1,9 +1,8 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +14,7 @@ import javax.inject.Singleton
 sealed interface NodeEditState {
 	data object NotEditing : NodeEditState
 	data class Editing(
-		val actionNode: ActionNodeDef,
-		val actionData: ActionNodeData
+		val nodeID: String,
 	) : NodeEditState
 }
 
@@ -28,13 +26,9 @@ class NodeEditManager @Inject constructor(
 	val editingNodeState = _editingNodeState.asStateFlow()
 
 	fun startEditNode(nodeID: String) {
-		val actionNode = automationManager.findAction(nodeID) ?: return
-		val actionData = actionNodes[actionNode.name]?.data ?: return
-
 		_editingNodeState.update {
 			NodeEditState.Editing(
-				actionNode = actionNode,
-				actionData = actionData
+				nodeID = nodeID
 			)
 		}
 	}
@@ -43,9 +37,26 @@ class NodeEditManager @Inject constructor(
 		val state = editingNodeState.value
 		if (state !is NodeEditState.Editing) return
 
+		val actionNode = automationManager.findAction(state.nodeID) ?: return
+		val actionData = actionNodes[actionNode.name]?.data ?: return
+
 		automationManager.editAction(
-			state.actionNode.id, state.actionNode.copy(
-			input = state.actionData.inputDefinitions.mapValues { it.value.defaultValue }
+			actionNode.id, actionNode.copy(
+			input = emptyMap()
 		))
+	}
+
+	fun setConfig(name: String, config: ConfigurationEntry<*>) {
+		val state = editingNodeState.value
+		if (state !is NodeEditState.Editing) return
+
+		val actionNode = automationManager.findAction(state.nodeID) ?: return
+		val actionData = actionNodes[actionNode.name]?.data ?: return
+
+		automationManager.editAction(
+			actionNode.id, actionNode.copy(
+				input = actionNode.input + mapOf(name to config)
+			)
+		)
 	}
 }

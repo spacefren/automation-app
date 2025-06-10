@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -39,7 +40,7 @@ val WaitNode = ActionNodesEntry(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the pause, in milliseconds",
 				defaultValue = ConfigurationEntry.NUMBER(1000),
-				validate = { true }
+				validate = { ValidationResult.Success }
 			)
 		)
 	),

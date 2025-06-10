@@ -18,9 +18,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
@@ -30,7 +30,7 @@ fun AddAutomationScreen(
 	name: String,
 	isSheetOpen: Boolean,
 	autoOpenKeyboard: Boolean,
-	validateAutomationName: (name: String) -> TextInputValidationResult,
+	validateAutomationName: (name: String) -> ValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChangeRequest: () -> Unit,
 	onCreateAutomation: () -> Unit,
@@ -59,7 +59,7 @@ fun AddAutomationScreen(
 				modifier = Modifier
 					.size(28.dp)
 					.clickableWithIndication {
-						if (validateAutomationName(name) is TextInputValidationResult.Success) {
+						if (validateAutomationName(name) is ValidationResult.Success) {
 							onCreateAutomation()
 						}
 					}

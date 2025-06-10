@@ -7,12 +7,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
-import com.jxd20072.automationapp.ui.shared.TextInputValidationResult
 
 @Composable
 fun AddAutomationDrawer(
@@ -20,7 +20,7 @@ fun AddAutomationDrawer(
 	autoOpenKeyboard: Boolean,
 	onDismissRequest: () -> Unit,
 	onScreenChanged: (screen: AddAutomationDrawerScreen) -> Unit,
-	validateAutomationName: (name: String) -> TextInputValidationResult,
+	validateAutomationName: (name: String) -> ValidationResult,
 	onNameChanged: (name: String) -> Unit,
 	onIconChanged: (icon: String) -> Unit,
 	onIconSearch: (query: String) -> Unit,

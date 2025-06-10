@@ -320,7 +320,9 @@ fun ActionNode(
 			disabledForDragging = dragging
 		) {
 			NodeHeader(
-				displayName = actionData.editorActionDescription(actionNode.input),
+				displayName = actionData.editorActionDescription(
+					actionData.inputDefinitions.mapValues { it.value.defaultValue } + actionNode.input
+				),
 				nodeId = actionNode.id,
 				icon = actionData.icon,
 				draggableState = draggableState,

@@ -57,7 +57,7 @@ class DragManager @Inject constructor(
 				draggingNode = EditorDragNode.Action(
 					data = ActionNodeDef(
 					name = nodeData.name,
-					input = nodeData.inputDefinitions.mapValues { it.value.defaultValue }
+					input = emptyMap()
 				)),
 				dropData = EditorNodeDropData.NotDropping
 			)

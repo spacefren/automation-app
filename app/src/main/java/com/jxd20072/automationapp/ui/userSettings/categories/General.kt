@@ -18,7 +18,7 @@ fun GeneralSettingsCategory(
 		UserSettingsItem(
 			item = userSettingsUiState.settings.autoSave,
 			displayName = "Auto-save automations",
-			onValueChanged = onAutoSaveChanged
+			onValueChanged = onAutoSaveChanged,
 		)
 		UserSettingsItem(
 			item = userSettingsUiState.settings.autoOpenKeyboard,

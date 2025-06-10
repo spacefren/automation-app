@@ -42,12 +42,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-
-sealed class TextInputValidationResult {
-	data object Success : TextInputValidationResult()
-	data class Error(val message: String) : TextInputValidationResult()
-}
 
 @Composable
 fun BaseTextInput(
@@ -58,7 +54,7 @@ fun BaseTextInput(
 	focused: Boolean = false,
 	onlyFocusIfEmpty: Boolean = false,
 	modifier: Modifier = Modifier,
-	validateInput: ((text: String) -> TextInputValidationResult)? = null,
+	validateInput: ((text: String) -> ValidationResult)? = null,
 	onTextChanged: ((text: String) -> Unit),
 ) {
 	val focusRequester = remember { FocusRequester() }
@@ -66,11 +62,17 @@ fun BaseTextInput(
 	val focusManager = LocalFocusManager.current
 	val closeInteractionSource = remember { MutableInteractionSource() }
 
+	val iconSize = with(LocalDensity.current) {
+		LocalTheme.typography.header.fontSize.toDp()
+	}
+	
+	var isEdited by remember { mutableStateOf(false) }
+	
 	fun evaluateInput(text: String) {
 		if (validateInput != null) {
 			val validationResult = validateInput(text)
 
-			errorText = if (validationResult is TextInputValidationResult.Error) {
+			errorText = if (validationResult is ValidationResult.Error) {
 				validationResult.message
 			} else {
 				""
@@ -78,8 +80,12 @@ fun BaseTextInput(
 		}
 	}
 
-	val iconSize = with(LocalDensity.current) {
-		LocalTheme.typography.header.fontSize.toDp()
+	if (isEdited) {
+		evaluateInput(text)
+	}
+	
+	LaunchedEffect(Unit) {
+		isEdited = false
 	}
 
 	Column(modifier = modifier.width(IntrinsicSize.Max)) {
@@ -116,8 +122,8 @@ fun BaseTextInput(
 					BasicTextField(
 						value = text,
 						onValueChange = { t ->
+							isEdited = true
 							onTextChanged(t)
-							evaluateInput(t)
 						},
 						singleLine = true,
 						enabled = true,
@@ -154,8 +160,9 @@ fun BaseTextInput(
 						modifier = Modifier
 							.size(iconSize)
 							.clickable(interactionSource = closeInteractionSource, indication = null) {
-								onTextChanged("")
+								isEdited = true
 								focusManager.clearFocus()
+								onTextChanged("")
 								evaluateInput("")
 							}
 					)
@@ -163,7 +170,7 @@ fun BaseTextInput(
 			}
 		}
 		AnimatedVisibility(
-			visible = errorText !== "",
+			visible = errorText != "",
 			modifier = modifier.fillMaxWidth()
 		) {
 			Column(

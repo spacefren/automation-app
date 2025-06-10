@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -34,7 +35,7 @@ fun UserSettingsItem(
 	displayName: String,
 	description: String = "",
 	modifier: Modifier = Modifier,
-	validate: ((ConfigurationEntry.BOOL) -> Boolean)? = null,
+	validate: ((ConfigurationEntry.BOOL) -> ValidationResult)? = null,
 	onValueChanged: (ConfigurationEntry.BOOL) -> Unit
 ) {
 	val enabled = item.value
