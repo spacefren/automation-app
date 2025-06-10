@@ -59,30 +59,5 @@ data class FunctionNodeDef(
 data class ActionNodeDef(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, NodeInputEntry<*>>,
+	val input: Map<String, ConfigurationEntry<*>>,
 )
-
-@Serializable
-sealed class NodeInputEntry<T> {
-	abstract val value: T
-
-	@Serializable
-	data class TEXT(
-		override val value: String
-	) : NodeInputEntry<String>()
-
-	@Serializable
-	data class BOOL(
-		override val value: Boolean
-	) : NodeInputEntry<Boolean>()
-
-	@Serializable
-	data class NUMBER(
-		override val value: Int
-	) : NodeInputEntry<Int>()
-
-	@Serializable
-	data class CHOOSE(
-		override val value: String
-	) : NodeInputEntry<String>()
-}

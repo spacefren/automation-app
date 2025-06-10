@@ -9,8 +9,8 @@ import com.jxd20072.automationapp.core.data.local.AutomationsStore
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
+import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
-import com.jxd20072.automationapp.core.data.model.NodeInputEntry
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,19 +43,19 @@ class AutomationsRepository @Inject constructor(
 //				),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to NodeInputEntry.TEXT("first test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("first test"))
 			),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to NodeInputEntry.TEXT("second test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("second test"))
 			),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to NodeInputEntry.TEXT("third test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("third test"))
 			),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to NodeInputEntry.TEXT("fourth test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("fourth test"))
 			),
 		),
 		functions = listOf(
@@ -64,19 +64,19 @@ class AutomationsRepository @Inject constructor(
 				content = listOf(
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("1"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("1"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("2"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("2"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("3"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("3"))
 					),
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to NodeInputEntry.TEXT("4"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("4"))
 					),
 				)
 			),

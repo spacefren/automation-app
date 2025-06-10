@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.NodeInputEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -22,7 +22,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
 		super.execute(context)
 
-		val text = getInput<NodeInputEntry.TEXT>("Text").value
+		val text = getInput<ConfigurationEntry.TEXT>("Text").value
 
 		LocalSnackbarState.showSnackbar(
 			SnackbarData(
@@ -50,12 +50,12 @@ val LoggerNode = ActionNodesEntry(
 		inputDefinitions = mapOf(
 			"Text" to NodeInputDefinition(
 				description = "The text to display this is a longer, more complete description",
-				defaultValue = NodeInputEntry.TEXT("default value"),
+				defaultValue = ConfigurationEntry.TEXT("default value"),
 				validate = { true },
 			),
 			"OtherOption" to NodeInputDefinition(
 				description = "This is a shorter description.",
-				defaultValue = NodeInputEntry.BOOL(true),
+				defaultValue = ConfigurationEntry.BOOL(true),
 				validate = { true },
 			)
 		)

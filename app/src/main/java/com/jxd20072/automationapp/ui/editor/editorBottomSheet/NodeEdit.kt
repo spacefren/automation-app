@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
-import com.jxd20072.automationapp.core.data.model.NodeInputEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.shared.SettingsResetButton
@@ -59,26 +59,26 @@ fun EditorNodeEditScreen(
 fun NodeEditField(
 	name: String,
 	inputDefinition: NodeInputDefinition<*>,
-	currentValue: NodeInputEntry<*>, // Should be T but kotlin is just dumb
-	onValueChanged: (NodeInputEntry<*>) -> Unit
+	currentValue: ConfigurationEntry<*>, // Should be T but kotlin is just dumb
+	onValueChanged: (ConfigurationEntry<*>) -> Unit
 ) {
 	when (currentValue) {
-		is NodeInputEntry.BOOL -> {
+		is ConfigurationEntry.BOOL -> {
 			UserSettingsItem(
 				item = currentValue,
 				displayName = name,
 				description = inputDefinition.description,
-				validate = inputDefinition.validate as (NodeInputEntry.BOOL) -> Boolean,
+				validate = inputDefinition.validate as (ConfigurationEntry.BOOL) -> Boolean,
 				onValueChanged = onValueChanged
 			)
 		}
 
-		is NodeInputEntry.TEXT -> {
+		is ConfigurationEntry.TEXT -> {
 			UserSettingsItem(
 				item = currentValue,
 				displayName = name,
 				description = inputDefinition.description,
-				validate = inputDefinition.validate as (NodeInputEntry.TEXT) -> Boolean,
+				validate = inputDefinition.validate as (ConfigurationEntry.TEXT) -> Boolean,
 				onValueChanged = onValueChanged
 			)
 		}
