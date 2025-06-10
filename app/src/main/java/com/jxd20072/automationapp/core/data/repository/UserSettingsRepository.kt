@@ -33,7 +33,7 @@ class UserSettingsRepository @Inject constructor(
 				.toBuilder()
 				.setHasInitialized(true)
 				.setAutoSave(true)
-				.setAutoOpenKeyboard(true)
+				.setAutoOpenKeyboard(false)
 				.build()
 		}
 	}
