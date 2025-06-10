@@ -89,7 +89,7 @@ fun UserSettingsItem(
 					)
 				}
 				.shadow(
-					LocalTheme.layoutSystem.shadows.primary,
+					LocalTheme.layoutSystem.shadows.secondary,
 					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
 				)
 				.background(LocalTheme.colorScheme.surface)
