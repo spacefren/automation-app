@@ -34,11 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.R
@@ -61,13 +64,16 @@ fun BaseTextInput(
 	var errorText by remember { mutableStateOf("") }
 	val focusManager = LocalFocusManager.current
 	val closeInteractionSource = remember { MutableInteractionSource() }
+	var isEdited by remember { mutableStateOf(false) }
+	var state by remember {
+		mutableStateOf(TextFieldValue(text))
+	}
+	state = state.copy(text = text)
 
 	val iconSize = with(LocalDensity.current) {
 		LocalTheme.typography.header.fontSize.toDp()
 	}
-	
-	var isEdited by remember { mutableStateOf(false) }
-	
+
 	fun evaluateInput(text: String) {
 		if (validateInput != null) {
 			val validationResult = validateInput(text)
@@ -79,11 +85,8 @@ fun BaseTextInput(
 			}
 		}
 	}
+	evaluateInput(text)
 
-	if (isEdited) {
-		evaluateInput(text)
-	}
-	
 	LaunchedEffect(Unit) {
 		isEdited = false
 	}
@@ -120,12 +123,15 @@ fun BaseTextInput(
 					modifier = Modifier.weight(1f)
 				) {
 					BasicTextField(
-						value = text,
-						onValueChange = { t ->
-							isEdited = true
-							onTextChanged(t)
+						value = state,
+						onValueChange = {
+							if (!isEdited) {
+								isEdited = true
+							} else {
+								onTextChanged(it.text)
+								state = it
+							}
 						},
-						singleLine = true,
 						enabled = true,
 						cursorBrush = SolidColor(LocalTheme.colorScheme.onSurface),
 						textStyle = LocalTheme.typography.body.copy(
@@ -138,6 +144,13 @@ fun BaseTextInput(
 						modifier = Modifier
 							.wrapContentHeight(align = Alignment.CenterVertically)
 							.focusRequester(focusRequester)
+							.onFocusChanged { focusState ->
+								if (focusState.hasFocus) {
+									state = state.copy(
+										selection = TextRange(0, state.text.length)
+									)
+								}
+							}
 					)
 
 					if (text == "") {
@@ -160,10 +173,8 @@ fun BaseTextInput(
 						modifier = Modifier
 							.size(iconSize)
 							.clickable(interactionSource = closeInteractionSource, indication = null) {
-								isEdited = true
-								focusManager.clearFocus()
+								state = state.copy(text = "")
 								onTextChanged("")
-								evaluateInput("")
 							}
 					)
 				}
