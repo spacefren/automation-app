@@ -23,3 +23,7 @@ fun <T> List<T>.transformAt(index: Int, transform: (T) -> T): List<T> {
 fun <T> List<T>.findAndReplace(search: (T) -> Boolean, replacement: T): List<T> {
 	return this.map { if (search(it)) replacement else it }
 }
+
+fun <T> List<T>.findAndTransform(search: (T) -> Boolean, transform: (T) -> T): List<T> {
+	return this.map { if (search(it)) transform(it) else it }
+}

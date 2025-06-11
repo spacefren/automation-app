@@ -7,11 +7,11 @@ import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.copy
 import com.jxd20072.automationapp.core.data.local.AutomationsStore
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
-import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.model.FunctionDef
 import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +44,7 @@ class AutomationsRepository @Inject constructor(
 				input = mapOf("Duration" to ConfigurationEntry.NUMBER(3000)),
 				output = emptyMap(),
 				content = listOf(
-					ActionNodeDef(
+					ActionDef(
 						name = "log",
 						input = mapOf("Text" to ConfigurationEntry.TEXT("I waited for this")),
 						output = emptyMap()
@@ -53,27 +53,27 @@ class AutomationsRepository @Inject constructor(
 			)
 		),
 		entryPoint = listOf(
-			ActionNodeDef(
+			ActionDef(
 				name = "log",
 				input = mapOf("Text" to ConfigurationEntry.TEXT("first test")),
 				output = emptyMap()
 			),
-			ActionNodeDef(
+			ActionDef(
 				name = "log",
 				input = mapOf("Text" to ConfigurationEntry.TEXT("second test")),
 				output = emptyMap()
 			),
 		),
 		functions = listOf(
-			FunctionNodeDef(
+			FunctionDef(
 				name = "myFunction",
 				content = listOf(
-					ActionNodeDef(
+					ActionDef(
 						name = "log",
 						input = mapOf("Text" to ConfigurationEntry.TEXT("1")),
 						output = emptyMap()
 					),
-					ActionNodeDef(
+					ActionDef(
 						name = "log",
 						input = mapOf("Text" to ConfigurationEntry.TEXT("2")),
 						output = emptyMap()

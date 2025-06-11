@@ -38,8 +38,8 @@ data class AutomationDef(
 	val metadata: AutomationDefMetadata,
 	val variables: Map<String, VariableDef<*>>,
 	val triggers: List<TriggerDef>,
-	val functions: List<FunctionNodeDef>,
-	val entryPoint: List<ActionNodeDef>,
+	val functions: List<FunctionDef>,
+	val entryPoint: List<ActionDef>,
 )
 
 @Serializable
@@ -48,18 +48,18 @@ data class TriggerDef(
 	val id: String = UUID.randomUUID().toString(),
 	val input: Map<String, ConfigurationEntry<*>>,
 	val output: Map<String, ConfigurationEntry<*>>,
-	val content: List<ActionNodeDef>,
+	val content: List<ActionDef>,
 )
 
 @Serializable
-data class FunctionNodeDef(
+data class FunctionDef(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
-	val content: List<ActionNodeDef>,
+	val content: List<ActionDef>,
 )
 
 @Serializable
-data class ActionNodeDef(
+data class ActionDef(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
 	val input: Map<String, ConfigurationEntry<*>>,

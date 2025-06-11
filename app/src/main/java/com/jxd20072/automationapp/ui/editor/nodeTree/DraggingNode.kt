@@ -45,14 +45,18 @@ fun DraggingNode(
 		) {
 			NodeContainer(
 				level = when (draggingData.draggingNode) {
-					is EditorDragNode.Function -> 1
+					is EditorDragNode.Function,
+					is EditorDragNode.Trigger -> 1
 					is EditorDragNode.Action -> 2
 				},
 				enabledByDragging = true,
 				onLayout = { _ -> },
 			) {
 				NodeHeaderIcons(
-					icon = R.drawable.round_functions_24,
+					icon = when (draggingData.draggingNode) {
+						is EditorDragNode.Trigger -> R.drawable.round_electric_bolt_24
+						else -> R.drawable.round_functions_24
+					},
 					forceShowDragHandle = true
 				)
 			}

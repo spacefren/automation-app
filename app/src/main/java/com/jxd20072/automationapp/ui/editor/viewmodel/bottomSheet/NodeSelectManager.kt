@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
@@ -123,7 +123,7 @@ class NodeSelectManager @Inject constructor(
 	}
 
 	fun addActionClick(action: NodeData, parentID: String? = null, index: Int? = null) {
-		val actionDef = ActionNodeDef(
+		val actionDef = ActionDef(
 			name = action.name,
 			input = emptyMap(),
 			output = emptyMap()

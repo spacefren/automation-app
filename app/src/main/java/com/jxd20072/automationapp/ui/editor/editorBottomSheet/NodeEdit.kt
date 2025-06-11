@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -26,7 +26,7 @@ import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 @Composable
 fun EditorNodeEditScreen(
 	nodeEditState: NodeEditState,
-	editingNode: ActionNodeDef?,
+	editingNode: ActionDef?,
 	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultConfig: () -> Unit,

@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.core.executor
 
 import android.util.Log
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
@@ -29,13 +29,13 @@ class ExecutionFlow(
 		)
 	}
 
-	private fun buildAction(actionNodeDef: ActionNodeDef): ActionNode {
-		val actionNodeEntry = actionNodes[actionNodeDef.name]
-			?: throw Exception("Action not found: ${actionNodeDef.name}")
-		val action = actionNodeEntry.factory.invoke(actionNodeDef.id)
+	private fun buildAction(actionDef: ActionDef): ActionNode {
+		val actionNodeEntry = actionNodes[actionDef.name]
+			?: throw Exception("Action not found: ${actionDef.name}")
+		val action = actionNodeEntry.factory.invoke(actionDef.id)
 
 		val input = actionNodeEntry.data.inputDefinitions.mapValues { inputEntry ->
-			actionNodeDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
+			actionDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
 		}
 		action.input = input
 
@@ -109,7 +109,7 @@ class ExecutionFlow(
 		)
 	}
 
-	fun executeActionPath(actionDefinitions: List<ActionNodeDef>) {
+	fun executeActionPath(actionDefinitions: List<ActionDef>) {
 		executeActions(actionDefinitions.map { actionDef -> actions.find { it.id == actionDef.id }!! })
 	}
 

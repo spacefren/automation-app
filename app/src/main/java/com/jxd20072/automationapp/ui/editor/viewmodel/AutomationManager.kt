@@ -2,15 +2,16 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 
 import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.model.FunctionDef
+import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.ui.utils.findAndReplace
+import com.jxd20072.automationapp.ui.utils.findAndTransform
 import com.jxd20072.automationapp.ui.utils.insertAt
-import com.jxd20072.automationapp.ui.utils.transformAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -96,40 +97,55 @@ class AutomationManager @Inject constructor(
 		}
 	}
 
-	fun findAction(id: String): ActionNodeDef? {
-		val state = automationUiState.replayCache.last()
+	fun findAction(id: String): ActionDef? {
+		val state = automationUiState.value
 		if (state !is AutomationUiState.Success) return null
 
-		return (state.automationDraft.entryPoint +
+		return (
+			state.automationDraft.entryPoint +
 			state.automationDraft.functions
 				.map { it.content }
-				.flatten())
+				.flatten() +
+				state.automationDraft.triggers
+					.map { it.content }
+					.flatten()
+			)
 			.find { it.id == id }
 	}
 
-	fun findFunction(id: String): FunctionNodeDef? {
-		val state = automationUiState.replayCache.last()
+	fun findFunction(id: String): FunctionDef? {
+		val state = automationUiState.value
 		if (state !is AutomationUiState.Success) return null
 
 		return state.automationDraft.functions.find { it.id == id }
 	}
 
-	fun addAction(action: ActionNodeDef, parentID: String? = null, index: Int? = null) {
+	fun findTrigger(id: String): TriggerDef? {
+		val state = automationUiState.value
+		if (state !is AutomationUiState.Success) return null
+
+		return state.automationDraft.triggers.find { it.id == id }
+	}
+
+	fun addAction(action: ActionDef, parentID: String? = null, index: Int? = null) {
 		_automationUiState.update { state ->
 			if (state !is AutomationUiState.Success) return@update state
 
-			val parentIndex = state.automationDraft.functions.indexOfFirst { it.id == parentID }
-
 			state.copy(
-				automationDraft = if (parentIndex == -1) {
+				automationDraft = if (parentID == "entryPoint") {
 					state.automationDraft.copy(
 						entryPoint = state.automationDraft.entryPoint.insertAt(index, action)
 					)
 				} else {
 					state.automationDraft.copy(
-						functions = state.automationDraft.functions.transformAt(parentIndex) { function ->
-							function.copy(
-								content = function.content.insertAt(index, action)
+						functions = state.automationDraft.functions.findAndTransform({ it.id == parentID }) {
+							it.copy(
+								content = it.content.insertAt(index, action)
+							)
+						},
+						triggers = state.automationDraft.triggers.findAndTransform({ it.id == parentID }) {
+							it.copy(
+								content = it.content.insertAt(index, action)
 							)
 						}
 					)
@@ -138,13 +154,25 @@ class AutomationManager @Inject constructor(
 		}
 	}
 
-	fun addFunction(function: FunctionNodeDef, index: Int? = null) {
+	fun addFunction(function: FunctionDef, index: Int? = null) {
 		_automationUiState.update { state ->
 			if (state !is AutomationUiState.Success) return@update state
 
 			state.copy(
 				automationDraft = state.automationDraft.copy(
 					functions = state.automationDraft.functions.insertAt(index, function)
+				)
+			)
+		}
+	}
+
+	fun addTrigger(trigger: TriggerDef, index: Int? = null) {
+		_automationUiState.update { state ->
+			if (state !is AutomationUiState.Success) return@update state
+
+			state.copy(
+				automationDraft = state.automationDraft.copy(
+					triggers = state.automationDraft.triggers.insertAt(index, trigger)
 				)
 			)
 		}
@@ -160,6 +188,11 @@ class AutomationManager @Inject constructor(
 					functions = state.automationDraft.functions.map { function ->
 						function.copy(
 							content = function.content.filter { it.id != actionID }
+						)
+					},
+					triggers = state.automationDraft.triggers.map { trigger ->
+						trigger.copy(
+							content = trigger.content.filter { it.id != actionID }
 						)
 					}
 				)
@@ -179,8 +212,20 @@ class AutomationManager @Inject constructor(
 		}
 	}
 
+	fun deleteTrigger(triggerID: String) {
+		_automationUiState.update { state ->
+			if (state !is AutomationUiState.Success) return@update state
+
+			state.copy(
+				automationDraft = state.automationDraft.copy(
+					triggers = state.automationDraft.triggers.filter { it.id != triggerID }
+				)
+			)
+		}
+	}
+
 	fun moveAction(actionID: String, parentID: String?, index: Int) {
-		val state = automationUiState.replayCache.last()
+		val state = automationUiState.value
 		if (state !is AutomationUiState.Success) return
 
 		val action = findAction(actionID)!!
@@ -197,7 +242,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun moveFunction(functionID: String, index: Int) {
-		val state = automationUiState.replayCache.last()
+		val state = automationUiState.value
 		if (state !is AutomationUiState.Success) return
 
 		val function = findFunction(functionID)!!
@@ -209,7 +254,20 @@ class AutomationManager @Inject constructor(
 		addFunction(function, index + indexCorrection)
 	}
 
-	fun editAction(actionID: String, newData: ActionNodeDef) {
+	fun moveTrigger(triggerID: String, index: Int) {
+		val state = automationUiState.value
+		if (state !is AutomationUiState.Success) return
+
+		val trigger = findTrigger(triggerID)!!
+		val previousIndex = state.automationDraft.functions.indexOfFirst { it.id == triggerID }
+
+		val indexCorrection = if (previousIndex < index) -1 else 0
+
+		deleteFunction(triggerID)
+		addTrigger(trigger, index + indexCorrection)
+	}
+
+	fun editAction(actionID: String, newData: ActionDef) {
 		_automationUiState.update { data ->
 			if (data !is AutomationUiState.Success) return@update data
 

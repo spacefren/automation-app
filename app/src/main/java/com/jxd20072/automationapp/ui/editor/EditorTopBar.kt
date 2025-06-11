@@ -124,16 +124,6 @@ fun EditorTopBar(
 			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2)
 		) {
 			IconLabelButton(
-				label = "Triggers",
-				textStyle = LocalTheme.typography.body,
-				drawableRes = R.drawable.round_electric_bolt_24,
-				color = LocalTheme.colorScheme.tertiary,
-				iconColor = LocalTheme.colorScheme.onSecondary,
-				cornerRadius = 5.dp,
-				iconSize = 20.dp
-			) { }
-
-			IconLabelButton(
 				label = "Variables",
 				textStyle = LocalTheme.typography.body,
 				drawableRes = R.drawable.round_data_object_24,

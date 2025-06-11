@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
+import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -38,13 +39,52 @@ fun EditorNodeTree(
 		modifier = modifier
 			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
+		itemsIndexed(
+			automationDraft.triggers,
+			key = { _, item -> item.id }
+		) { index, trigger ->
+			val triggerData = triggerNodes[trigger.name]?.data
+			if (triggerData != null) {
 
-		item { Spacer(modifier = Modifier.height(20.dp)) }
+				EditorNodeDropTarget(
+					gap = 20.dp,
+					draggingData = draggingData,
+					dragNode = EditorDragNode.Trigger::class,
+					onEnter = { onDropLineEnter(index, null) },
+					onExit = onDropLineExit
+				)
+
+				TopLevelNode(
+					type = TopLevelNodeType.TRIGGER,
+					id = trigger.id,
+					displayName = triggerData.editorActionDescription(
+						triggerData.inputDefinitions.mapValues { it.value.defaultValue } + trigger.input
+					),
+					content = trigger.content,
+					onDragStart = onNodeDrag,
+					onStopDrag = onStopDrag,
+					draggableState = draggableState,
+					draggingData = draggingData,
+					onDropZoneEnter = onDropLineEnter,
+					onDropZoneExit = onDropLineExit
+				)
+			}
+		}
+
+		item {
+			EditorNodeDropTarget(
+				gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
+				draggingData = draggingData,
+				dragNode = EditorDragNode.Trigger::class,
+				onEnter = { onDropLineEnter(automationDraft.triggers.size, null) },
+				onExit = onDropLineExit
+			)
+		}
 
 		item {
 			TopLevelNode(
 				type = TopLevelNodeType.ENTRYPOINT,
-				id = "_entrypoint",
+				id = "entryPoint",
 				displayName = listOf("OnStart"),
 				content = automationDraft.entryPoint,
 				onDragStart = onNodeDrag,
@@ -61,7 +101,8 @@ fun EditorNodeTree(
 			key = { _, item -> item.id }
 		)
 		{ index, function ->
-			EditorNodeDropTarget(
+
+		EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
 				dragNode = EditorDragNode.Function::class,

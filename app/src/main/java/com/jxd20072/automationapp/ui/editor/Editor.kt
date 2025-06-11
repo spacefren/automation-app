@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
@@ -51,7 +51,7 @@ fun AutomationEditor(
 		editorViewModel.dragManager.dragNodeDelta(delta)
 	}
 
-	var editingActionNode: ActionNodeDef? = null
+	var editingActionNode: ActionDef? = null
 	var editingNodeData: NodeData? = null
 	if (nodeEditState is NodeEditState.Editing) {
 		editingActionNode = automationManager.findAction((nodeEditState as NodeEditState.Editing).nodeID)

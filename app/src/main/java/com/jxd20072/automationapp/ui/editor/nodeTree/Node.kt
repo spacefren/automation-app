@@ -40,14 +40,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 
-enum class TopLevelNodeType { ENTRYPOINT, FUNCTION }
+enum class TopLevelNodeType { ENTRYPOINT, FUNCTION, TRIGGER }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -111,6 +111,7 @@ fun NodeHeader(
 	displayName: List<String>,
 	nodeId: String,
 	icon: Int,
+	level: Int,
 	draggableState: Draggable2DState,
 	onDragStart: ((startedPosition: Offset) -> Unit)? = null,
 	onStopDrag: (() -> Unit)? = null,
@@ -136,7 +137,13 @@ fun NodeHeader(
 					Box(
 						modifier = Modifier
 							.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
-							.background(LocalTheme.colorScheme.surface)
+							.background(
+								when (level) {
+									1 -> LocalTheme.colorScheme.background
+									2 -> LocalTheme.colorScheme.surface
+									else -> LocalTheme.colorScheme.tertiary
+								}
+							)
 							.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 					) {
 						Text(
@@ -233,7 +240,7 @@ fun TopLevelNode(
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
 	modifier: Modifier = Modifier,
-	content: List<ActionNodeDef>
+	content: List<ActionDef>
 ) {
 	var dragging by remember { mutableStateOf(false) }
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -253,8 +260,12 @@ fun TopLevelNode(
 			NodeHeader(
 				displayName = displayName,
 				nodeId = id,
-				icon = if (displayName[0] == "OnStart") R.drawable.round_play_arrow_24
-				else R.drawable.round_functions_24,
+				level = 1,
+				icon = when (type) {
+					TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
+					TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
+					TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
+				},
 				draggableState = draggableState,
 				onStopDrag = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
 					dragging = false
@@ -297,7 +308,7 @@ fun TopLevelNode(
 @Composable
 fun ActionNode(
 	modifier: Modifier = Modifier,
-	actionNode: ActionNodeDef,
+	actionNode: ActionDef,
 	draggableState: Draggable2DState,
 	onStopDrag: (() -> Unit)? = null,
 	onDragStart: ((
@@ -323,6 +334,7 @@ fun ActionNode(
 				displayName = actionData.editorActionDescription(
 					actionData.inputDefinitions.mapValues { it.value.defaultValue } + actionNode.input
 				),
+				level = 2,
 				nodeId = actionNode.id,
 				icon = actionData.icon,
 				draggableState = draggableState,

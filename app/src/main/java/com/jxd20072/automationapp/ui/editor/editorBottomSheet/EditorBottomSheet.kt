@@ -9,7 +9,7 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
@@ -30,7 +30,7 @@ fun EditorBottomSheet(
 	bottomSheetState: EditorBottomSheetState,
 	nodeSelectState: NodeSelectState,
 	nodeEditScreenState: NodeEditState,
-	editingNode: ActionNodeDef?,
+	editingNode: ActionDef?,
 	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultNodeConfig: () -> Unit,

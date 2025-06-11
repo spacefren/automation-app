@@ -2,8 +2,9 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
-import com.jxd20072.automationapp.core.data.model.ActionNodeDef
-import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.model.ActionDef
+import com.jxd20072.automationapp.core.data.model.FunctionDef
+import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,8 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 sealed interface EditorDragNode {
-	data class Action(val data: ActionNodeDef) : EditorDragNode
-	data class Function(val data: FunctionNodeDef) : EditorDragNode
+	data class Action(val data: ActionDef) : EditorDragNode
+	data class Function(val data: FunctionDef) : EditorDragNode
+	data class Trigger(val data: TriggerDef) : EditorDragNode
 }
 
 @Immutable
@@ -55,7 +57,7 @@ class DragManager @Inject constructor(
 				inputOffset = pressedPosition - nodePosition,
 				isCreatingNode = true,
 				draggingNode = EditorDragNode.Action(
-					data = ActionNodeDef(
+					data = ActionDef(
 					name = nodeData.name,
 						input = emptyMap(),
 						output = emptyMap()
@@ -90,11 +92,14 @@ class DragManager @Inject constructor(
 	fun dragNode(id: String, nodePosition: Offset, pressedPosition: Offset) {
 		val actionNode = automationManager.findAction(id)
 		val functionNode = automationManager.findFunction(id)
+		val triggerNode = automationManager.findTrigger(id)
 
 		val draggingNode = if (actionNode != null) {
 			EditorDragNode.Action(actionNode)
 		} else if (functionNode != null) {
 			EditorDragNode.Function(functionNode)
+		} else if (triggerNode != null) {
+			EditorDragNode.Trigger(triggerNode)
 		} else return
 
 		_editorNodeDragState.update {
@@ -133,6 +138,11 @@ class DragManager @Inject constructor(
 						state.draggingNode.data.id,
 						state.dropData.targetIndex
 					)
+				} else if (state.draggingNode is EditorDragNode.Trigger) {
+					automationManager.moveTrigger(
+						state.draggingNode.data.id,
+						state.dropData.targetIndex
+					)
 				}
 			}
 
@@ -141,6 +151,8 @@ class DragManager @Inject constructor(
 					automationManager.deleteAction(state.draggingNode.data.id)
 				} else if (state.draggingNode is EditorDragNode.Function) {
 					automationManager.deleteFunction(state.draggingNode.data.id)
+				} else if (state.draggingNode is EditorDragNode.Trigger) {
+					automationManager.deleteTrigger(state.draggingNode.data.id)
 				}
 			}
 		}
