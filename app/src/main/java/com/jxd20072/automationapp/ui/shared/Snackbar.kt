@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.shared
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -61,6 +62,12 @@ data class SnackbarActionData(
 	val onClick: () -> Unit
 )
 
+object SnackbarDuration {
+	const val SHORT = 1000L
+	const val STANDARD = 5000L
+	const val LONG = 10000L
+}
+
 data class SnackbarData(
 	val text: String,
 	val type: SnackbarType,
@@ -69,7 +76,7 @@ data class SnackbarData(
 		SnackbarType.WARNING -> R.drawable.round_warning_24
 		SnackbarType.ERROR -> R.drawable.round_error_24
 	},
-	val duration: Long = 10000L,
+	val duration: Long = SnackbarDuration.STANDARD,
 	val id: String = UUID.randomUUID().toString(),
 	val action: SnackbarActionData? = null
 )
@@ -85,6 +92,7 @@ class SnackbarHostState() {
 	}
 
 	fun dismissSnackbar(id: String) {
+		Spring.StiffnessLow
 		activeSnackbars = activeSnackbars.filter { it.id != id }
 	}
 }

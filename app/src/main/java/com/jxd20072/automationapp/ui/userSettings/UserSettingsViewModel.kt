@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
+import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+
 
 @Immutable
 data class UserEditableSettings(
@@ -29,6 +31,7 @@ sealed interface UserSettingsUiState {
 @HiltViewModel
 class UserSettingsViewModel @Inject constructor(
 	private val userSettingsRepository: UserSettingsRepository,
+	private val automationsRepository: AutomationsRepository
 ) : ViewModel() {
 
 	init {
@@ -65,6 +68,4 @@ class UserSettingsViewModel @Inject constructor(
 			userSettingsRepository.setAutoOpenKeyboard(enabled.value)
 		}
 	}
-
-	fun openAutomationsFolder() {}
 }

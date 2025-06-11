@@ -87,7 +87,6 @@ fun UserSettingsScreen(
 						userSettingsUiState = settings,
 						onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled,
 						onAutoOpenKeyboardChanged = userSettingsViewModel::setAutoOpenKeyboard,
-						openAutomationsFolder = userSettingsViewModel::openAutomationsFolder
 					)
 				}
 			}

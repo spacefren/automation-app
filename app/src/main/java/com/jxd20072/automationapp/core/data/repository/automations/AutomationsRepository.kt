@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.core.data.repository.automations
 
+import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
@@ -26,7 +27,8 @@ import javax.inject.Inject
 
 class AutomationsRepository @Inject constructor(
 	private val automationsStore: AutomationsStore,
-	private val automationsDataStore: DataStore<AutomationsDataMap>
+	private val automationsDataStore: DataStore<AutomationsDataMap>,
+	private val context: Context
 ) {
 	private val testingAutomationDef = AutomationDef(
 		metadata = AutomationDefMetadata(
