@@ -47,7 +47,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEntry
 import com.jxd20072.automationapp.ui.shared.SearchBar
@@ -60,12 +60,12 @@ import kotlin.math.truncate
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NodeCard(
-	nodeData: ActionNodeData,
+	nodeData: NodeData,
 	draggableState: Draggable2DState,
 	modifier: Modifier = Modifier,
 	onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: (nodeData: ActionNodeData) -> Unit,
+	onClick: (nodeData: NodeData) -> Unit,
 ) {
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
@@ -120,12 +120,12 @@ fun NodeCategoryContainer(
 	categoryListEntry: CategoryListEntry,
 	draggableState: Draggable2DState,
 	onStartDrag: (
-		nodeData: ActionNodeData,
+		nodeData: NodeData,
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: (nodeData: ActionNodeData) -> Unit,
+	onClick: (nodeData: NodeData) -> Unit,
 	modifier: Modifier = Modifier
 ) {
 	var expanded by remember { mutableStateOf(false) }
@@ -220,12 +220,12 @@ fun EditorNodeSelectScreen(
 	autoOpenKeyboard: Boolean,
 	isCollapsed: Boolean,
 	onStartDrag: (
-		nodeData: ActionNodeData,
+		nodeData: NodeData,
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: (nodeData: ActionNodeData) -> Unit,
+	onClick: (nodeData: NodeData) -> Unit,
 	draggableState: Draggable2DState,
 	nodes: List<CategoryListEntry>,
 	onNodeSearch: (query: String) -> Unit

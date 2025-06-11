@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
@@ -31,7 +31,7 @@ fun EditorBottomSheet(
 	nodeSelectState: NodeSelectState,
 	nodeEditScreenState: NodeEditState,
 	editingNode: ActionNodeDef?,
-	editingNodeData: ActionNodeData?,
+	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultNodeConfig: () -> Unit,
 	dragData: EditorNodeDragState,
@@ -39,12 +39,12 @@ fun EditorBottomSheet(
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
 	onStartDrag: (
-		nodeData: ActionNodeData,
+		nodeData: NodeData,
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: (nodeData: ActionNodeData) -> Unit,
+	onClick: (nodeData: NodeData) -> Unit,
 	autoOpenKeyboard: Boolean,
 ) {
 	val state = remember { ModalBottomSheetState() }

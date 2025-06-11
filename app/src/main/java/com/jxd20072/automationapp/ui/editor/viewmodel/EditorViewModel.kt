@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.BottomSheetManager
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +41,7 @@ class EditorViewModel @Inject constructor(
 		bottomSheetManager.nodeSearchManager.setPageCollapsed(false)
 	}
 
-	fun onCreateNodeDrag(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
+	fun onCreateNodeDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
 		dragManager.dragCreateAction(nodeData, nodePosition, pressedPosition)
 	}
 

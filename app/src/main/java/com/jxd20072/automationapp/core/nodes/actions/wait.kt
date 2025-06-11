@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
@@ -23,8 +24,8 @@ class WaitAction(id: String) : ActionNode(id) {
 	}
 }
 
-val WaitNode = ActionNodesEntry(
-	data = ActionNodeData(
+val WaitActionNode = ActionNodesEntry(
+	data = NodeData(
 		displayName = "Wait",
 		name = "wait",
 		category = "debug",
@@ -39,10 +40,11 @@ val WaitNode = ActionNodesEntry(
 		inputDefinitions = mapOf(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the pause, in milliseconds",
-				defaultValue = ConfigurationEntry.NUMBER(1000),
+				defaultValue = ConfigurationEntry.NUMBER(10000),
 				validate = { ValidationResult.Success }
 			)
-		)
+		),
+		outputDefinitions = emptyMap()
 	),
 	factory = { WaitAction(it) }
 )

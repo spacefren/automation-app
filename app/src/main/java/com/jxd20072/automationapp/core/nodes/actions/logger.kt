@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.ActionNodesEntry
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.LocalSnackbarState
@@ -36,7 +37,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 }
 
 val LoggerNode = ActionNodesEntry(
-	data = ActionNodeData(
+	data = NodeData(
 		displayName = "Log message",
 		name = "log",
 		category = "debug",
@@ -70,7 +71,8 @@ val LoggerNode = ActionNodesEntry(
 				defaultValue = ConfigurationEntry.BOOL(true),
 				validate = { ValidationResult.Success },
 			)
-		)
+		),
+		outputDefinitions = emptyMap()
 	),
 	factory = { LoggerAction(it) }
 )

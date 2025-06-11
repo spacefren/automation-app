@@ -5,8 +5,8 @@ import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
-import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.ui.utils.findAndReplace
 import com.jxd20072.automationapp.ui.utils.insertAt
@@ -63,11 +63,9 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun runAutomation() {
-		CoroutineScope(Dispatchers.Main).launch {
-			val uiState = automationUiState.value
-			if (uiState is AutomationUiState.Success) {
-				executeAutomation(uiState.automationDraft)
-			}
+		val uiState = automationUiState.value
+		if (uiState is AutomationUiState.Success) {
+			executeAutomation(uiState.automationDraft)
 		}
 	}
 

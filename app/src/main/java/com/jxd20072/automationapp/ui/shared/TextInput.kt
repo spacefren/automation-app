@@ -85,7 +85,9 @@ fun BaseTextInput(
 			}
 		}
 	}
-	evaluateInput(text)
+	if (isEdited) {
+		evaluateInput(text)
+	}
 
 	LaunchedEffect(Unit) {
 		isEdited = false
@@ -127,10 +129,9 @@ fun BaseTextInput(
 						onValueChange = {
 							if (!isEdited) {
 								isEdited = true
-							} else {
-								onTextChanged(it.text)
-								state = it
 							}
+							onTextChanged(it.text)
+							state = it
 						},
 						singleLine = true,
 						enabled = true,

@@ -44,8 +44,11 @@ data class AutomationDef(
 
 @Serializable
 data class TriggerDef(
-	val id: String = UUID.randomUUID().toString(),
 	val name: String,
+	val id: String = UUID.randomUUID().toString(),
+	val input: Map<String, ConfigurationEntry<*>>,
+	val output: Map<String, ConfigurationEntry<*>>,
+	val content: List<ActionNodeDef>,
 )
 
 @Serializable
@@ -60,4 +63,5 @@ data class ActionNodeDef(
 	val name: String,
 	val id: String = UUID.randomUUID().toString(),
 	val input: Map<String, ConfigurationEntry<*>>,
+	val output: Map<String, ConfigurationEntry<*>>,
 )

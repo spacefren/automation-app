@@ -11,8 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
@@ -52,11 +52,11 @@ fun AutomationEditor(
 	}
 
 	var editingActionNode: ActionNodeDef? = null
-	var editingActionNodeData: ActionNodeData? = null
+	var editingNodeData: NodeData? = null
 	if (nodeEditState is NodeEditState.Editing) {
 		editingActionNode = automationManager.findAction((nodeEditState as NodeEditState.Editing).nodeID)
 		if (editingActionNode != null) {
-			editingActionNodeData = actionNodes[editingActionNode.name]?.data
+			editingNodeData = actionNodes[editingActionNode.name]?.data
 		}
 	}
 
@@ -100,7 +100,7 @@ fun AutomationEditor(
 			nodeSelectState = nodeSelectState,
 			nodeEditScreenState = nodeEditState,
 			editingNode = editingActionNode,
-			editingNodeData = editingActionNodeData,
+			editingNodeData = editingNodeData,
 			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
 			onNodeSearch = bottomSheetManager.nodeSearchManager::changeNodeSearchQuery,

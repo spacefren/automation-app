@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.core.data.repository.automations
+package com.jxd20072.automationapp.core.data.repository
 
 import android.content.Context
 import android.util.Log
@@ -12,6 +12,7 @@ import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
+import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,27 +38,30 @@ class AutomationsRepository @Inject constructor(
 		variables = mapOf(
 			"test" to VariableDef.TEXT("textVariableValue"),
 		),
-		triggers = emptyList(),
+		triggers = listOf(
+			TriggerDef(
+				name = "wait",
+				input = mapOf("Duration" to ConfigurationEntry.NUMBER(3000)),
+				output = emptyMap(),
+				content = listOf(
+					ActionNodeDef(
+						name = "log",
+						input = mapOf("Text" to ConfigurationEntry.TEXT("I waited for this")),
+						output = emptyMap()
+					),
+				)
+			)
+		),
 		entryPoint = listOf(
-//				ActionNodeDef(
-//					name = "writeVariable",
-//					input = mapOf("variable" to "textVariable", "value" to "changedValue!!")
-//				),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("first test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("first test")),
+				output = emptyMap()
 			),
 			ActionNodeDef(
 				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("second test"))
-			),
-			ActionNodeDef(
-				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("third test"))
-			),
-			ActionNodeDef(
-				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("fourth test"))
+				input = mapOf("Text" to ConfigurationEntry.TEXT("second test")),
+				output = emptyMap()
 			),
 		),
 		functions = listOf(
@@ -66,19 +70,13 @@ class AutomationsRepository @Inject constructor(
 				content = listOf(
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to ConfigurationEntry.TEXT("1"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("1")),
+						output = emptyMap()
 					),
 					ActionNodeDef(
 						name = "log",
-						input = mapOf("Text" to ConfigurationEntry.TEXT("2"))
-					),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to ConfigurationEntry.TEXT("3"))
-					),
-					ActionNodeDef(
-						name = "log",
-						input = mapOf("Text" to ConfigurationEntry.TEXT("4"))
+						input = mapOf("Text" to ConfigurationEntry.TEXT("2")),
+						output = emptyMap()
 					),
 				)
 			),

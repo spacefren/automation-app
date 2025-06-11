@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.FunctionNodeDef
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.NodeData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -48,7 +48,7 @@ class DragManager @Inject constructor(
 		MutableStateFlow<EditorNodeDragState>(EditorNodeDragState.NotDragging)
 	val editorNodeDragState = _editorNodeDragState.asStateFlow()
 
-	fun dragCreateAction(nodeData: ActionNodeData, nodePosition: Offset, pressedPosition: Offset) {
+	fun dragCreateAction(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
 		_editorNodeDragState.update {
 			EditorNodeDragState.Dragging(
 				nodePosition = nodePosition,
@@ -57,7 +57,8 @@ class DragManager @Inject constructor(
 				draggingNode = EditorDragNode.Action(
 					data = ActionNodeDef(
 					name = nodeData.name,
-					input = emptyMap()
+						input = emptyMap(),
+						output = emptyMap()
 				)),
 				dropData = EditorNodeDropData.NotDropping
 			)

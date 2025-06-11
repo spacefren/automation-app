@@ -2,8 +2,8 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +33,7 @@ val defaultNodeList = actionNodes.values
 
 @Immutable
 data class NodeListEntry(
-	val data: ActionNodeData,
+	val data: NodeData,
 	val searchMatchRatio: Int,
 )
 
@@ -122,10 +122,11 @@ class NodeSelectManager @Inject constructor(
 		filterNodes()
 	}
 
-	fun addActionClick(action: ActionNodeData, parentID: String? = null, index: Int? = null) {
+	fun addActionClick(action: NodeData, parentID: String? = null, index: Int? = null) {
 		val actionDef = ActionNodeDef(
 			name = action.name,
-			input = action.inputDefinitions.mapValues { it.value.defaultValue }
+			input = emptyMap(),
+			output = emptyMap()
 		)
 		automationManager.addAction(actionDef, parentID, index)
 		bottomSheetManager.get().openNodeEdit(actionDef.id)

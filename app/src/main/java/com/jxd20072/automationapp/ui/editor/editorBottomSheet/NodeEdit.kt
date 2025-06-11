@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.data.model.ActionNodeDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
-import com.jxd20072.automationapp.core.nodes.actions.ActionNodeData
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
@@ -27,7 +27,7 @@ import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 fun EditorNodeEditScreen(
 	nodeEditState: NodeEditState,
 	editingNode: ActionNodeDef?,
-	editingNodeData: ActionNodeData?,
+	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultConfig: () -> Unit,
 ) {

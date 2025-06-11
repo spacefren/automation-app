@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
-import com.jxd20072.automationapp.core.data.repository.automations.AutomationsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
