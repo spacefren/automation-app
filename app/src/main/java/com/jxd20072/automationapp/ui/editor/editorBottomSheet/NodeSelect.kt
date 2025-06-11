@@ -1,6 +1,9 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateBounds
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -24,12 +27,14 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +44,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
@@ -53,9 +59,6 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEn
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import kotlin.math.ceil
-import kotlin.math.min
-import kotlin.math.truncate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -79,6 +82,7 @@ fun NodeCard(
 			)
 			.background(LocalTheme.colorScheme.tertiary)
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+			.widthIn(max = 90.dp)
 	) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,6 +100,7 @@ fun NodeCard(
 				onStopDrag = onStopDrag,
 				icon = nodeData.icon
 			)
+			Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 			Image(
 				painter = painterResource(R.drawable.round_info_24),
 				contentDescription = "help",
@@ -114,7 +119,10 @@ fun NodeCard(
 	}
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@OptIn(
+	ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
+	ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun NodeCategoryContainer(
 	categoryListEntry: CategoryListEntry,
@@ -132,18 +140,6 @@ fun NodeCategoryContainer(
 	val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
 
 	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
-	val availableWidth = LocalWindowInfo.current.containerSize.width -
-		2 * LocalTheme.layoutSystem.spacing.paddingLevel1.value -
-		2 * elementSeparation
-	val elementSize = 90
-	val elementCount = categoryListEntry.nodes.size
-
-	val columns = min(
-		elementCount,
-		truncate((availableWidth + elementSeparation) / (elementSize + elementSeparation)).toInt()
-	)
-	val rows = ceil(elementCount.toFloat() / columns.toFloat()).toInt()
-	val verticalSpace = rows * (elementSize + elementSeparation) - elementSeparation
 
 	Column(
 		modifier = modifier
@@ -193,20 +189,26 @@ fun NodeCategoryContainer(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(top = elementSeparation.dp)
+					.animateContentSize()
 			) {
-				categoryListEntry.nodes.forEach { node ->
-					NodeCard(
-						nodeData = node.data,
-						draggableState = draggableState,
-						onDragStart = { startedPosition, offset ->
-							onStartDrag(node.data, startedPosition, offset)
-						},
-						onStopDrag = onStopDrag,
-						onClick = onClick,
-						modifier = Modifier
-							.weight(1f)
-							.fillMaxRowHeight(1f)
-					)
+				LookaheadScope {
+					categoryListEntry.nodes.forEachIndexed { index, node ->
+						key(node.data.name) {
+							NodeCard(
+								nodeData = node.data,
+								draggableState = draggableState,
+								onDragStart = { startedPosition, offset ->
+									onStartDrag(node.data, startedPosition, offset)
+								},
+								onStopDrag = onStopDrag,
+								onClick = onClick,
+								modifier = Modifier
+									.weight(1f)
+									.fillMaxRowHeight(1f)
+									.animateBounds(this@LookaheadScope)
+							)
+						}
+					}
 				}
 			}
 		}

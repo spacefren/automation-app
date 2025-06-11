@@ -82,7 +82,8 @@ fun FloatingSubButton(
 fun EditorFloatingAddButton(
 	hidden: Boolean,
 	onCreateNodePressed: () -> Unit,
-	onCreateFunctionPressed: () -> Unit
+	onCreateFunctionPressed: () -> Unit,
+	onCreateTriggerPressed: () -> Unit,
 ) {
 	var showSubButtons by remember { mutableStateOf(false) }
 	val backgroundAlpha by animateFloatAsState(if (showSubButtons) .5f else 0f)
@@ -111,10 +112,21 @@ fun EditorFloatingAddButton(
 				verticalArrangement = Arrangement.spacedBy(10.dp)
 			) {
 				FloatingSubButton(
+					name = "Trigger",
+					icon = R.drawable.round_electric_bolt_24,
+					columnIndex = 2,
+					columnItemCount = 3,
+					show = showSubButtons,
+					onClick = {
+						onCreateTriggerPressed()
+						showSubButtons = false
+					}
+				)
+				FloatingSubButton(
 					name = "Function",
 					icon = R.drawable.round_functions_24,
 					columnIndex = 1,
-					columnItemCount = 2,
+					columnItemCount = 3,
 					show = showSubButtons,
 					onClick = {
 						onCreateFunctionPressed()
@@ -125,7 +137,7 @@ fun EditorFloatingAddButton(
 					name = "Action",
 					icon = R.drawable.round_play_arrow_24,
 					columnIndex = 0,
-					columnItemCount = 2,
+					columnItemCount = 3,
 					show = showSubButtons,
 					onClick = {
 						onCreateNodePressed()

@@ -92,7 +92,8 @@ fun AutomationEditor(
 		EditorFloatingAddButton(
 			hidden = draggingData is EditorNodeDragState.Dragging,
 			onCreateNodePressed = bottomSheetManager::openNodeSelect,
-			onCreateFunctionPressed = { }
+			onCreateFunctionPressed = { },
+			onCreateTriggerPressed = { }
 		)
 		EditorBottomSheet(
 			onDismiss = bottomSheetManager::closeBottomSheet,

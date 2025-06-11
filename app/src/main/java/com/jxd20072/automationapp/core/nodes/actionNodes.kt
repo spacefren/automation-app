@@ -12,7 +12,8 @@ data class ActionNodesEntry(
 val actionNodes: Map<String, ActionNodesEntry> = mapOf(
 	"log" to LoggerNode,
 	"wait" to WaitActionNode,
-	"log3" to LoggerNode,
+	"log1" to LoggerNode,
+	"wait1" to WaitActionNode
 )
 
 /*

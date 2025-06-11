@@ -102,7 +102,7 @@ fun EditorNodeTree(
 		)
 		{ index, function ->
 
-		EditorNodeDropTarget(
+			EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
 				dragNode = EditorDragNode.Function::class,
