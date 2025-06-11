@@ -132,6 +132,7 @@ fun BaseTextInput(
 								state = it
 							}
 						},
+						singleLine = true,
 						enabled = true,
 						cursorBrush = SolidColor(LocalTheme.colorScheme.onSurface),
 						textStyle = LocalTheme.typography.body.copy(
