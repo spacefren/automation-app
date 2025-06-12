@@ -49,7 +49,6 @@ data class NodeSelectState(
 	val isCollapsed: Boolean = false,
 	val nodeSearchQuery: String = "",
 	val nodes: List<CategoryListEntry> = defaultNodeList,
-	val filteredNodes: List<CategoryListEntry> = nodes
 )
 
 @Singleton
@@ -60,13 +59,13 @@ class NodeSelectManager @Inject constructor(
 	private val _nodeSelectStateState = MutableStateFlow(NodeSelectState())
 	val nodeSelectState = _nodeSelectStateState.asStateFlow()
 
-	fun filterNodes() {
+	fun searchNodes() {
 		_nodeSelectStateState.update { state ->
 			val searchQuery = state.nodeSearchQuery.lowercase()
 
 			if (searchQuery.isBlank()) {
 				return@update state.copy(
-					filteredNodes = state.nodes
+					nodes = defaultNodeList
 				)
 			}
 
@@ -108,7 +107,7 @@ class NodeSelectManager @Inject constructor(
 				}
 
 			state.copy(
-				filteredNodes = filteredNodes
+				nodes = filteredNodes
 			)
 		}
 	}
@@ -119,7 +118,7 @@ class NodeSelectManager @Inject constructor(
 				nodeSearchQuery = query
 			)
 		}
-		filterNodes()
+		searchNodes()
 	}
 
 	fun addActionClick(action: NodeData, parentID: String? = null, index: Int? = null) {

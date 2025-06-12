@@ -59,6 +59,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEn
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.utils.hooks.rememberPrevious
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -126,6 +127,7 @@ fun NodeCard(
 @Composable
 fun NodeCategoryContainer(
 	categoryListEntry: CategoryListEntry,
+	isSearching: Boolean,
 	draggableState: Draggable2DState,
 	onStartDrag: (
 		nodeData: NodeData,
@@ -136,14 +138,22 @@ fun NodeCategoryContainer(
 	onClick: (nodeData: NodeData) -> Unit,
 	modifier: Modifier = Modifier
 ) {
-	var expanded by remember { mutableStateOf(false) }
+	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
+
+	var userExpanded by remember { mutableStateOf(false) }
+	val searchRequiresExpand = isSearching && categoryListEntry.nodes.isNotEmpty()
+	val expanded = searchRequiresExpand || userExpanded
+
 	val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
 
-	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
+	val previousEntry = rememberPrevious(categoryListEntry)
+	val visibleEntry = if (expanded) categoryListEntry else previousEntry ?: categoryListEntry
 
 	Column(
 		modifier = modifier
-			.clickableWithIndication { expanded = !expanded }
+			.clickableWithIndication {
+				userExpanded = !userExpanded
+			}
 			.shadow(
 				LocalTheme.layoutSystem.shadows.primary,
 				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
@@ -192,7 +202,7 @@ fun NodeCategoryContainer(
 					.animateContentSize()
 			) {
 				LookaheadScope {
-					categoryListEntry.nodes.forEachIndexed { index, node ->
+					visibleEntry.nodes.forEachIndexed { index, node ->
 						key(node.data.name) {
 							NodeCard(
 								nodeData = node.data,
@@ -273,6 +283,7 @@ fun EditorNodeSelectScreen(
 				items(nodes) {
 					NodeCategoryContainer(
 						categoryListEntry = it,
+						isSearching = nodeSearchQuery.isNotEmpty(),
 						onStartDrag = onStartDrag,
 						onStopDrag = onStopDrag,
 						draggableState = draggableState,

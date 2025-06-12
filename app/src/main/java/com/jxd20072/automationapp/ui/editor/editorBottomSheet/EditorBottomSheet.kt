@@ -94,7 +94,7 @@ fun EditorBottomSheet(
 							isCollapsed = isCollapsed,
 							onClick = onClick,
 							draggableState = draggableState,
-							nodes = nodeSelectState.filteredNodes
+							nodes = nodeSelectState.nodes
 						)
 					}
 
