@@ -9,6 +9,7 @@ import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.utils.findAndReplace
 import com.jxd20072.automationapp.ui.utils.findAndTransform
 import com.jxd20072.automationapp.ui.utils.insertAt
@@ -125,6 +126,30 @@ class AutomationManager @Inject constructor(
 		if (state !is AutomationUiState.Success) return null
 
 		return state.automationDraft.triggers.find { it.id == id }
+	}
+
+	fun createActionDef(nodeData: NodeData): ActionDef {
+		return ActionDef(
+			name = nodeData.name,
+			input = emptyMap(),
+			output = emptyMap()
+		)
+	}
+
+	fun createTriggerDef(nodeData: NodeData): TriggerDef {
+		return TriggerDef(
+			name = nodeData.name,
+			input = emptyMap(),
+			output = emptyMap(),
+			content = emptyList()
+		)
+	}
+
+	fun createFunctionDef(nodeData: NodeData): FunctionDef {
+		return FunctionDef(
+			name = nodeData.name,
+			content = emptyList()
+		)
 	}
 
 	fun addAction(action: ActionDef, parentID: String? = null, index: Int? = null) {

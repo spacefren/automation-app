@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.FunctionDef
 import com.jxd20072.automationapp.core.data.model.TriggerDef
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -50,43 +51,60 @@ class DragManager @Inject constructor(
 		MutableStateFlow<EditorNodeDragState>(EditorNodeDragState.NotDragging)
 	val editorNodeDragState = _editorNodeDragState.asStateFlow()
 
-	fun dragCreateAction(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
+	fun dragCreateNode(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
 		_editorNodeDragState.update {
 			EditorNodeDragState.Dragging(
 				nodePosition = nodePosition,
 				inputOffset = pressedPosition - nodePosition,
 				isCreatingNode = true,
-				draggingNode = EditorDragNode.Action(
-					data = ActionDef(
-					name = nodeData.name,
-						input = emptyMap(),
-						output = emptyMap()
-				)),
+				draggingNode = when (nodeData.nodeType) {
+					NodeType.ACTION -> EditorDragNode.Action(automationManager.createActionDef(nodeData))
+					NodeType.TRIGGER -> EditorDragNode.Trigger(automationManager.createTriggerDef(nodeData))
+					NodeType.FUNCTION -> EditorDragNode.Function(automationManager.createFunctionDef(nodeData))
+				},
 				dropData = EditorNodeDropData.NotDropping
 			)
 		}
 	}
 
-	fun dropCreateAction(): String? {
-		var actionID: String? = null
+	fun dropCreateNode(): String? {
+		var nodeID: String? = null
 		_editorNodeDragState.update { state ->
 			if (
 				state !is EditorNodeDragState.Dragging
-				|| state.draggingNode !is EditorDragNode.Action
 				|| state.dropData !is EditorNodeDropData.Moving
 			) return@update EditorNodeDragState.NotDragging
 
-			actionID = state.draggingNode.data.id
+			when (state.draggingNode) {
+				is EditorDragNode.Action -> {
+					automationManager.addAction(
+						state.draggingNode.data,
+						state.dropData.parentId,
+						state.dropData.targetIndex
+					)
+					nodeID = state.draggingNode.data.id
+				}
 
-			automationManager.addAction(
-				state.draggingNode.data,
-				state.dropData.parentId,
-				state.dropData.targetIndex
-			)
+				is EditorDragNode.Function -> {
+					automationManager.addFunction(
+						state.draggingNode.data,
+						state.dropData.targetIndex
+					)
+					nodeID = state.draggingNode.data.id
+				}
+
+				is EditorDragNode.Trigger -> {
+					automationManager.addTrigger(
+						state.draggingNode.data,
+						state.dropData.targetIndex
+					)
+					nodeID = state.draggingNode.data.id
+				}
+			}
 
 			EditorNodeDragState.NotDragging
 		}
-		return actionID
+		return nodeID
 	}
 
 	fun dragNode(id: String, nodePosition: Offset, pressedPosition: Offset) {

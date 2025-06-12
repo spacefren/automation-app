@@ -44,7 +44,7 @@ fun EditorBottomSheet(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onClick: (nodeData: NodeData) -> Unit,
+	onCreateClick: (nodeData: NodeData) -> Unit,
 	autoOpenKeyboard: Boolean,
 ) {
 	val state = remember { ModalBottomSheetState() }
@@ -92,7 +92,7 @@ fun EditorBottomSheet(
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
 							isCollapsed = isCollapsed,
-							onClick = onClick,
+							onClick = onCreateClick,
 							draggableState = draggableState,
 						)
 					}

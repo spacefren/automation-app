@@ -1,6 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
+import com.jxd20072.automationapp.core.nodes.NodeType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,7 +43,7 @@ class BottomSheetManager @Inject constructor(
 		}
 	}
 
-	fun openNodeSelect(nodeSelectType: NodeSelectType) {
+	fun openNodeSelect(nodeSelectType: NodeType) {
 		nodeSelectManager.loadState(nodeSelectType)
 		_bottomSheetState.update {
 			EditorBottomSheetState.Open(

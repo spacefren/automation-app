@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
@@ -20,7 +21,6 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectType
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
@@ -92,9 +92,9 @@ fun AutomationEditor(
 		)
 		EditorFloatingAddButton(
 			hidden = draggingData is EditorNodeDragState.Dragging,
-			onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeSelectType.ACTION) },
+			onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeType.ACTION) },
 			onCreateFunctionPressed = { },
-			onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeSelectType.TRIGGER) }
+			onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeType.TRIGGER) }
 		)
 		EditorBottomSheet(
 			onDismiss = bottomSheetManager::closeBottomSheet,
@@ -109,7 +109,7 @@ fun AutomationEditor(
 			dragData = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,
-			onClick = nodeSearchManager::addActionClick,
+			onCreateClick = editorViewModel::onCreateNodeClick,
 			draggableState = draggableState,
 			onDropZoneEnter = dragManager::enterNodeDropZone,
 			onDropZoneExit = dragManager::exitNodeDropZone,

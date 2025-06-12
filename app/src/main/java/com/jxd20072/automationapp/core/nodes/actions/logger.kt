@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
+import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.LocalSnackbarState
@@ -36,6 +37,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 
 val LoggerNode = NodeRegistryEntry<ActionNode>(
 	data = NodeData(
+		nodeType = NodeType.ACTION,
 		displayName = "Log message",
 		name = "log",
 		category = "debug",

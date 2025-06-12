@@ -54,10 +54,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEntry
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectType
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -265,8 +265,9 @@ fun EditorNodeSelectScreen(
 		) {
 			Text(
 				text = "Select " + when (nodeSelectState.nodeSelectType) {
-					NodeSelectType.ACTION -> "action"
-					NodeSelectType.TRIGGER -> "trigger"
+					NodeType.ACTION -> "action"
+					NodeType.TRIGGER -> "trigger"
+					NodeType.FUNCTION -> "function"
 				},
 				color = LocalTheme.colorScheme.onBackground,
 				style = LocalTheme.typography.subTitle

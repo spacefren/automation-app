@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
+import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
@@ -26,6 +27,7 @@ class WaitAction(id: String) : ActionNode(id) {
 
 val WaitActionNode = NodeRegistryEntry<ActionNode>(
 	data = NodeData(
+		nodeType = NodeType.ACTION,
 		displayName = "Wait",
 		name = "wait",
 		category = "debug",

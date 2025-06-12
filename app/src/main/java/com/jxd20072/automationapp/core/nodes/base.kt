@@ -4,12 +4,17 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
+enum class NodeType {
+	ACTION, TRIGGER, FUNCTION
+}
+
 data class NodeRegistryEntry<T>(
 	val data: NodeData,
 	val factory: (id: String) -> T
 ) where T : BaseNode
 
 data class NodeData(
+	val nodeType: NodeType,
 	val displayName: String,
 	val name: String,
 	val category: String,
