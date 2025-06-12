@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -55,7 +56,9 @@ fun DraggingNode(
 				NodeHeaderIcons(
 					icon = when (draggingData.draggingNode) {
 						is EditorDragNode.Trigger -> R.drawable.round_electric_bolt_24
-						else -> R.drawable.round_functions_24
+						is EditorDragNode.Function -> R.drawable.round_functions_24
+						is EditorDragNode.Action -> actionNodes[draggingData.draggingNode.data.name]?.data?.icon
+							?: R.drawable.round_play_arrow_24
 					},
 					forceShowDragHandle = true
 				)
