@@ -2,10 +2,10 @@ package com.jxd20072.automationapp.core.nodes.triggers
 
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
-import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
@@ -45,6 +45,11 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the delay, in milliseconds",
 				defaultValue = ConfigurationEntry.NUMBER(1000),
+				validate = { ValidationResult.Success }
+			),
+			"IsThisWorking" to NodeInputDefinition(
+				description = "if you see this, yes",
+				defaultValue = ConfigurationEntry.BOOL(true),
 				validate = { ValidationResult.Success }
 			)
 		),

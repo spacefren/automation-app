@@ -7,12 +7,11 @@ import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.copy
 import com.jxd20072.automationapp.core.data.local.AutomationsStore
-import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
-import com.jxd20072.automationapp.core.data.model.FunctionDef
-import com.jxd20072.automationapp.core.data.model.TriggerDef
+import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,45 +37,44 @@ class AutomationsRepository @Inject constructor(
 		variables = mapOf(
 			"test" to VariableDef.TEXT("textVariableValue"),
 		),
-		triggers = listOf(
-			TriggerDef(
+		topLevel = listOf(
+			NodeDef(
 				name = "wait",
+				nodeType = NodeType.TRIGGER,
 				input = mapOf("Duration" to ConfigurationEntry.NUMBER(3000)),
-				output = emptyMap(),
 				content = listOf(
-					ActionDef(
+					NodeDef(
 						name = "log",
+						nodeType = NodeType.ACTION,
 						input = mapOf("Text" to ConfigurationEntry.TEXT("I waited for this")),
-						output = emptyMap()
 					),
 				)
-			)
-		),
-		entryPoint = listOf(
-			ActionDef(
-				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("first test")),
-				output = emptyMap()
 			),
-			ActionDef(
-				name = "log",
-				input = mapOf("Text" to ConfigurationEntry.TEXT("second test")),
-				output = emptyMap()
-			),
-		),
-		functions = listOf(
-			FunctionDef(
-				name = "myFunction",
+			NodeDef(
+				name = "onStart",
+				id = "0",
+				nodeType = NodeType.FUNCTION,
 				content = listOf(
-					ActionDef(
+					NodeDef(
 						name = "log",
-						input = mapOf("Text" to ConfigurationEntry.TEXT("1")),
-						output = emptyMap()
+						nodeType = NodeType.ACTION,
+						input = mapOf("Text" to ConfigurationEntry.TEXT("I didn't wait for this")),
 					),
-					ActionDef(
+				)
+			),
+			NodeDef(
+				name = "myFunction",
+				nodeType = NodeType.FUNCTION,
+				content = listOf(
+					NodeDef(
 						name = "log",
+						nodeType = NodeType.ACTION,
+						input = mapOf("Text" to ConfigurationEntry.TEXT("1")),
+					),
+					NodeDef(
+						name = "log",
+						nodeType = NodeType.ACTION,
 						input = mapOf("Text" to ConfigurationEntry.TEXT("2")),
-						output = emptyMap()
 					),
 				)
 			),

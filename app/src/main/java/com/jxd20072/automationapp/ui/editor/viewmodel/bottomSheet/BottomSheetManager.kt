@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.nodes.NodeType
+import com.jxd20072.automationapp.core.data.model.NodeType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

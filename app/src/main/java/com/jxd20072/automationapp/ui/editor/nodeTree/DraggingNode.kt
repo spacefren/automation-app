@@ -22,12 +22,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlin.math.abs
-import kotlin.reflect.KClass
+
+enum class NodeDropScope {
+	ENTRY, CONTENT
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -36,6 +39,8 @@ fun DraggingNode(
 	modifier: Modifier = Modifier
 ) {
 	if (draggingData is EditorNodeDragState.Dragging) {
+		val nodeType = draggingData.draggingNode.nodeType
+
 		Box(
 			modifier = modifier
 				.zIndex(40f)
@@ -45,19 +50,23 @@ fun DraggingNode(
 				}
 		) {
 			NodeContainer(
-				level = when (draggingData.draggingNode) {
-					is EditorDragNode.Function,
-					is EditorDragNode.Trigger -> 1
-					is EditorDragNode.Action -> 2
+				level = when (draggingData.draggingNode.nodeType) {
+					NodeType.FUNCTION,
+					NodeType.TRIGGER -> 1
+
+					NodeType.ACTION -> 2
 				},
 				enabledByDragging = true,
 				onLayout = { _ -> },
 			) {
 				NodeHeaderIcons(
-					icon = when (draggingData.draggingNode) {
-						is EditorDragNode.Trigger -> R.drawable.round_electric_bolt_24
-						is EditorDragNode.Function -> R.drawable.round_functions_24
-						is EditorDragNode.Action -> actionNodes[draggingData.draggingNode.data.name]?.data?.icon
+					icon = when {
+						nodeType == NodeType.TRIGGER -> R.drawable.round_electric_bolt_24
+						nodeType == NodeType.FUNCTION && draggingData.draggingNode.id == "0" ->
+							R.drawable.round_play_arrow_24
+
+						nodeType == NodeType.FUNCTION -> R.drawable.round_functions_24
+						else -> actionNodes[draggingData.draggingNode.name]?.data?.icon
 							?: R.drawable.round_play_arrow_24
 					},
 					forceShowDragHandle = true
@@ -68,9 +77,9 @@ fun DraggingNode(
 }
 
 @Composable
-fun <T : EditorDragNode> EditorNodeDropTarget(
+fun EditorNodeDropTarget(
 	gap: Dp,
-	dragNode: KClass<T>,
+	dropScope: NodeDropScope,
 	draggingData: EditorNodeDragState,
 	onEnter: () -> Unit,
 	onExit: () -> Unit,
@@ -81,7 +90,13 @@ fun <T : EditorDragNode> EditorNodeDropTarget(
 		val checkHovering = { position: Offset ->
 			val pos = draggingData.nodePosition.y
 			val offset = draggingData.inputOffset.y
-			dragNode.isInstance(draggingData.draggingNode) && abs(pos + offset - position.y) < 40
+			when (dropScope) {
+				NodeDropScope.ENTRY ->
+					draggingData.draggingNode.nodeType == NodeType.FUNCTION
+						|| draggingData.draggingNode.nodeType == NodeType.TRIGGER
+
+				NodeDropScope.CONTENT -> draggingData.draggingNode.nodeType == NodeType.ACTION
+			} && abs(pos + offset - position.y) < 40
 		}
 
 		var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }

@@ -53,8 +53,8 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEntry
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState

@@ -1,9 +1,11 @@
 package com.jxd20072.automationapp.core.executor
 
 import android.util.Log
-import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.TriggerDef
+import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.nodes.BaseNode
+import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.triggerNodes
@@ -19,6 +21,8 @@ class ExecutionFlow(
 	val scope: String = "main"
 ) {
 	lateinit var context: ExecutionFlowContext
+
+	// TODO: Rework this. Should all actions be built here or inside the content of every function/trigger?
 	private var actions: Set<ActionNode> = emptySet()
 	private var triggers: Set<TriggerNode> = emptySet()
 
@@ -29,35 +33,29 @@ class ExecutionFlow(
 		)
 	}
 
-	private fun buildAction(actionDef: ActionDef): ActionNode {
-		val actionNodeEntry = actionNodes[actionDef.name]
-			?: throw Exception("Action not found: ${actionDef.name}")
-		val action = actionNodeEntry.factory.invoke(actionDef.id)
+	private fun <T : BaseNode> buildNode(nodeDef: NodeDef, registryEntry: NodeRegistryEntry<T>): T {
+		val node = registryEntry.factory.invoke(nodeDef.id)
 
-		val input = actionNodeEntry.data.inputDefinitions.mapValues { inputEntry ->
-			actionDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
+		val input = registryEntry.data.inputDefinitions.mapValues { inputEntry ->
+			nodeDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
 		}
-		action.input = input
+		node.input = input
 
-		actions = actions + action
-		return action
+		return node
 	}
 
-	private fun buildTrigger(triggerNodeDef: TriggerDef): TriggerNode {
-		val triggerNodeEntry = triggerNodes[triggerNodeDef.name]
-			?: throw Exception("Trigger not found: ${triggerNodeDef.name}")
-		val trigger = triggerNodeEntry.factory.invoke(triggerNodeDef.id)
+	private fun buildAction(nodeDef: NodeDef): ActionNode {
+		val actionNodeEntry = actionNodes[nodeDef.name]
+			?: throw Exception("Action not found: ${nodeDef.name}")
 
-		val input = triggerNodeEntry.data.inputDefinitions.mapValues { inputEntry ->
-			triggerNodeDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
-		}
-		trigger.input = input
-		trigger.content = triggerNodeDef.content.map { actionNodeDef ->
-			actions.find { it.id == actionNodeDef.id } ?: buildAction(actionNodeDef)
-		}
+		return buildNode(nodeDef, actionNodeEntry)
+	}
 
-		triggers = triggers + trigger
-		return trigger
+	private fun buildTrigger(nodeDef: NodeDef): TriggerNode {
+		val triggerNodeEntry = triggerNodes[nodeDef.name]
+			?: throw Exception("Trigger not found: ${nodeDef.name}")
+
+		return buildNode(nodeDef, triggerNodeEntry)
 	}
 
 	private fun resetState() {
@@ -72,8 +70,12 @@ class ExecutionFlow(
 		context.onStartExecution()
 
 		// Build nodes
-		automationDef.entryPoint.forEach { buildAction(it) }
-		automationDef.triggers.forEach { buildTrigger(it) }
+		automationDef.topLevel.forEach { topLevelNode ->
+			actions += topLevelNode.content.map { buildAction(it) }
+			if (topLevelNode.nodeType == NodeType.TRIGGER) {
+				triggers += buildTrigger(topLevelNode)
+			}
+		}
 
 		// Init actions
 		actions.forEach { action ->
@@ -83,9 +85,12 @@ class ExecutionFlow(
 		coroutineScope {
 			// Execute entry actions
 			Log.d("APP_A", "running actions...");
-			async {
-				executeActionPath(automationDef.entryPoint)
-				Log.d("APP_A", "actions done!");
+			val entryPoint = automationDef.topLevel.find { it.id == "0" }
+			if (entryPoint != null) {
+				async {
+					executeActionPath(entryPoint.content)
+					Log.d("APP_A", "actions done!");
+				}
 			}
 
 			// Init triggers
@@ -93,9 +98,9 @@ class ExecutionFlow(
 			triggers.forEach { trigger ->
 				async {
 					trigger.onInit(context) {
+						Log.d("APP_A", "trigger fired!");
 						executeActions(trigger.content)
 					}
-					Log.d("APP_A", "trigger fired!");
 				}
 			}
 
@@ -109,8 +114,8 @@ class ExecutionFlow(
 		)
 	}
 
-	fun executeActionPath(actionDefinitions: List<ActionDef>) {
-		executeActions(actionDefinitions.map { actionDef -> actions.find { it.id == actionDef.id }!! })
+	fun executeActionPath(nodeDefinitions: List<NodeDef>) {
+		executeActions(nodeDefinitions.map { actionDef -> actions.find { it.id == actionDef.id }!! })
 	}
 
 	fun executeActions(builtActions: List<ActionNode>) {

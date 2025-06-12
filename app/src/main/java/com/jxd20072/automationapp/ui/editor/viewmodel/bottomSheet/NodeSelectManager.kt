@@ -1,17 +1,15 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.triggerNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Immutable
@@ -36,10 +34,7 @@ data class NodeSelectState(
 )
 
 @Singleton
-class NodeSelectManager @Inject constructor(
-	private val automationManager: AutomationManager,
-	private val bottomSheetManager: Provider<BottomSheetManager>
-) {
+class NodeSelectManager @Inject constructor() {
 	private val _nodeSelectStateState = MutableStateFlow(NodeSelectState())
 	val nodeSelectState = _nodeSelectStateState.asStateFlow()
 

@@ -10,10 +10,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jxd20072.automationapp.core.data.model.ActionDef
+import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
@@ -52,12 +53,16 @@ fun AutomationEditor(
 		editorViewModel.dragManager.dragNodeDelta(delta)
 	}
 
-	var editingActionNode: ActionDef? = null
+	var editingNode: NodeDef? = null
 	var editingNodeData: NodeData? = null
 	if (nodeEditState is NodeEditState.Editing) {
-		editingActionNode = automationManager.findAction((nodeEditState as NodeEditState.Editing).nodeID)
-		if (editingActionNode != null) {
-			editingNodeData = actionNodes[editingActionNode.name]?.data
+		editingNode = automationManager.findNode((nodeEditState as NodeEditState.Editing).nodeID)
+		if (editingNode != null) {
+			editingNodeData = when (editingNode.nodeType) {
+				NodeType.TRIGGER -> triggerNodes[editingNode.name]?.data
+				NodeType.ACTION -> actionNodes[editingNode.name]?.data
+				else -> null
+			}
 		}
 	}
 
@@ -101,12 +106,12 @@ fun AutomationEditor(
 			bottomSheetState = bottomSheetState,
 			nodeSelectState = nodeSelectState,
 			nodeEditScreenState = nodeEditState,
-			editingNode = editingActionNode,
+			editingNode = editingNode,
 			editingNodeData = editingNodeData,
 			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
 			onNodeSearch = bottomSheetManager.nodeSelectManager::changeNodeSearchQuery,
-			dragData = draggingData,
+			editorDragState = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,
 			onCreateClick = editorViewModel::onCreateNodeClick,

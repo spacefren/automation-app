@@ -13,8 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
-import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -26,7 +27,7 @@ import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 @Composable
 fun EditorNodeEditScreen(
 	nodeEditState: NodeEditState,
-	editingNode: ActionDef?,
+	editingNode: NodeDef?,
 	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultConfig: () -> Unit,
@@ -47,7 +48,11 @@ fun EditorNodeEditScreen(
 			modifier = Modifier.fillMaxWidth()
 		) {
 			Text(
-				text = "Edit action",
+				text = "Edit " + when (editingNode.nodeType) {
+					NodeType.ACTION -> "action"
+					NodeType.TRIGGER -> "trigger"
+					NodeType.FUNCTION -> "function"
+				},
 				style = LocalTheme.typography.subTitle,
 				color = LocalTheme.colorScheme.onBackground
 			)

@@ -9,8 +9,8 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
-import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
@@ -26,15 +26,20 @@ import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
 @Composable
 fun EditorBottomSheet(
 	onDismiss: () -> Unit,
-	onNodeSearch: (String) -> Unit,
 	bottomSheetState: EditorBottomSheetState,
+	autoOpenKeyboard: Boolean,
+	// Node select screen
+	onNodeSearch: (String) -> Unit,
 	nodeSelectState: NodeSelectState,
+	onCreateClick: (nodeData: NodeData) -> Unit,
+	// Node edit screen
 	nodeEditScreenState: NodeEditState,
-	editingNode: ActionDef?,
+	editingNode: NodeDef?,
 	editingNodeData: NodeData?,
 	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
 	resetDefaultNodeConfig: () -> Unit,
-	dragData: EditorNodeDragState,
+	// Dragging
+	editorDragState: EditorNodeDragState,
 	draggableState: Draggable2DState,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
@@ -44,12 +49,10 @@ fun EditorBottomSheet(
 		startedOffset: Offset,
 	) -> Unit,
 	onStopDrag: () -> Unit,
-	onCreateClick: (nodeData: NodeData) -> Unit,
-	autoOpenKeyboard: Boolean,
 ) {
 	val state = remember { ModalBottomSheetState() }
 	val isCollapsed = bottomSheetState is EditorBottomSheetState.Open
-		&& dragData is EditorNodeDragState.Dragging
+		&& editorDragState is EditorNodeDragState.Dragging
 
 	state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
 	state.isCollapsed = isCollapsed
@@ -64,8 +67,8 @@ fun EditorBottomSheet(
 		Layer {
 			if (isCollapsed) {
 				EditorBottomSheetCollapsedContent(
-					dragData = dragData,
-					showDelete = !dragData.isCreatingNode,
+					dragData = editorDragState,
+					showDelete = !editorDragState.isCreatingNode,
 					onDropZoneEnter = onDropZoneEnter,
 					onDropZoneExit = onDropZoneExit
 				)

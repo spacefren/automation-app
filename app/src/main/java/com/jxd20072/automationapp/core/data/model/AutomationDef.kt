@@ -37,31 +37,20 @@ sealed interface VariableDef<T> {
 data class AutomationDef(
 	val metadata: AutomationDefMetadata,
 	val variables: Map<String, VariableDef<*>>,
-	val triggers: List<TriggerDef>,
-	val functions: List<FunctionDef>,
-	val entryPoint: List<ActionDef>,
+	val topLevel: List<NodeDef>,
 )
 
 @Serializable
-data class TriggerDef(
-	val name: String,
-	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, ConfigurationEntry<*>>,
-	val output: Map<String, ConfigurationEntry<*>>,
-	val content: List<ActionDef>,
-)
+enum class NodeType {
+	ACTION, TRIGGER, FUNCTION
+}
 
 @Serializable
-data class FunctionDef(
+data class NodeDef(
 	val name: String,
+	val nodeType: NodeType,
 	val id: String = UUID.randomUUID().toString(),
-	val content: List<ActionDef>,
-)
-
-@Serializable
-data class ActionDef(
-	val name: String,
-	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, ConfigurationEntry<*>>,
-	val output: Map<String, ConfigurationEntry<*>>,
+	val input: Map<String, ConfigurationEntry<*>> = emptyMap(),
+	val output: Map<String, ConfigurationEntry<*>> = emptyMap(),
+	val content: List<NodeDef> = emptyList(),
 )

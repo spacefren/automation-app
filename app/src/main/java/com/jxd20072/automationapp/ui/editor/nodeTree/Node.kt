@@ -40,9 +40,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ActionDef
+import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
@@ -240,7 +239,7 @@ fun TopLevelNode(
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
 	modifier: Modifier = Modifier,
-	content: List<ActionDef>
+	content: List<NodeDef>
 ) {
 	var dragging by remember { mutableStateOf(false) }
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -267,20 +266,20 @@ fun TopLevelNode(
 					TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
 				},
 				draggableState = draggableState,
-				onStopDrag = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
+				onStopDrag = {
 					dragging = false
 					onStopDrag()
-				}),
-				onDragStart = if (type == TopLevelNodeType.ENTRYPOINT) null else ({
+				},
+				onDragStart = {
 					dragging = true
 					onDragStart(id, rootPosition, it)
-				})
+				}
 			)
 			content.forEachIndexed { index, actionNode ->
 				EditorNodeDropTarget(
 					gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 					draggingData = draggingData,
-					dragNode = EditorDragNode.Action::class,
+					dropScope = NodeDropScope.CONTENT,
 					onEnter = { onDropZoneEnter(index, id) },
 					onExit = onDropZoneExit
 				)
@@ -296,7 +295,7 @@ fun TopLevelNode(
 			EditorNodeDropTarget(
 				gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
 				draggingData = draggingData,
-				dragNode = EditorDragNode.Action::class,
+				dropScope = NodeDropScope.CONTENT,
 				onEnter = { onDropZoneEnter(content.size, id) },
 				onExit = onDropZoneExit
 			)
@@ -308,7 +307,7 @@ fun TopLevelNode(
 @Composable
 fun ActionNode(
 	modifier: Modifier = Modifier,
-	actionNode: ActionDef,
+	actionNode: NodeDef,
 	draggableState: Draggable2DState,
 	onStopDrag: (() -> Unit)? = null,
 	onDragStart: ((

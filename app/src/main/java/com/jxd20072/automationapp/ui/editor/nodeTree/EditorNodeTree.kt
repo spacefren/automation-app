@@ -13,8 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
+import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.triggerNodes
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorDragNode
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
@@ -40,81 +41,37 @@ fun EditorNodeTree(
 			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 	) {
 		itemsIndexed(
-			automationDraft.triggers,
+			automationDraft.topLevel,
 			key = { _, item -> item.id }
-		) { index, trigger ->
-			val triggerData = triggerNodes[trigger.name]?.data
-			if (triggerData != null) {
-
-				EditorNodeDropTarget(
-					gap = 20.dp,
-					draggingData = draggingData,
-					dragNode = EditorDragNode.Trigger::class,
-					onEnter = { onDropLineEnter(index, null) },
-					onExit = onDropLineExit
-				)
-
-				TopLevelNode(
-					type = TopLevelNodeType.TRIGGER,
-					id = trigger.id,
-					displayName = triggerData.editorActionDescription(
-						triggerData.inputDefinitions.mapValues { it.value.defaultValue } + trigger.input
-					),
-					content = trigger.content,
-					onDragStart = onNodeDrag,
-					onStopDrag = onStopDrag,
-					draggableState = draggableState,
-					draggingData = draggingData,
-					onDropZoneEnter = onDropLineEnter,
-					onDropZoneExit = onDropLineExit
-				)
+		) { index, node ->
+			var triggerData: NodeData? = null
+			if (node.nodeType == NodeType.TRIGGER) {
+				triggerData = triggerNodes[node.name]?.data ?: return@itemsIndexed
 			}
-		}
-
-		item {
-			EditorNodeDropTarget(
-				gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
-				draggingData = draggingData,
-				dragNode = EditorDragNode.Trigger::class,
-				onEnter = { onDropLineEnter(automationDraft.triggers.size, null) },
-				onExit = onDropLineExit
-			)
-		}
-
-		item {
-			TopLevelNode(
-				type = TopLevelNodeType.ENTRYPOINT,
-				id = "entryPoint",
-				displayName = listOf("OnStart"),
-				content = automationDraft.entryPoint,
-				onDragStart = onNodeDrag,
-				onStopDrag = onStopDrag,
-				draggableState = draggableState,
-				draggingData = draggingData,
-				onDropZoneEnter = onDropLineEnter,
-				onDropZoneExit = onDropLineExit
-			)
-		}
-
-		itemsIndexed(
-			automationDraft.functions,
-			key = { _, item -> item.id }
-		)
-		{ index, function ->
 
 			EditorNodeDropTarget(
 				gap = 20.dp,
 				draggingData = draggingData,
-				dragNode = EditorDragNode.Function::class,
+				dropScope = NodeDropScope.ENTRY,
 				onEnter = { onDropLineEnter(index, null) },
 				onExit = onDropLineExit
 			)
 
 			TopLevelNode(
-				type = TopLevelNodeType.FUNCTION,
-				id = function.id,
-				displayName = listOf(function.name),
-				content = function.content,
+				type = when {
+					node.nodeType == NodeType.TRIGGER -> TopLevelNodeType.TRIGGER
+					node.nodeType == NodeType.FUNCTION && node.id == "0" -> TopLevelNodeType.ENTRYPOINT
+					else -> TopLevelNodeType.FUNCTION
+				},
+				id = node.id,
+				displayName = when (node.nodeType) {
+					NodeType.TRIGGER -> triggerData!!.editorActionDescription(
+						triggerData.inputDefinitions.mapValues { it.value.defaultValue } + node.input
+					)
+
+					else -> listOf(node.name)
+				},
+				content = node.content,
 				onDragStart = onNodeDrag,
 				onStopDrag = onStopDrag,
 				draggableState = draggableState,
@@ -128,8 +85,8 @@ fun EditorNodeTree(
 			EditorNodeDropTarget(
 				gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
 				draggingData = draggingData,
-				dragNode = EditorDragNode.Function::class,
-				onEnter = { onDropLineEnter(automationDraft.functions.size, null) },
+				dropScope = NodeDropScope.ENTRY,
+				onEnter = { onDropLineEnter(automationDraft.topLevel.size, null) },
 				onExit = onDropLineExit
 			)
 		}

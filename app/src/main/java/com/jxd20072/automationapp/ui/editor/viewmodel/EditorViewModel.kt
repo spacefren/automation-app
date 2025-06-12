@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.NodeType
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.BottomSheetManager
 import com.jxd20072.automationapp.ui.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,31 +46,16 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onCreateNodeClick(nodeData: NodeData) {
-		when (nodeData.nodeType) {
-			NodeType.ACTION -> {
-				val actionDef = automationManager.createActionDef(nodeData)
-				automationManager.addAction(actionDef)
-				bottomSheetManager.openNodeEdit(actionDef.id)
-			}
-
-			NodeType.TRIGGER -> {
-				val triggerDef = automationManager.createTriggerDef(nodeData)
-				automationManager.addTrigger(triggerDef)
-				bottomSheetManager.openNodeEdit(triggerDef.id)
-			}
-
-			NodeType.FUNCTION -> {
-				val functionDef = automationManager.createFunctionDef(nodeData)
-				automationManager.addFunction(functionDef)
-			}
-		}
+		val nodeDef = automationManager.createNodeDef(nodeData)
+		automationManager.addNode(nodeDef)
+		bottomSheetManager.openNodeEdit(nodeDef.id)
 	}
 
 	fun onCreateNodeDrop() {
 		bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
-		val actionID = dragManager.dropCreateNode()
-		if (actionID != null) {
-			bottomSheetManager.openNodeEdit(actionID)
+		val nodeID = dragManager.dropCreateNode()
+		if (nodeID != null) {
+			bottomSheetManager.openNodeEdit(nodeID)
 		} else {
 			bottomSheetManager.closeBottomSheet()
 		}

@@ -2,7 +2,6 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
-import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,25 +36,25 @@ class NodeEditManager @Inject constructor(
 		val state = editingNodeState.value
 		if (state !is NodeEditState.Editing) return
 
-		val actionNode = automationManager.findAction(state.nodeID) ?: return
-		val actionData = actionNodes[actionNode.name]?.data ?: return
+		val nodeDef = automationManager.findNode(state.nodeID) ?: return
 
-		automationManager.editAction(
-			actionNode.id, actionNode.copy(
-			input = emptyMap()
-		))
+		automationManager.editNode(
+			nodeDef.id, nodeDef.copy(
+				input = emptyMap(),
+				output = emptyMap()
+			)
+		)
 	}
 
 	fun setConfig(name: String, config: ConfigurationEntry<*>) {
 		val state = editingNodeState.value
 		if (state !is NodeEditState.Editing) return
 
-		val actionNode = automationManager.findAction(state.nodeID) ?: return
-		val actionData = actionNodes[actionNode.name]?.data ?: return
+		val nodeDef = automationManager.findNode(state.nodeID) ?: return
 
-		automationManager.editAction(
-			actionNode.id, actionNode.copy(
-				input = actionNode.input + mapOf(name to config)
+		automationManager.editNode(
+			nodeDef.id, nodeDef.copy(
+				input = nodeDef.input + mapOf(name to config)
 			)
 		)
 	}
