@@ -4,6 +4,11 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
+data class NodeRegistryEntry<T>(
+	val data: NodeData,
+	val factory: (id: String) -> T
+) where T : BaseNode
+
 data class NodeData(
 	val displayName: String,
 	val name: String,

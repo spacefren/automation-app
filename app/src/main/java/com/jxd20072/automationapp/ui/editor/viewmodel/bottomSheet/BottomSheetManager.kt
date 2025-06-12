@@ -22,7 +22,7 @@ sealed interface EditorBottomSheetState {
 
 @Singleton
 class BottomSheetManager @Inject constructor(
-	val nodeSearchManager: NodeSelectManager,
+	val nodeSelectManager: NodeSelectManager,
 	val nodeEditManager: NodeEditManager,
 ) {
 	private val _bottomSheetState = MutableStateFlow<EditorBottomSheetState>(
@@ -42,8 +42,8 @@ class BottomSheetManager @Inject constructor(
 		}
 	}
 
-	fun openNodeSelect() {
-		nodeSearchManager.resetState()
+	fun openNodeSelect(nodeSelectType: NodeSelectType) {
+		nodeSelectManager.loadState(nodeSelectType)
 		_bottomSheetState.update {
 			EditorBottomSheetState.Open(
 				screen = EditorBottomSheetScreen.NODE_SELECT

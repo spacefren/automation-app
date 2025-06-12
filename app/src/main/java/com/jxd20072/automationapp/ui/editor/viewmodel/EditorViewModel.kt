@@ -38,7 +38,7 @@ class EditorViewModel @Inject constructor(
 	fun onExistingNodeDrop() {
 		dragManager.dropNode()
 		bottomSheetManager.closeBottomSheet()
-		bottomSheetManager.nodeSearchManager.setPageCollapsed(false)
+		bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
 	}
 
 	fun onCreateNodeDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
@@ -46,7 +46,7 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun onCreateNodeDrop() {
-		bottomSheetManager.nodeSearchManager.setPageCollapsed(false)
+		bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
 		val actionID = dragManager.dropCreateAction()
 		if (actionID != null) {
 			bottomSheetManager.openNodeEdit(actionID)

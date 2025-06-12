@@ -87,14 +87,13 @@ fun EditorBottomSheet(
 					state.screen == EditorBottomSheetScreen.NODE_SELECT -> {
 						EditorNodeSelectScreen(
 							onNodeSearch = onNodeSearch,
-							nodeSearchQuery = nodeSelectState.nodeSearchQuery,
+							nodeSelectState = nodeSelectState,
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
 							onStopDrag = onStopDrag,
 							isCollapsed = isCollapsed,
 							onClick = onClick,
 							draggableState = draggableState,
-							nodes = nodeSelectState.nodes
 						)
 					}
 

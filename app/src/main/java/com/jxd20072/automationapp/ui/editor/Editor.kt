@@ -20,6 +20,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectType
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
@@ -37,7 +38,7 @@ fun AutomationEditor(
 
 	val automationManager = editorViewModel.automationManager
 	val bottomSheetManager = editorViewModel.bottomSheetManager
-	val nodeSearchManager = bottomSheetManager.nodeSearchManager
+	val nodeSearchManager = bottomSheetManager.nodeSelectManager
 	val nodeEditManager = bottomSheetManager.nodeEditManager
 	val dragManager = editorViewModel.dragManager
 
@@ -91,9 +92,9 @@ fun AutomationEditor(
 		)
 		EditorFloatingAddButton(
 			hidden = draggingData is EditorNodeDragState.Dragging,
-			onCreateNodePressed = bottomSheetManager::openNodeSelect,
+			onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeSelectType.ACTION) },
 			onCreateFunctionPressed = { },
-			onCreateTriggerPressed = { }
+			onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeSelectType.TRIGGER) }
 		)
 		EditorBottomSheet(
 			onDismiss = bottomSheetManager::closeBottomSheet,
@@ -104,7 +105,7 @@ fun AutomationEditor(
 			editingNodeData = editingNodeData,
 			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
-			onNodeSearch = bottomSheetManager.nodeSearchManager::changeNodeSearchQuery,
+			onNodeSearch = bottomSheetManager.nodeSelectManager::changeNodeSearchQuery,
 			dragData = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,

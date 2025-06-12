@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.model.ActionDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,23 +14,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-val defaultNodeList = actionNodes.values
-	.map { it.data.category }
-	.distinct()
-	.map { categoryName ->
-		CategoryListEntry(
-			categoryName = categoryName,
-			nodes = actionNodes.values
-				.filter { node -> node.data.category == categoryName }
-				.map { node ->
-					NodeListEntry(
-						searchMatchRatio = 0,
-						data = node.data
-					)
-				},
-			searchMatchRatio = 0
-		)
-	}
+enum class NodeSelectType {
+	ACTION, TRIGGER
+}
 
 @Immutable
 data class NodeListEntry(
@@ -48,7 +35,8 @@ data class CategoryListEntry(
 data class NodeSelectState(
 	val isCollapsed: Boolean = false,
 	val nodeSearchQuery: String = "",
-	val nodes: List<CategoryListEntry> = defaultNodeList,
+	val nodeSelectType: NodeSelectType = NodeSelectType.ACTION,
+	val nodes: List<CategoryListEntry> = emptyList(),
 )
 
 @Singleton
@@ -59,17 +47,59 @@ class NodeSelectManager @Inject constructor(
 	private val _nodeSelectStateState = MutableStateFlow(NodeSelectState())
 	val nodeSelectState = _nodeSelectStateState.asStateFlow()
 
+	private val allActions = setupNodes(NodeSelectType.ACTION)
+	private val allTriggers = setupNodes(NodeSelectType.TRIGGER)
+
+	fun setupNodes(nodeSelectType: NodeSelectType): List<CategoryListEntry> {
+		return when (nodeSelectType) {
+			NodeSelectType.ACTION -> actionNodes
+			NodeSelectType.TRIGGER -> triggerNodes
+		}.values
+			.groupBy { it.data.category }
+			.map { category ->
+				CategoryListEntry(
+					categoryName = category.key,
+					nodes = category.value
+						.map { node ->
+							NodeListEntry(
+								searchMatchRatio = 0,
+								data = node.data
+							)
+						},
+					searchMatchRatio = 0
+				)
+			}
+	}
+
+	fun getNodes(nodeSelectType: NodeSelectType): List<CategoryListEntry> {
+		return when (nodeSelectType) {
+			NodeSelectType.ACTION -> allActions
+			NodeSelectType.TRIGGER -> allTriggers
+		}
+	}
+
+	fun loadState(nodeSelectType: NodeSelectType) {
+		_nodeSelectStateState.update { state ->
+			state.copy(
+				nodeSelectType = nodeSelectType,
+				nodes = getNodes(nodeSelectType)
+			)
+		}
+	}
+
 	fun searchNodes() {
 		_nodeSelectStateState.update { state ->
 			val searchQuery = state.nodeSearchQuery.lowercase()
+			val nodeSelectType = state.nodeSelectType
+			val allNodes = getNodes(nodeSelectType)
 
 			if (searchQuery.isBlank()) {
 				return@update state.copy(
-					nodes = defaultNodeList
+					nodes = allNodes
 				)
 			}
 
-			val filteredNodes = state.nodes
+			val filteredNodes = allNodes
 
 				// Search nodes
 				.map { categoryListEntry ->
@@ -129,10 +159,6 @@ class NodeSelectManager @Inject constructor(
 		)
 		automationManager.addAction(actionDef, parentID, index)
 		bottomSheetManager.get().openNodeEdit(actionDef.id)
-	}
-
-	fun resetState() {
-		_nodeSelectStateState.update { NodeSelectState() }
 	}
 
 	fun setPageCollapsed(collapsed: Boolean) {

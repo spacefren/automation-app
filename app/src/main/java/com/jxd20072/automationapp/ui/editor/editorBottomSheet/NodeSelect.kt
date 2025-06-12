@@ -56,6 +56,8 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEntry
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectType
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -228,7 +230,7 @@ fun NodeCategoryContainer(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeSelectScreen(
-	nodeSearchQuery: String,
+	nodeSelectState: NodeSelectState,
 	autoOpenKeyboard: Boolean,
 	isCollapsed: Boolean,
 	onStartDrag: (
@@ -239,7 +241,6 @@ fun EditorNodeSelectScreen(
 	onStopDrag: () -> Unit,
 	onClick: (nodeData: NodeData) -> Unit,
 	draggableState: Draggable2DState,
-	nodes: List<CategoryListEntry>,
 	onNodeSearch: (query: String) -> Unit
 ) {
 	val screenHeight = LocalWindowInfo.current.containerSize.height
@@ -263,13 +264,16 @@ fun EditorNodeSelectScreen(
 				.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 		) {
 			Text(
-				text = "Select action",
+				text = "Select " + when (nodeSelectState.nodeSelectType) {
+					NodeSelectType.ACTION -> "action"
+					NodeSelectType.TRIGGER -> "trigger"
+				},
 				color = LocalTheme.colorScheme.onBackground,
 				style = LocalTheme.typography.subTitle
 			)
 			SearchBar(
 				searchText = "Search actions or categories",
-				queryText = nodeSearchQuery,
+				queryText = nodeSelectState.nodeSearchQuery,
 				modifier = Modifier.fillMaxWidth(),
 				focused = autoOpenKeyboard
 			) { query ->
@@ -280,10 +284,10 @@ fun EditorNodeSelectScreen(
 				modifier = Modifier
 					.fillMaxSize()
 			) {
-				items(nodes) {
+				items(nodeSelectState.nodes) {
 					NodeCategoryContainer(
 						categoryListEntry = it,
-						isSearching = nodeSearchQuery.isNotEmpty(),
+						isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
 						onStartDrag = onStartDrag,
 						onStopDrag = onStopDrag,
 						draggableState = draggableState,

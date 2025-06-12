@@ -4,7 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.TriggerNodesEntry
+import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
@@ -26,7 +26,7 @@ class WaitTrigger(id: String) : TriggerNode(id) {
 	}
 }
 
-val WaitTriggerNode = TriggerNodesEntry(
+val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
 	data = NodeData(
 		displayName = "Wait",
 		name = "wait",
