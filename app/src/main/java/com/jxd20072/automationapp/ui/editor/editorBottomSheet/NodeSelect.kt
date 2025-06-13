@@ -276,7 +276,7 @@ fun EditorNodeSelectScreen(
 				searchText = "Search actions or categories",
 				queryText = nodeSelectState.nodeSearchQuery,
 				modifier = Modifier.fillMaxWidth(),
-				focused = autoOpenKeyboard
+				autoFocus = autoOpenKeyboard
 			) { query ->
 				onNodeSearch(query)
 			}

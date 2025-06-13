@@ -28,7 +28,6 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun AddAutomationScreen(
 	selectedIcon: String,
 	name: String,
-	isSheetOpen: Boolean,
 	autoOpenKeyboard: Boolean,
 	validateAutomationName: (name: String) -> ValidationResult,
 	onNameChanged: (name: String) -> Unit,
@@ -81,8 +80,7 @@ fun AddAutomationScreen(
 			BaseTextInput(
 				placeholderText = "Name",
 				imeAction = ImeAction.Done,
-				onlyFocusIfEmpty = true,
-				focused = if (autoOpenKeyboard) isSheetOpen else false,
+				autoFocus = if (autoOpenKeyboard) name.isEmpty() else false,
 				text = name,
 				modifier = Modifier.fillMaxWidth(),
 				validateInput = { text -> validateAutomationName(text) }

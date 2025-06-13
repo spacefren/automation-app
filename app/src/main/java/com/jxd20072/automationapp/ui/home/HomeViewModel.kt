@@ -18,13 +18,13 @@ import java.time.Instant
 import javax.inject.Inject
 
 enum class AddAutomationDrawerScreen {
-	AUTOMATION_ADD, ICON_SELECT
+	BLANK, AUTOMATION_ADD, ICON_SELECT
 }
 
 @Immutable
 data class AddAutomationDrawerUiState(
 	val isDrawerOpen: Boolean = false,
-	val screen: AddAutomationDrawerScreen = AddAutomationDrawerScreen.AUTOMATION_ADD,
+	val screen: AddAutomationDrawerScreen = AddAutomationDrawerScreen.BLANK,
 
 	val selectedName: String = "",
 	val selectedIcon: String = "wave-square",
@@ -161,7 +161,9 @@ class HomeViewModel @Inject constructor(
 	fun changeAddAutomationDrawerVisibility(open: Boolean) {
 		_homeUiState.update { currentState ->
 			currentState.copy(
-				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(isDrawerOpen = open)
+				addAutomationDrawerState = currentState.addAutomationDrawerState.copy(
+					isDrawerOpen = open
+				)
 			)
 		}
 

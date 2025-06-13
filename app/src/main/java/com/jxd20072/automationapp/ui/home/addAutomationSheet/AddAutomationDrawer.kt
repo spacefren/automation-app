@@ -62,7 +62,6 @@ fun AddAutomationDrawer(
 								onNameChanged(newName)
 							},
 							onCreateAutomation = onCreateAutomation,
-							isSheetOpen = drawerUiState.isDrawerOpen,
 							autoOpenKeyboard = autoOpenKeyboard
 						)
 					}
@@ -79,6 +78,8 @@ fun AddAutomationDrawer(
 							onScreenChanged(AddAutomationDrawerScreen.AUTOMATION_ADD)
 						}
 					}
+
+					AddAutomationDrawerScreen.BLANK -> {}
 				}
 			}
 		}

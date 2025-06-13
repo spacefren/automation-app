@@ -54,8 +54,7 @@ fun BaseTextInput(
 	text: String,
 	imeAction: ImeAction,
 	icon: Int? = null,
-	focused: Boolean = false,
-	onlyFocusIfEmpty: Boolean = false,
+	autoFocus: Boolean = false,
 	modifier: Modifier = Modifier,
 	validateInput: ((text: String) -> ValidationResult)? = null,
 	onTextChanged: ((text: String) -> Unit),
@@ -90,7 +89,9 @@ fun BaseTextInput(
 	}
 
 	LaunchedEffect(Unit) {
-		isEdited = false
+		if (autoFocus) {
+			focusRequester.requestFocus()
+		}
 	}
 
 	Column(modifier = modifier.width(IntrinsicSize.Max)) {
@@ -196,15 +197,6 @@ fun BaseTextInput(
 					fontSize = 14.sp
 				)
 			}
-		}
-	}
-
-	LaunchedEffect(focused) {
-		if (focused) {
-			if (onlyFocusIfEmpty && text.isNotEmpty()) return@LaunchedEffect
-			focusRequester.requestFocus()
-		} else {
-			focusManager.clearFocus()
 		}
 	}
 }

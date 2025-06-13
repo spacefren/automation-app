@@ -130,7 +130,7 @@ fun HomeScreen(
 				searchText = "Search automations",
 				queryText = homeUiState.searchQuery,
 				onSearch = { query -> homeViewModel.changeSearchQuery(query) },
-				focused = false,
+				autoFocus = false,
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(45.dp)
@@ -160,6 +160,7 @@ fun HomeScreen(
 				&& (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
 			onDismissRequest = {
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
+				homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
 			},
 			validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
 			onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
@@ -172,6 +173,7 @@ fun HomeScreen(
 				icon = homeUiState.addAutomationDrawerState.selectedIcon
 			) { id ->
 				homeViewModel.changeAddAutomationDrawerVisibility(false)
+				homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
 				editAutomation(id)
 			}
 		}
@@ -179,6 +181,7 @@ fun HomeScreen(
 		Box(modifier = Modifier.fillMaxSize()) {
 			FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
 				homeViewModel.changeAddAutomationDrawerVisibility(true)
+				homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.AUTOMATION_ADD)
 			}
 		}
 	}

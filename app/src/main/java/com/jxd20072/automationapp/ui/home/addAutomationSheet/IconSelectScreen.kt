@@ -49,7 +49,7 @@ fun IconSelectScreen(
 			searchText = "Search icons",
 			queryText = iconSearchQuery,
 			modifier = Modifier.fillMaxWidth(),
-			focused = if (autoOpenKeyboard) isSheetOpen else false
+			autoFocus = autoOpenKeyboard
 		) { query ->
 			onIconSearch(query)
 		}
