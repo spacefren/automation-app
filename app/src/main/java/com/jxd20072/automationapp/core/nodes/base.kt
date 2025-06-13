@@ -1,8 +1,8 @@
 package com.jxd20072.automationapp.core.nodes
 
 import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 data class NodeRegistryEntry<T>(
@@ -24,11 +24,7 @@ data class NodeData(
 
 open class BaseNode(id: String) {
 	var input: Map<String, ConfigurationEntry<*>> = emptyMap()
-
-	open fun onInit(
-		context: ExecutionFlowContext,
-	) {
-	}
+	var content: List<NodeDef> = emptyList()
 
 	inline fun <reified T> getInput(inputEntry: String): T where T : ConfigurationEntry<*> {
 		val entry = this.input[inputEntry]

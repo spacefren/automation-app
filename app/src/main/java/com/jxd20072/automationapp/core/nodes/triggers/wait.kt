@@ -12,11 +12,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 class WaitTrigger(id: String) : TriggerNode(id) {
-	override fun onInit(
+	override fun startListening(
 		context: ExecutionFlowContext,
 		trigger: (output: Map<String, ConfigurationEntry<*>>) -> Unit
 	) {
-		super.onInit(context)
+		super.startListening(context, trigger)
 
 		val duration = getInput<ConfigurationEntry.NUMBER>("Duration").value
 

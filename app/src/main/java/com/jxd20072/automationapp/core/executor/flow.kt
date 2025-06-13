@@ -40,6 +40,7 @@ class ExecutionFlow(
 			nodeDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
 		}
 		node.input = input
+		node.content = nodeDef.content
 
 		return node
 	}
@@ -48,14 +49,18 @@ class ExecutionFlow(
 		val actionNodeEntry = actionNodes[nodeDef.name]
 			?: throw Exception("Action not found: ${nodeDef.name}")
 
-		return buildNode(nodeDef, actionNodeEntry)
+		val action = buildNode(nodeDef, actionNodeEntry)
+		actions += action
+		return action
 	}
 
 	private fun buildTrigger(nodeDef: NodeDef): TriggerNode {
 		val triggerNodeEntry = triggerNodes[nodeDef.name]
 			?: throw Exception("Trigger not found: ${nodeDef.name}")
 
-		return buildNode(nodeDef, triggerNodeEntry)
+		val trigger = buildNode(nodeDef, triggerNodeEntry)
+		triggers += trigger
+		return trigger
 	}
 
 	private fun resetState() {
@@ -68,19 +73,6 @@ class ExecutionFlow(
 		// Setup
 		resetState()
 		context.onStartExecution()
-
-		// Build nodes
-		automationDef.topLevel.forEach { topLevelNode ->
-			actions += topLevelNode.content.map { buildAction(it) }
-			if (topLevelNode.nodeType == NodeType.TRIGGER) {
-				triggers += buildTrigger(topLevelNode)
-			}
-		}
-
-		// Init actions
-		actions.forEach { action ->
-			action.onInit(context)
-		}
 
 		coroutineScope {
 			// Execute entry actions
@@ -95,14 +87,17 @@ class ExecutionFlow(
 
 			// Init triggers
 			Log.d("APP_A", "setting up triggers...");
-			triggers.forEach { trigger ->
-				async {
-					trigger.onInit(context) {
-						Log.d("APP_A", "trigger fired!");
-						executeActions(trigger.content)
+			automationDef.topLevel
+				.filter { it.nodeType == NodeType.TRIGGER }
+				.map { buildTrigger(it) }
+				.forEach { trigger ->
+					async {
+						trigger.startListening(context) {
+							Log.d("APP_A", "trigger fired!");
+							executeActionPath(trigger.content)
+						}
 					}
 				}
-			}
 
 			Log.d("APP_A", "automation running!");
 		}
@@ -115,7 +110,9 @@ class ExecutionFlow(
 	}
 
 	fun executeActionPath(nodeDefinitions: List<NodeDef>) {
-		executeActions(nodeDefinitions.map { actionDef -> actions.find { it.id == actionDef.id }!! })
+		executeActions(nodeDefinitions.map { actionDef ->
+			actions.find { it.id == actionDef.id } ?: buildAction(actionDef)
+		})
 	}
 
 	fun executeActions(builtActions: List<ActionNode>) {
