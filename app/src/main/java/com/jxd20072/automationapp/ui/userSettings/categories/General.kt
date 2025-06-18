@@ -42,7 +42,7 @@ fun GeneralSettingsCategory(
 			onActivate = {
 				val appDataPath = "Android%2Fdata%2F${context.packageName}%2Ffiles"
 				val uri =
-					Uri.parse("content://com.android.externalstorage.documents/document/primary%3A$appDataPath/automations")
+					Uri.parse("content://com.android.externalstorage.documents/document/primary%3A$appDataPath%2Fautomations")
 
 				val intent = Intent(Intent.ACTION_VIEW)
 				intent.setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR)
