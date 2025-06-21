@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +40,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +51,6 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun BaseTextInput(
 	placeholderText: String,
 	text: String,
-	keyboardType: KeyboardType = KeyboardType.Text,
 	imeAction: ImeAction,
 	icon: Int? = null,
 	autoFocus: Boolean = false,
@@ -96,7 +93,7 @@ fun BaseTextInput(
 		}
 	}
 
-	Column(modifier = modifier.width(IntrinsicSize.Max)) {
+	Column(modifier = modifier) {
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -108,12 +105,11 @@ fun BaseTextInput(
 				.clickable(interactionSource = null, indication = ripple()) {
 					focusRequester.requestFocus()
 				}
-				.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+				.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
 		) {
 			Row(
 				horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
 			) {
 				if (icon != null) {
 					Icon(

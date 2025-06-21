@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,17 +26,18 @@ fun UserSettingsItemContainerContent(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 		modifier = modifier
+			.widthIn(max = 220.dp)
 	) {
 		Text(
 			text = displayName,
 			color = LocalTheme.colorScheme.onBackground,
-			style = LocalTheme.typography.header
+			style = LocalTheme.typography.header,
 		)
 		if (description.isNotEmpty()) {
 			Text(
 				text = description,
 				color = LocalTheme.colorScheme.onSurface,
-				style = LocalTheme.typography.body
+				style = LocalTheme.typography.body,
 			)
 		}
 	}
@@ -57,12 +59,12 @@ fun HorizontalUserSettingsItemContainer(
 		UserSettingsItemContainerContent(
 			displayName = displayName,
 			description = description,
-			modifier = Modifier.weight(1f)
 		)
 		Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
 		Box(
 			content = content,
-			modifier = Modifier.height(35.dp)
+			modifier = Modifier
+				.height(35.dp)
 		)
 	}
 }

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
+import com.jxd20072.automationapp.ui.shared.getTextSize
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.utils.conditional
 import com.jxd20072.automationapp.ui.utils.dashedBorder
@@ -114,12 +115,8 @@ fun NodeDropZone(
 			text = text,
 			color = LocalTheme.colorScheme.onBackground,
 			fontSize = 17.sp,
-			onTextLayout = { // I know I'm genius
-				val lineEnds = mutableListOf<Float>()
-				for (i in 0..it.lineCount - 1) {
-					lineEnds.add(it.getLineRight(i) - it.getLineLeft(i))
-				}
-				textWidth = lineEnds.max()
+			onTextLayout = {
+				textWidth = getTextSize(it)
 			},
 			modifier = Modifier
 				.conditional(textWidth != 0f, ifTrue = {

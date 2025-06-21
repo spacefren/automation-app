@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.userSettings.settingsItems
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ fun UserSettingsItem(
 	modifier: Modifier = Modifier,
 	onValueChanged: (ConfigurationEntry.NUMBER) -> Unit
 ) {
-	VerticalUserSettingsItemContainer(
+	HorizontalUserSettingsItemContainer(
 		displayName = displayName,
 		description = description,
 		modifier = modifier
@@ -26,11 +27,13 @@ fun UserSettingsItem(
 		BaseTextInput(
 			placeholderText = "",
 			text = item?.value ?: defaultItem.value,
-			modifier = Modifier.fillMaxWidth(),
+			modifier = Modifier
+				.fillMaxWidth(),
 			imeAction = ImeAction.Done,
 			validateInput = {
 				val number = it.toFloatOrNull()
 				if (number == null) {
+					Log.d("APP_A", "AAA")
 					ValidationResult.Error("Only numbers allowed")
 				} else {
 					validate?.invoke(ConfigurationEntry.NUMBER(it)) ?: ValidationResult.Success

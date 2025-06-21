@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -72,6 +73,7 @@ fun UserSettingsItem(
 				.onGloballyPositioned {
 					containerSize = it.size
 				}
+				.align(Alignment.CenterEnd)
 				.width(60.dp)
 				.fillMaxHeight()
 				.pointerInput(enabled) {

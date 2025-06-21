@@ -56,7 +56,7 @@ fun AddAutomationScreen(
 				contentDescription = "confirm",
 				tint = LocalTheme.colorScheme.onBackground,
 				modifier = Modifier
-					.size(28.dp)
+					.size(25.dp)
 					.clickableWithIndication {
 						if (validateAutomationName(name) is ValidationResult.Success) {
 							onCreateAutomation()
@@ -72,8 +72,8 @@ fun AddAutomationScreen(
 				iconColor = LocalTheme.colorScheme.onSurface,
 				iconName = selectedIcon,
 				cornerRadius = 8.dp,
-				padding = 8.dp,
-				size = 42.dp
+				padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+				size = 36.dp
 			) {
 				onIconChangeRequest()
 			}
