@@ -7,7 +7,6 @@ sealed class ValidationResult {
 	data class Error(val message: String) : ValidationResult()
 }
 
-
 data class NodeInputDefinition<T>(
 	val description: String,
 	val defaultValue: T,

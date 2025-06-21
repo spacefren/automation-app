@@ -21,8 +21,6 @@ class LoggerAction(id: String) : ActionNode(id) {
 	}
 
 	override fun execute(context: ExecutionFlowContext) {
-		super.execute(context)
-
 		val text = getInput<ConfigurationEntry.TEXT>("Text").value
 
 		LocalSnackbarState.showSnackbar(

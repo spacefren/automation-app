@@ -22,7 +22,7 @@ data class NodeData(
 	val outputDefinitions: Map<String, NodeInputDefinition<*>>
 )
 
-open class BaseNode(id: String) {
+abstract class BaseNode(id: String) {
 	var input: Map<String, ConfigurationEntry<*>> = emptyMap()
 	var content: List<NodeDef> = emptyList()
 

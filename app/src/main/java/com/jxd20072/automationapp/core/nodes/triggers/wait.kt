@@ -16,8 +16,6 @@ class WaitTrigger(id: String) : TriggerNode(id) {
 		context: ExecutionFlowContext,
 		trigger: (output: Map<String, ConfigurationEntry<*>>) -> Unit
 	) {
-		super.startListening(context, trigger)
-
 		val duration = getInput<ConfigurationEntry.NUMBER>("Duration").value
 
 		runBlocking {
@@ -44,7 +42,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
 		inputDefinitions = mapOf(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the delay, in milliseconds",
-				defaultValue = ConfigurationEntry.NUMBER(1000),
+				defaultValue = ConfigurationEntry.NUMBER("1000"),
 				validate = { ValidationResult.Success }
 			),
 			"IsThisWorking" to NodeInputDefinition(

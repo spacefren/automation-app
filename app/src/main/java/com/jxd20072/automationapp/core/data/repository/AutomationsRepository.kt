@@ -41,7 +41,7 @@ class AutomationsRepository @Inject constructor(
 			NodeDef(
 				name = "wait",
 				nodeType = NodeType.TRIGGER,
-				input = mapOf("Duration" to ConfigurationEntry.NUMBER(3000)),
+				input = mapOf("Duration" to ConfigurationEntry.NUMBER("3000")),
 				content = listOf(
 					NodeDef(
 						name = "log",

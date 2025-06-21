@@ -18,11 +18,16 @@ sealed class ConfigurationEntry<T> {
 
 	@Serializable
 	data class NUMBER(
-		override val value: Int
-	) : ConfigurationEntry<Int>()
+		override val value: String
+	) : ConfigurationEntry<String>()
 
 	@Serializable
 	data class CHOOSE(
+		override val value: String
+	) : ConfigurationEntry<String>()
+
+	@Serializable
+	data class VARIABLE(
 		override val value: String
 	) : ConfigurationEntry<String>()
 }

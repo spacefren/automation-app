@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +53,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun BaseTextInput(
 	placeholderText: String,
 	text: String,
+	keyboardType: KeyboardType = KeyboardType.Text,
 	imeAction: ImeAction,
 	icon: Int? = null,
 	autoFocus: Boolean = false,

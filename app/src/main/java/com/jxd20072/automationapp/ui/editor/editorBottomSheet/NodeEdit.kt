@@ -99,6 +99,18 @@ fun NodeEditField(
 			)
 		}
 
+		is ConfigurationEntry.NUMBER -> {
+			if (currentValue != null && currentValue !is ConfigurationEntry.NUMBER) return
+			UserSettingsItem(
+				item = currentValue,
+				defaultItem = inputDefinition.defaultValue,
+				displayName = name,
+				description = inputDefinition.description,
+				validate = inputDefinition.validate as (ConfigurationEntry.NUMBER) -> ValidationResult,
+				onValueChanged = onValueChanged
+			)
+		}
+
 		else -> {}
 	}
 }

@@ -11,12 +11,8 @@ import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
-private const val TAG = "APP_NODE:WAIT"
-
 class WaitAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
-		super.execute(context)
-
 		val duration = getInput<ConfigurationEntry.NUMBER>("Duration").value
 
 		runBlocking {
@@ -42,7 +38,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
 		inputDefinitions = mapOf(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the pause, in milliseconds",
-				defaultValue = ConfigurationEntry.NUMBER(10000),
+				defaultValue = ConfigurationEntry.NUMBER("10000"),
 				validate = { ValidationResult.Success }
 			)
 		),
