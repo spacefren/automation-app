@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +62,6 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectStat
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.utils.hooks.rememberPrevious
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -142,19 +142,19 @@ fun NodeCategoryContainer(
 ) {
 	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
 
-	var userExpanded by remember { mutableStateOf(false) }
-	val searchRequiresExpand = isSearching && categoryListEntry.nodes.isNotEmpty()
-	val expanded = searchRequiresExpand || userExpanded
-
+	var expanded by remember { mutableStateOf(false) }
 	val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
 
-	val previousEntry = rememberPrevious(categoryListEntry)
-	val visibleEntry = if (expanded) categoryListEntry else previousEntry ?: categoryListEntry
+	LaunchedEffect(isSearching) {
+		if (isSearching && categoryListEntry.nodes.isNotEmpty()) {
+			expanded = true
+		}
+	}
 
 	Column(
 		modifier = modifier
 			.clickableWithIndication {
-				userExpanded = !userExpanded
+				expanded = !expanded
 			}
 			.shadow(
 				LocalTheme.layoutSystem.shadows.primary,
@@ -204,7 +204,7 @@ fun NodeCategoryContainer(
 					.animateContentSize()
 			) {
 				LookaheadScope {
-					visibleEntry.nodes.forEachIndexed { index, node ->
+					categoryListEntry.nodes.forEachIndexed { index, node ->
 						key(node.data.name) {
 							NodeCard(
 								nodeData = node.data,
