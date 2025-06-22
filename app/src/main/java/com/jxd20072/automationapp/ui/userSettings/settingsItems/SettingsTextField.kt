@@ -21,6 +21,7 @@ fun UserSettingsItem(
 	VerticalUserSettingsItemContainer(
 		displayName = displayName,
 		description = description,
+		validationResult = validate?.invoke(item ?: defaultItem),
 		modifier = modifier
 	) {
 		BaseTextInput(
@@ -28,9 +29,6 @@ fun UserSettingsItem(
 			text = item?.value ?: defaultItem.value,
 			modifier = Modifier.fillMaxWidth(),
 			imeAction = ImeAction.Done,
-			validateInput = {
-				validate?.invoke(ConfigurationEntry.TEXT(it)) ?: ValidationResult.Success
-			},
 			onTextChanged = { onValueChanged(ConfigurationEntry.TEXT(it)) }
 		)
 	}

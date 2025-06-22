@@ -21,6 +21,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.IconButton
+import com.jxd20072.automationapp.ui.shared.ValidationMessage
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
@@ -35,7 +36,7 @@ fun AddAutomationScreen(
 	onCreateAutomation: () -> Unit,
 ) {
 	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp),
+		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 		modifier = Modifier
 			.imePadding()
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
@@ -64,29 +65,34 @@ fun AddAutomationScreen(
 					}
 			)
 		}
-		Row(
-			horizontalArrangement = Arrangement.spacedBy(10.dp)
-		) {
-			IconButton(
-				color = LocalTheme.colorScheme.surface,
-				iconColor = LocalTheme.colorScheme.onSurface,
-				iconName = selectedIcon,
-				cornerRadius = 8.dp,
-				padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
-				size = 36.dp
+		Column {
+			Row(
+				horizontalArrangement = Arrangement.spacedBy(10.dp)
 			) {
-				onIconChangeRequest()
+				IconButton(
+					color = LocalTheme.colorScheme.surface,
+					iconColor = LocalTheme.colorScheme.onSurface,
+					iconName = selectedIcon,
+					cornerRadius = 8.dp,
+					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+					size = 36.dp
+				) {
+					onIconChangeRequest()
+				}
+				BaseTextInput(
+					placeholderText = "Name",
+					imeAction = ImeAction.Done,
+					autoFocus = if (autoOpenKeyboard) name.isEmpty() else false,
+					text = name,
+					modifier = Modifier.fillMaxWidth(),
+				) { text ->
+					onNameChanged(text)
+				}
 			}
-			BaseTextInput(
-				placeholderText = "Name",
-				imeAction = ImeAction.Done,
-				autoFocus = if (autoOpenKeyboard) name.isEmpty() else false,
-				text = name,
-				modifier = Modifier.fillMaxWidth(),
-				validateInput = { text -> validateAutomationName(text) }
-			) { text ->
-				onNameChanged(text)
-			}
+			ValidationMessage(
+				validateAutomationName(name),
+				Modifier.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel3)
+			)
 		}
 		Spacer(modifier = Modifier.height(100.dp))
 	}
