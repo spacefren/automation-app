@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
+import com.jxd20072.automationapp.core.nodes.props.NodeOutputDefinition
 
 data class NodeRegistryEntry<T>(
 	val data: NodeData,
@@ -19,7 +20,7 @@ data class NodeData(
 	val description: String,
 	val icon: Int,
 	val inputDefinitions: Map<String, NodeInputDefinition<*>>,
-	val outputDefinitions: Map<String, NodeInputDefinition<*>>
+	val outputDefinitions: Map<String, NodeOutputDefinition>
 )
 
 abstract class BaseNode(id: String) {

@@ -12,3 +12,12 @@ data class NodeInputDefinition<T>(
 	val defaultValue: T,
 	val validate: ((T) -> ValidationResult)? = null,
 ) where T : ConfigurationEntry<*>
+
+enum class NodeOutputType {
+	TEXT, BOOL, NUMBER
+}
+
+data class NodeOutputDefinition(
+	val description: String,
+	val outputType: NodeOutputType
+)
