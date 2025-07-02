@@ -53,8 +53,8 @@ fun SwipeableContainer(
 	val haptic = LocalHapticFeedback.current
 	val coroutineScope = rememberCoroutineScope()
 
-	val actionThreshold = 280f
-	val maxDisplacement = 180f
+	val actionThreshold = 290f
+	val maxDisplacement = 165f
 	val maxIconSize = 24f
 	val maxIconDisplacement = 13f
 	val totalDelta = remember { Animatable(0f) }

@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
@@ -189,6 +190,42 @@ class AutomationManager @Inject constructor(
 							content = function.content.findAndReplace({ it.id == nodeID }, newData)
 						)
 					}
+				)
+			)
+		}
+	}
+
+	fun findVariable(name: String): VariableDef<*>? {
+		val state = automationUiState.value
+		if (state !is AutomationUiState.Success) return null
+
+		return state.automationDraft.variables.find { it.name == name }
+	}
+
+	fun editVariable(name: String, newData: VariableDef<*>) {
+		_automationUiState.update { data ->
+			if (data !is AutomationUiState.Success) return@update data
+
+			data.copy(
+				automationDraft = data.automationDraft.copy(
+					variables = data.automationDraft.variables
+						.filter { it.name != name }
+						.toSet()
+						+ newData
+				)
+			)
+		}
+	}
+
+	fun deleteVariable(name: String) {
+		_automationUiState.update { data ->
+			if (data !is AutomationUiState.Success) return@update data
+
+			data.copy(
+				automationDraft = data.automationDraft.copy(
+					variables = data.automationDraft.variables
+						.filter { it.name != name }
+						.toSet()
 				)
 			)
 		}

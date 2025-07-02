@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.core.nodes.triggers
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
@@ -14,9 +14,9 @@ import kotlinx.coroutines.runBlocking
 class WaitTrigger(id: String) : TriggerNode(id) {
 	override fun startListening(
 		context: ExecutionFlowContext,
-		trigger: (output: Map<String, ConfigurationEntry<*>>) -> Unit
+		trigger: (output: Map<String, ConfigurationValue<*>>) -> Unit
 	) {
-		val duration = getInput<ConfigurationEntry.NUMBER>("Duration").value
+		val duration = getInput<ConfigurationValue.NUMBER>("Duration").value
 
 		runBlocking {
 			delay(duration.toLong())
@@ -42,12 +42,12 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
 		inputDefinitions = mapOf(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the delay, in milliseconds",
-				defaultValue = ConfigurationEntry.NUMBER("1000"),
+				defaultValue = ConfigurationValue.NUMBER("1000"),
 				validate = { ValidationResult.Success }
 			),
 			"IsThisWorking" to NodeInputDefinition(
 				description = "if you see this, yes",
-				defaultValue = ConfigurationEntry.BOOL(true),
+				defaultValue = ConfigurationValue.BOOL(true),
 				validate = { ValidationResult.Success }
 			)
 		),

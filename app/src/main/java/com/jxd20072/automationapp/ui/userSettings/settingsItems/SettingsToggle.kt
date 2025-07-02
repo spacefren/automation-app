@@ -26,18 +26,18 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun UserSettingsItem(
-	item: ConfigurationEntry.BOOL,
+	item: ConfigurationValue.BOOL,
 	displayName: String,
 	description: String = "",
 	modifier: Modifier = Modifier,
-	validate: ((ConfigurationEntry.BOOL) -> ValidationResult)? = null,
-	onValueChanged: (ConfigurationEntry.BOOL) -> Unit
+	validate: ((ConfigurationValue.BOOL) -> ValidationResult)? = null,
+	onValueChanged: (ConfigurationValue.BOOL) -> Unit
 ) {
 	val enabled = item.value
 	var isPressed by remember { mutableStateOf(false) }
@@ -79,7 +79,7 @@ fun UserSettingsItem(
 				.pointerInput(enabled) {
 					detectTapGestures(
 						onTap = {
-							onValueChanged(ConfigurationEntry.BOOL(!enabled))
+							onValueChanged(ConfigurationValue.BOOL(!enabled))
 						},
 						onPress = {
 							isPressed = true

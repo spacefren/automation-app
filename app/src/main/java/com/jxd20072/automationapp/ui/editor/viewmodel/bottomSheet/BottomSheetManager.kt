@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class EditorBottomSheetScreen {
-	EMPTY, NODE_SELECT, NODE_EDIT
+	EMPTY, NODE_SELECT, NODE_EDIT, VARIABLES, VARIABLE_EDIT, LOGS
 }
 
 @Immutable
@@ -25,6 +25,8 @@ sealed interface EditorBottomSheetState {
 class BottomSheetManager @Inject constructor(
 	val nodeSelectManager: NodeSelectManager,
 	val nodeEditManager: NodeEditManager,
+	val variablesManager: VariablesManager,
+	val variableEditManager: VariableEditManager
 ) {
 	private val _bottomSheetState = MutableStateFlow<EditorBottomSheetState>(
 		EditorBottomSheetState.Closed
@@ -57,6 +59,32 @@ class BottomSheetManager @Inject constructor(
 		_bottomSheetState.update {
 			EditorBottomSheetState.Open(
 				screen = EditorBottomSheetScreen.NODE_EDIT
+			)
+		}
+	}
+
+	fun openVariables() {
+		variablesManager.updateVariableList()
+		_bottomSheetState.update {
+			EditorBottomSheetState.Open(
+				screen = EditorBottomSheetScreen.VARIABLES
+			)
+		}
+	}
+
+	fun openVariableEdit(variableName: String) {
+		_bottomSheetState.update {
+			EditorBottomSheetState.Open(
+				screen = EditorBottomSheetScreen.VARIABLE_EDIT
+			)
+		}
+		variableEditManager.startVariableEdit(variableName)
+	}
+
+	fun openLogs() {
+		_bottomSheetState.update {
+			EditorBottomSheetState.Open(
+				screen = EditorBottomSheetScreen.LOGS
 			)
 		}
 	}

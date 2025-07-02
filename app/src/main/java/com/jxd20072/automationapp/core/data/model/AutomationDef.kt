@@ -10,33 +10,32 @@ data class AutomationDefMetadata(
 
 @Serializable
 sealed interface VariableDef<T> {
+	val name: String
 	val value: T
 
 	@Serializable
 	data class TEXT(
-		override val value: String
+		override val value: String,
+		override val name: String
 	) : VariableDef<String>
 
 	@Serializable
 	data class BOOL(
-		override val value: Boolean
+		override val value: Boolean,
+		override val name: String
 	) : VariableDef<Boolean>
 
 	@Serializable
 	data class NUMBER(
-		override val value: Int
+		override val value: Int,
+		override val name: String
 	) : VariableDef<Int>
-
-	@Serializable
-	data class VARIABLE(
-		override val value: String
-	) : VariableDef<String>
 }
 
 @Serializable
 data class AutomationDef(
 	val metadata: AutomationDefMetadata,
-	val variables: Map<String, VariableDef<*>>,
+	val variables: Set<VariableDef<*>>,
 	val topLevel: List<NodeDef>,
 )
 
@@ -50,7 +49,7 @@ data class NodeDef(
 	val name: String,
 	val nodeType: NodeType,
 	val id: String = UUID.randomUUID().toString(),
-	val input: Map<String, ConfigurationEntry<*>> = emptyMap(),
-	val output: Map<String, ConfigurationEntry<*>> = emptyMap(),
+	val input: Map<String, ConfigurationValue<*>> = emptyMap(),
+	val output: Map<String, ConfigurationValue<*>> = emptyMap(),
 	val content: List<NodeDef> = emptyList(),
 )

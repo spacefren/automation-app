@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 
 class WaitAction(id: String) : ActionNode(id) {
 	override fun execute(context: ExecutionFlowContext) {
-		val duration = getInput<ConfigurationEntry.NUMBER>("Duration").value
+		val duration = getInput<ConfigurationValue.NUMBER>("Duration").value
 
 		runBlocking {
 			delay(duration.toLong())
@@ -38,7 +38,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
 		inputDefinitions = mapOf(
 			"Duration" to NodeInputDefinition(
 				description = "The duration of the pause, in milliseconds",
-				defaultValue = ConfigurationEntry.NUMBER("10000"),
+				defaultValue = ConfigurationValue.NUMBER("10000"),
 				validate = { ValidationResult.Success }
 			)
 		),

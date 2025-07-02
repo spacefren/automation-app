@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
@@ -29,7 +29,7 @@ fun EditorNodeEditScreen(
 	nodeEditState: NodeEditState,
 	editingNode: NodeDef?,
 	editingNodeData: NodeData?,
-	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
+	setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
 	resetDefaultConfig: () -> Unit,
 ) {
 	if (nodeEditState !is NodeEditState.Editing) return
@@ -72,41 +72,41 @@ fun EditorNodeEditScreen(
 fun NodeEditField(
 	name: String,
 	inputDefinition: NodeInputDefinition<*>,
-	currentValue: ConfigurationEntry<*>?, // Should be T but kotlin is just dumb
-	onValueChanged: (ConfigurationEntry<*>) -> Unit
+	currentValue: ConfigurationValue<*>?, // Should be T but kotlin is just dumb
+	onValueChanged: (ConfigurationValue<*>) -> Unit
 ) {
 	when (inputDefinition.defaultValue) {
-		is ConfigurationEntry.BOOL -> {
-			if (currentValue != null && currentValue !is ConfigurationEntry.BOOL) return
+		is ConfigurationValue.BOOL -> {
+			if (currentValue != null && currentValue !is ConfigurationValue.BOOL) return
 			UserSettingsItem(
 				item = currentValue ?: inputDefinition.defaultValue,
 				displayName = name,
 				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationEntry.BOOL) -> ValidationResult,
+				validate = inputDefinition.validate as (ConfigurationValue.BOOL) -> ValidationResult,
 				onValueChanged = onValueChanged
 			)
 		}
 
-		is ConfigurationEntry.TEXT -> {
-			if (currentValue != null && currentValue !is ConfigurationEntry.TEXT) return
+		is ConfigurationValue.TEXT -> {
+			if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
 			UserSettingsItem(
 				item = currentValue,
 				defaultItem = inputDefinition.defaultValue,
 				displayName = name,
 				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationEntry.TEXT) -> ValidationResult,
+				validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,
 				onValueChanged = onValueChanged
 			)
 		}
 
-		is ConfigurationEntry.NUMBER -> {
-			if (currentValue != null && currentValue !is ConfigurationEntry.NUMBER) return
+		is ConfigurationValue.NUMBER -> {
+			if (currentValue != null && currentValue !is ConfigurationValue.NUMBER) return
 			UserSettingsItem(
 				item = currentValue,
 				defaultItem = inputDefinition.defaultValue,
 				displayName = name,
 				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationEntry.NUMBER) -> ValidationResult,
+				validate = inputDefinition.validate as (ConfigurationValue.NUMBER) -> ValidationResult,
 				onValueChanged = onValueChanged
 			)
 		}

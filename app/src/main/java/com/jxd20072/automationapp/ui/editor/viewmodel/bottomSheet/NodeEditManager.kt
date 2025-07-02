@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +46,7 @@ class NodeEditManager @Inject constructor(
 		)
 	}
 
-	fun setConfig(name: String, config: ConfigurationEntry<*>) {
+	fun setConfig(name: String, config: ConfigurationValue<*>) {
 		val state = editingNodeState.value
 		if (state !is NodeEditState.Editing) return
 

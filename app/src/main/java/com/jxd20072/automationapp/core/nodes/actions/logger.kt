@@ -1,7 +1,7 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
 import com.jxd20072.automationapp.core.nodes.NodeData
@@ -21,7 +21,7 @@ class LoggerAction(id: String) : ActionNode(id) {
 	}
 
 	override fun execute(context: ExecutionFlowContext) {
-		val text = getInput<ConfigurationEntry.TEXT>("Text").value
+		val text = getInput<ConfigurationValue.TEXT>("Text").value
 
 		LocalSnackbarState.showSnackbar(
 			SnackbarData(
@@ -50,12 +50,12 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
 		inputDefinitions = mapOf(
 			"Text" to NodeInputDefinition(
 				description = "The text to display this is a longer, more complete description",
-				defaultValue = ConfigurationEntry.TEXT("default value"),
+				defaultValue = ConfigurationValue.TEXT("default value"),
 				validate = { ValidationResult.Success },
 			),
 			"ValidatedText" to NodeInputDefinition(
 				description = "This one doesn't accept any value!",
-				defaultValue = ConfigurationEntry.TEXT("default value 2"),
+				defaultValue = ConfigurationValue.TEXT("default value 2"),
 				validate = { textConfig ->
 					when {
 						textConfig.value.isBlank() -> ValidationResult.Error("Text can't be blank")
@@ -66,7 +66,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
 			),
 			"OtherOption" to NodeInputDefinition(
 				description = "This is a shorter description.",
-				defaultValue = ConfigurationEntry.BOOL(true),
+				defaultValue = ConfigurationValue.BOOL(true),
 				validate = { ValidationResult.Success },
 			)
 		),

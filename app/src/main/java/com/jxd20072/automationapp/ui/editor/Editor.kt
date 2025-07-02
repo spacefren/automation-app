@@ -39,15 +39,19 @@ fun AutomationEditor(
 
 	val automationManager = editorViewModel.automationManager
 	val bottomSheetManager = editorViewModel.bottomSheetManager
-	val nodeSearchManager = bottomSheetManager.nodeSelectManager
+	val nodeSelectManager = bottomSheetManager.nodeSelectManager
 	val nodeEditManager = bottomSheetManager.nodeEditManager
+	val variablesManager = bottomSheetManager.variablesManager
+	val variableEditManager = bottomSheetManager.variableEditManager
 	val dragManager = editorViewModel.dragManager
 
 	val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
 	val draggingData by dragManager.editorNodeDragState.collectAsState()
 	val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
-	val nodeSelectState by nodeSearchManager.nodeSelectState.collectAsState()
+	val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
 	val nodeEditState by nodeEditManager.editingNodeState.collectAsState()
+	val variablesUiState by variablesManager.variablesUiState.collectAsState()
+	val variableEditUiState by variableEditManager.variableEditUiState.collectAsState()
 
 	val draggableState = rememberDraggable2DState { delta ->
 		editorViewModel.dragManager.dragNodeDelta(delta)
@@ -78,6 +82,8 @@ fun AutomationEditor(
 					automationData = (automationState as AutomationUiState.Success).automationData,
 					currentTime = currentTime,
 					returnHome = returnHome,
+					openVariablesScreen = bottomSheetManager::openVariables,
+					openLogsScreen = bottomSheetManager::openLogs,
 					saveAutomation = { automationManager.trySaveAutomation(true) },
 					runAutomation = automationManager::runAutomation,
 				)
@@ -110,7 +116,12 @@ fun AutomationEditor(
 			editingNodeData = editingNodeData,
 			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
-			onNodeSearch = bottomSheetManager.nodeSelectManager::changeNodeSearchQuery,
+			onNodeSearch = nodeSelectManager::changeNodeSearchQuery,
+			variablesScreenState = variablesUiState,
+			searchVariable = variablesManager::changeSearchQuery,
+			editVariable = bottomSheetManager::openVariableEdit,
+			deleteVariable = automationManager::deleteVariable,
+			variableEditScreenState = variableEditUiState,
 			editorDragState = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,

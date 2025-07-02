@@ -26,6 +26,9 @@ class EditorViewModel @Inject constructor(
 			async {
 				automationManager.observeFileChanges()
 			}
+			async {
+				bottomSheetManager.variablesManager.watchVariableChanges()
+			}
 			automationManager.observeDraftChanges()
 		}
 	}

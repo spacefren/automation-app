@@ -34,6 +34,8 @@ fun EditorTopBar(
 	currentTime: Instant,
 	modifier: Modifier = Modifier,
 	returnHome: (saveChanges: Boolean) -> Unit,
+	openVariablesScreen: () -> Unit,
+	openLogsScreen: () -> Unit,
 	saveAutomation: () -> Unit,
 	runAutomation: () -> Unit,
 ) {
@@ -130,8 +132,9 @@ fun EditorTopBar(
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5.dp,
-				iconSize = 20.dp
-			) { }
+				iconSize = 20.dp,
+				onClick = openVariablesScreen
+			)
 
 			IconLabelButton(
 				label = "Logs",
@@ -140,8 +143,9 @@ fun EditorTopBar(
 				color = LocalTheme.colorScheme.tertiary,
 				iconColor = LocalTheme.colorScheme.onSecondary,
 				cornerRadius = 5.dp,
-				iconSize = 20.dp
-			) { }
+				iconSize = 20.dp,
+				onClick = openLogsScreen
+			)
 		}
 	}
 }

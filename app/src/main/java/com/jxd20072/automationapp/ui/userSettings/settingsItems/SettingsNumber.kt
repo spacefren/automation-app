@@ -3,26 +3,26 @@ package com.jxd20072.automationapp.ui.userSettings.settingsItems
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.BaseTextInput
 
 @Composable
 fun UserSettingsItem(
-	item: ConfigurationEntry.NUMBER?,
-	defaultItem: ConfigurationEntry.NUMBER,
+	item: ConfigurationValue.NUMBER?,
+	defaultItem: ConfigurationValue.NUMBER,
 	displayName: String,
 	description: String = "",
-	validate: ((ConfigurationEntry.NUMBER) -> ValidationResult)?,
+	validate: ((ConfigurationValue.NUMBER) -> ValidationResult)?,
 	modifier: Modifier = Modifier,
-	onValueChanged: (ConfigurationEntry.NUMBER) -> Unit
+	onValueChanged: (ConfigurationValue.NUMBER) -> Unit
 ) {
 	fun validationFunction(text: String): ValidationResult {
 		val number = text.toFloatOrNull()
 		return if (number == null) {
 			ValidationResult.Error("Only numbers allowed")
 		} else {
-			validate?.invoke(ConfigurationEntry.NUMBER(text)) ?: ValidationResult.Success
+			validate?.invoke(ConfigurationValue.NUMBER(text)) ?: ValidationResult.Success
 		}
 	}
 
@@ -37,7 +37,7 @@ fun UserSettingsItem(
 			text = item?.value ?: defaultItem.value,
 			modifier = Modifier,
 			imeAction = ImeAction.Done,
-			onTextChanged = { onValueChanged(ConfigurationEntry.NUMBER(it)) }
+			onTextChanged = { onValueChanged(ConfigurationValue.NUMBER(it)) }
 		)
 	}
 }

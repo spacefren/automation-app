@@ -1,6 +1,6 @@
 package com.jxd20072.automationapp.core.nodes
 
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -16,7 +16,7 @@ data class NodeData(
 	val displayName: String,
 	val name: String,
 	val category: String,
-	val editorActionDescription: (input: Map<String, ConfigurationEntry<*>>) -> List<String>,
+	val editorActionDescription: (input: Map<String, ConfigurationValue<*>>) -> List<String>,
 	val description: String,
 	val icon: Int,
 	val inputDefinitions: Map<String, NodeInputDefinition<*>>,
@@ -24,10 +24,10 @@ data class NodeData(
 )
 
 abstract class BaseNode(id: String) {
-	var input: Map<String, ConfigurationEntry<*>> = emptyMap()
+	var input: Map<String, ConfigurationValue<*>> = emptyMap()
 	var content: List<NodeDef> = emptyList()
 
-	inline fun <reified T> getInput(inputEntry: String): T where T : ConfigurationEntry<*> {
+	inline fun <reified T> getInput(inputEntry: String): T where T : ConfigurationValue<*> {
 		val entry = this.input[inputEntry]
 		if (entry is T) {
 			return entry

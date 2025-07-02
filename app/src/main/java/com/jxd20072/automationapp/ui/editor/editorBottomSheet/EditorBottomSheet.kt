@@ -9,7 +9,7 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
@@ -18,6 +18,8 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSh
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariableEditScreenState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
@@ -36,8 +38,15 @@ fun EditorBottomSheet(
 	nodeEditScreenState: NodeEditState,
 	editingNode: NodeDef?,
 	editingNodeData: NodeData?,
-	setNodeConfig: (name: String, config: ConfigurationEntry<*>) -> Unit,
+	setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
 	resetDefaultNodeConfig: () -> Unit,
+	// Variables screen
+	variablesScreenState: VariablesScreenState,
+	searchVariable: (query: String) -> Unit,
+	editVariable: (name: String) -> Unit,
+	deleteVariable: (name: String) -> Unit,
+	// Variable edit
+	variableEditScreenState: VariableEditScreenState,
 	// Dragging
 	editorDragState: EditorNodeDragState,
 	draggableState: Draggable2DState,
@@ -110,7 +119,24 @@ fun EditorBottomSheet(
 						)
 					}
 
-					else -> {}
+					state.screen == EditorBottomSheetScreen.VARIABLES -> {
+						EditorVariablesScreen(
+							variablesScreenState = variablesScreenState,
+							searchVariable = searchVariable,
+							editVariable = editVariable,
+							deleteVariable = deleteVariable
+						)
+					}
+
+					state.screen == EditorBottomSheetScreen.VARIABLE_EDIT -> {
+
+					}
+
+					state.screen == EditorBottomSheetScreen.LOGS -> {
+						EditorLogsScreen()
+					}
+
+					state.screen == EditorBottomSheetScreen.EMPTY -> {}
 				}
 			}
 		}

@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.data.repository
 
-import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
@@ -9,7 +8,7 @@ import com.jxd20072.automationapp.core.data.copy
 import com.jxd20072.automationapp.core.data.local.AutomationsStore
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
-import com.jxd20072.automationapp.core.data.model.ConfigurationEntry
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
@@ -28,25 +27,26 @@ import javax.inject.Inject
 class AutomationsRepository @Inject constructor(
 	private val automationsStore: AutomationsStore,
 	private val automationsDataStore: DataStore<AutomationsDataMap>,
-	private val context: Context
 ) {
 	private val testingAutomationDef = AutomationDef(
 		metadata = AutomationDefMetadata(
 			version = 0
 		),
-		variables = mapOf(
-			"test" to VariableDef.TEXT("textVariableValue"),
+		variables = setOf(
+			VariableDef.TEXT(name = "firstVar", value = "textVariableValue"),
+			VariableDef.BOOL(name = "secondVar", value = true),
+			VariableDef.NUMBER(name = "justThird", value = 10)
 		),
 		topLevel = listOf(
 			NodeDef(
 				name = "wait",
 				nodeType = NodeType.TRIGGER,
-				input = mapOf("Duration" to ConfigurationEntry.NUMBER("3000")),
+				input = mapOf("Duration" to ConfigurationValue.NUMBER("3000")),
 				content = listOf(
 					NodeDef(
 						name = "log",
 						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationEntry.TEXT("I waited for this")),
+						input = mapOf("Text" to ConfigurationValue.TEXT("I waited for this")),
 					),
 				)
 			),
@@ -58,7 +58,7 @@ class AutomationsRepository @Inject constructor(
 					NodeDef(
 						name = "log",
 						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationEntry.TEXT("I didn't wait for this")),
+						input = mapOf("Text" to ConfigurationValue.TEXT("I didn't wait for this")),
 					),
 				)
 			),
@@ -69,12 +69,12 @@ class AutomationsRepository @Inject constructor(
 					NodeDef(
 						name = "log",
 						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationEntry.TEXT("1")),
+						input = mapOf("Text" to ConfigurationValue.TEXT("1")),
 					),
 					NodeDef(
 						name = "log",
 						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationEntry.TEXT("2")),
+						input = mapOf("Text" to ConfigurationValue.TEXT("2")),
 					),
 				)
 			),
