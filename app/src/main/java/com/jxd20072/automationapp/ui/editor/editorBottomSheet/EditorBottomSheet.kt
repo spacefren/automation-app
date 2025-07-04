@@ -10,15 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
-import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariableEditScreenState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
@@ -35,18 +36,20 @@ fun EditorBottomSheet(
 	nodeSelectState: NodeSelectState,
 	onCreateClick: (nodeData: NodeData) -> Unit,
 	// Node edit screen
-	nodeEditScreenState: NodeEditState,
-	editingNode: NodeDef?,
-	editingNodeData: NodeData?,
+	nodeEditScreenState: NodeEditState?,
 	setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
 	resetDefaultNodeConfig: () -> Unit,
 	// Variables screen
 	variablesScreenState: VariablesScreenState,
+	filteredVariables: Set<VariableDef>,
 	searchVariable: (query: String) -> Unit,
 	editVariable: (name: String) -> Unit,
 	deleteVariable: (name: String) -> Unit,
 	// Variable edit
-	variableEditScreenState: VariableEditScreenState,
+	editingVariableDef: VariableDef?,
+	validateVariableName: (name: String) -> ValidationResult,
+	changeVariableName: (newName: String) -> Unit,
+	changeVariableValue: (newValue: VariableDefValue<*>) -> Unit,
 	// Dragging
 	editorDragState: EditorNodeDragState,
 	draggableState: Draggable2DState,
@@ -112,8 +115,6 @@ fun EditorBottomSheet(
 					state.screen == EditorBottomSheetScreen.NODE_EDIT -> {
 						EditorNodeEditScreen(
 							nodeEditState = nodeEditScreenState,
-							editingNode = editingNode,
-							editingNodeData = editingNodeData,
 							setNodeConfig = setNodeConfig,
 							resetDefaultConfig = resetDefaultNodeConfig,
 						)
@@ -122,6 +123,7 @@ fun EditorBottomSheet(
 					state.screen == EditorBottomSheetScreen.VARIABLES -> {
 						EditorVariablesScreen(
 							variablesScreenState = variablesScreenState,
+							filteredVariables = filteredVariables,
 							searchVariable = searchVariable,
 							editVariable = editVariable,
 							deleteVariable = deleteVariable
@@ -129,7 +131,12 @@ fun EditorBottomSheet(
 					}
 
 					state.screen == EditorBottomSheetScreen.VARIABLE_EDIT -> {
-
+						VariableEditScreen(
+							editingVariable = editingVariableDef,
+							validateVariableName = validateVariableName,
+							changeVariableName = changeVariableName,
+							changeVariableValue = changeVariableValue
+						)
 					}
 
 					state.screen == EditorBottomSheetScreen.LOGS -> {

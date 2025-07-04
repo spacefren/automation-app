@@ -1,70 +1,43 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
-import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
+import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-
-@Immutable
-sealed interface VariableEditScreenState {
-	data object NotEditing : VariableEditScreenState
-	data class Editing(
-		val variableDef: VariableDef<*>
-	) : VariableEditScreenState
-}
 
 @Singleton
 class VariableEditManager @Inject constructor(
 	private val automationManager: AutomationManager
 ) {
-	private val _variableEditUiState = MutableStateFlow<VariableEditScreenState>(
-		VariableEditScreenState.NotEditing
-	)
-	val variableEditUiState = _variableEditUiState.asStateFlow()
+	val editingVariableID = MutableStateFlow<String?>(null)
+	val editingVariableDef = combine(
+		automationManager.automationUiState.map { automationState ->
+			if (automationState !is AutomationUiState.Success) null
+			else automationState.automationDraft.variables
+		},
+		editingVariableID
+	) { variables, editingVariableName ->
+		variables?.find { it.id == editingVariableName }
+	}
 
-	fun startVariableEdit(variableName: String) {
-		val variableDef = automationManager.findVariable(variableName)
-		if (variableDef == null) return
-		_variableEditUiState.update { VariableEditScreenState.Editing(variableDef) }
+	fun startVariableEdit(variableId: String) {
+		editingVariableID.value = variableId
 	}
 
 	fun changeName(newName: String) {
-		val state = variableEditUiState.value
-		if (state !is VariableEditScreenState.Editing) return
-		automationManager.editVariable(
-			state.variableDef.name,
-			when (state.variableDef) { // Kotlin type system moment
-				is VariableDef.BOOL -> state.variableDef.copy(name = newName)
-				is VariableDef.TEXT -> state.variableDef.copy(name = newName)
-				is VariableDef.NUMBER -> state.variableDef.copy(name = newName)
-			}
-		)
-		// TODO: Should also rename any existing references
+		val variableID = editingVariableID.value
+		if (variableID == null) return
+		automationManager.renameVariable(variableID, newName)
 	}
 
-	fun <T> changeValue(id: String, newValue: T) {
-		val state = variableEditUiState.value
-		if (state !is VariableEditScreenState.Editing) return
-		if (!state.variableDef.value::class.isInstance(newValue)) return
+	fun changeValue(newValue: VariableDefValue<*>) {
+		val variableID = editingVariableID.value
+		if (variableID == null) return
 
-		automationManager.editVariable(
-			state.variableDef.name,
-			when (state.variableDef) { // Kotlin type system moment
-				is VariableDef.BOOL -> state.variableDef.copy(value = newValue as Boolean)
-				is VariableDef.TEXT -> state.variableDef.copy(value = newValue as String)
-				is VariableDef.NUMBER -> state.variableDef.copy(value = newValue as Int)
-			}
-		)
-	}
-
-	fun swapVariable(id: String, newVariable: VariableDef<*>) {
-		val state = variableEditUiState.value
-		if (state !is VariableEditScreenState.Editing) return
-		automationManager.deleteVariable(id)
-		automationManager.editVariable(id, newVariable)
+		automationManager.changeVariableValue(variableID, newValue)
 	}
 }

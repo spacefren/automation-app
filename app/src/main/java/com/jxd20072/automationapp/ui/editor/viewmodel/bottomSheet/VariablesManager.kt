@@ -1,11 +1,11 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
-import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -16,7 +16,6 @@ import javax.inject.Singleton
 @Immutable
 data class VariablesScreenState(
 	val searchQuery: String = "",
-	val filteredVariables: Set<VariableDef<*>> = emptySet()
 )
 
 @Singleton
@@ -24,41 +23,23 @@ class VariablesManager @Inject constructor(
 	private val automationManager: AutomationManager
 ) {
 	private val _variablesUiState = MutableStateFlow(
-		VariablesScreenState(
-			filteredVariables = getVariables() ?: emptySet()
-		)
+		VariablesScreenState()
 	)
 	val variablesUiState = _variablesUiState.asStateFlow()
 
-	suspend fun watchVariableChanges() {
+	val filteredVariables = combine(
 		automationManager.automationUiState
 			.map { if (it is AutomationUiState.Success) it.automationDraft.variables else null }
-			.distinctUntilChanged()
-			.collect { if (it != null) updateVariableList() }
-	}
-
-	fun getVariables(): Set<VariableDef<*>>? {
-		val automationUiState = automationManager.automationUiState.value
-		if (automationUiState !is AutomationUiState.Success) return null
-
-		val allVariables = automationUiState.automationDraft.variables
-		val searchQuery = variablesUiState.value.searchQuery
-
-		if (searchQuery.isBlank()) {
-			return allVariables
-		}
-
-		return allVariables
-			.filter { FuzzySearch.partialRatio(searchQuery, it.name.lowercase()) > 50 }
-			.toSet()
-	}
-
-	fun updateVariableList() {
-		_variablesUiState.update { state ->
-			state.copy(
-				filteredVariables = getVariables() ?: emptySet()
-			)
-		}
+			.distinctUntilChanged(),
+		variablesUiState
+	) { variables, state ->
+		if (state.searchQuery.isBlank()) {
+			variables
+		} else {
+			variables
+				?.filter { FuzzySearch.partialRatio(state.searchQuery, it.name.lowercase()) > 50 }
+				?.toSet()
+		} ?: emptySet()
 	}
 
 	fun changeSearchQuery(query: String) {
@@ -67,6 +48,5 @@ class VariablesManager @Inject constructor(
 				searchQuery = query
 			)
 		}
-		updateVariableList()
 	}
 }

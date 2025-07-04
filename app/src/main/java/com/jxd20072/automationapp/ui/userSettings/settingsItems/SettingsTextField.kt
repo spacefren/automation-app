@@ -10,8 +10,7 @@ import com.jxd20072.automationapp.ui.shared.BaseTextInput
 
 @Composable
 fun UserSettingsItem(
-	item: ConfigurationValue.TEXT?,
-	defaultItem: ConfigurationValue.TEXT,
+	item: ConfigurationValue.TEXT,
 	displayName: String,
 	description: String = "",
 	validate: ((ConfigurationValue.TEXT) -> ValidationResult)?,
@@ -21,12 +20,12 @@ fun UserSettingsItem(
 	VerticalUserSettingsItemContainer(
 		displayName = displayName,
 		description = description,
-		validationResult = validate?.invoke(item ?: defaultItem),
+		validationResult = validate?.invoke(item),
 		modifier = modifier
 	) {
 		BaseTextInput(
 			placeholderText = "",
-			text = item?.value ?: defaultItem.value,
+			text = item.value,
 			modifier = Modifier.fillMaxWidth(),
 			imeAction = ImeAction.Done,
 			onTextChanged = { onValueChanged(ConfigurationValue.TEXT(it)) }

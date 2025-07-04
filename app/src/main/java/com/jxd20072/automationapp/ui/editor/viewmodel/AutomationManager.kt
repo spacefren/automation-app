@@ -6,10 +6,12 @@ import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.utils.findAndReplace
 import com.jxd20072.automationapp.ui.utils.findAndTransform
 import com.jxd20072.automationapp.ui.utils.insertAt
@@ -195,39 +197,61 @@ class AutomationManager @Inject constructor(
 		}
 	}
 
-	fun findVariable(name: String): VariableDef<*>? {
+	fun findVariable(id: String): VariableDef? {
 		val state = automationUiState.value
 		if (state !is AutomationUiState.Success) return null
 
-		return state.automationDraft.variables.find { it.name == name }
+		return state.automationDraft.variables.find { it.id == id }
 	}
 
-	fun editVariable(name: String, newData: VariableDef<*>) {
+	fun addVariable(variable: VariableDef) {
+		if (findVariable(variable.name) != null) return
+
+		_automationUiState.update { data ->
+			if (data !is AutomationUiState.Success) return@update data
+
+			data.copy(
+				automationDraft = data.automationDraft.copy(
+					variables = data.automationDraft.variables.toSet() + variable
+				)
+			)
+		}
+	}
+
+	fun deleteVariable(id: String) {
 		_automationUiState.update { data ->
 			if (data !is AutomationUiState.Success) return@update data
 
 			data.copy(
 				automationDraft = data.automationDraft.copy(
 					variables = data.automationDraft.variables
-						.filter { it.name != name }
+						.filter { it.id != id }
 						.toSet()
-						+ newData
 				)
 			)
 		}
 	}
 
-	fun deleteVariable(name: String) {
-		_automationUiState.update { data ->
-			if (data !is AutomationUiState.Success) return@update data
+	fun renameVariable(id: String, newName: String) {
+		val data = automationUiState.value
+		if (data !is AutomationUiState.Success) return
+		val variable = findVariable(id) ?: return
 
-			data.copy(
-				automationDraft = data.automationDraft.copy(
-					variables = data.automationDraft.variables
-						.filter { it.name != name }
-						.toSet()
-				)
-			)
-		}
+		deleteVariable(id)
+		addVariable(variable.copy(name = newName))
+	}
+
+	fun changeVariableValue(id: String, newValue: VariableDefValue<*>) {
+		val data = automationUiState.value
+		if (data !is AutomationUiState.Success) return
+		val variable = findVariable(id) ?: return
+
+		deleteVariable(id)
+		addVariable(variable.copy(value = newValue))
+	}
+
+	fun validateVariableName(name: String): ValidationResult {
+		// TODO
+		return ValidationResult.Success
 	}
 }

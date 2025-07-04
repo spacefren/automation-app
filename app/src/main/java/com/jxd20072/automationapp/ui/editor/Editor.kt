@@ -10,18 +10,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
 import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
@@ -49,25 +44,13 @@ fun AutomationEditor(
 	val draggingData by dragManager.editorNodeDragState.collectAsState()
 	val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
 	val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
-	val nodeEditState by nodeEditManager.editingNodeState.collectAsState()
+	val nodeEditState by nodeEditManager.editingNodeState.collectAsState(null)
 	val variablesUiState by variablesManager.variablesUiState.collectAsState()
-	val variableEditUiState by variableEditManager.variableEditUiState.collectAsState()
+	val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
+	val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
 
 	val draggableState = rememberDraggable2DState { delta ->
 		editorViewModel.dragManager.dragNodeDelta(delta)
-	}
-
-	var editingNode: NodeDef? = null
-	var editingNodeData: NodeData? = null
-	if (nodeEditState is NodeEditState.Editing) {
-		editingNode = automationManager.findNode((nodeEditState as NodeEditState.Editing).nodeID)
-		if (editingNode != null) {
-			editingNodeData = when (editingNode.nodeType) {
-				NodeType.TRIGGER -> triggerNodes[editingNode.name]?.data
-				NodeType.ACTION -> actionNodes[editingNode.name]?.data
-				else -> null
-			}
-		}
 	}
 
 	if (automationState is AutomationUiState.Success) {
@@ -112,16 +95,18 @@ fun AutomationEditor(
 			bottomSheetState = bottomSheetState,
 			nodeSelectState = nodeSelectState,
 			nodeEditScreenState = nodeEditState,
-			editingNode = editingNode,
-			editingNodeData = editingNodeData,
 			setNodeConfig = nodeEditManager::setConfig,
 			resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
 			onNodeSearch = nodeSelectManager::changeNodeSearchQuery,
 			variablesScreenState = variablesUiState,
+			filteredVariables = filteredVariables,
 			searchVariable = variablesManager::changeSearchQuery,
 			editVariable = bottomSheetManager::openVariableEdit,
 			deleteVariable = automationManager::deleteVariable,
-			variableEditScreenState = variableEditUiState,
+			editingVariableDef = editingVariableDef,
+			validateVariableName = automationManager::validateVariableName,
+			changeVariableName = variableEditManager::changeName,
+			changeVariableValue = variableEditManager::changeValue,
 			editorDragState = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,

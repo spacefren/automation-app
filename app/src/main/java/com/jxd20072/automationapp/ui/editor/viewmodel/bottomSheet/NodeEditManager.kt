@@ -2,41 +2,58 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet
 
 import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationManager
+import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Immutable
-sealed interface NodeEditState {
-	data object NotEditing : NodeEditState
-	data class Editing(
-		val nodeID: String,
-	) : NodeEditState
-}
+data class NodeEditState(
+	val nodeDef: NodeDef,
+	val nodeData: NodeData,
+)
 
 @Singleton
 class NodeEditManager @Inject constructor(
 	private val automationManager: AutomationManager
 ) {
-	private val _editingNodeState = MutableStateFlow<NodeEditState>(NodeEditState.NotEditing)
-	val editingNodeState = _editingNodeState.asStateFlow()
+	private val editingNodeID = MutableStateFlow<String?>(null)
+	val editingNodeState = combine(
+		automationManager.automationUiState.map { automationState ->
+			if (automationState !is AutomationUiState.Success) null
+			else automationState.automationDraft.topLevel +
+				automationState.automationDraft.topLevel.map { it.content }.flatten()
+		},
+		editingNodeID
+	) { nodes, nodeID ->
+		val nodeDef = nodes?.find { it.id == nodeID }
+		val nodeData = when (nodeDef?.nodeType) {
+			NodeType.ACTION -> actionNodes[nodeDef.name]?.data
+			NodeType.TRIGGER -> triggerNodes[nodeDef.name]?.data
+			else -> null
+		}
+		if (nodeDef == null || nodeData == null) return@combine null
+		NodeEditState(
+			nodeDef = nodeDef,
+			nodeData = nodeData
+		)
+	}
 
 	fun startEditNode(nodeID: String) {
-		_editingNodeState.update {
-			NodeEditState.Editing(
-				nodeID = nodeID
-			)
-		}
+		editingNodeID.value = nodeID
 	}
 
 	fun resetDefaultConfig() {
-		val state = editingNodeState.value
-		if (state !is NodeEditState.Editing) return
-
-		val nodeDef = automationManager.findNode(state.nodeID) ?: return
+		val nodeID = editingNodeID.value ?: return
+		val nodeDef = automationManager.findNode(nodeID) ?: return
 
 		automationManager.editNode(
 			nodeDef.id, nodeDef.copy(
@@ -47,10 +64,8 @@ class NodeEditManager @Inject constructor(
 	}
 
 	fun setConfig(name: String, config: ConfigurationValue<*>) {
-		val state = editingNodeState.value
-		if (state !is NodeEditState.Editing) return
-
-		val nodeDef = automationManager.findNode(state.nodeID) ?: return
+		val nodeID = editingNodeID.value ?: return
+		val nodeDef = automationManager.findNode(nodeID) ?: return
 
 		automationManager.editNode(
 			nodeDef.id, nodeDef.copy(

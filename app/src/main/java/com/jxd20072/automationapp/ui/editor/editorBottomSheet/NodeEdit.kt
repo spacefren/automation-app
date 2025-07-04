@@ -14,9 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
-import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
@@ -26,14 +24,11 @@ import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 
 @Composable
 fun EditorNodeEditScreen(
-	nodeEditState: NodeEditState,
-	editingNode: NodeDef?,
-	editingNodeData: NodeData?,
+	nodeEditState: NodeEditState?,
 	setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
 	resetDefaultConfig: () -> Unit,
 ) {
-	if (nodeEditState !is NodeEditState.Editing) return
-	if (editingNode == null || editingNodeData == null) return
+	if (nodeEditState == null) return
 
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -48,7 +43,7 @@ fun EditorNodeEditScreen(
 			modifier = Modifier.fillMaxWidth()
 		) {
 			Text(
-				text = "Edit " + when (editingNode.nodeType) {
+				text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
 					NodeType.ACTION -> "action"
 					NodeType.TRIGGER -> "trigger"
 					NodeType.FUNCTION -> "function"
@@ -59,10 +54,10 @@ fun EditorNodeEditScreen(
 			SettingsResetButton(resetDefaultConfig)
 		}
 
-		editingNodeData.inputDefinitions.forEach {
-			val name = it.key
-			val inputDef = it.value
-			val currentValue = editingNode.input[name]
+		nodeEditState.nodeData.inputDefinitions.forEach { inputDef ->
+			val name = inputDef.key
+			val inputDef = inputDef.value
+			val currentValue = nodeEditState.nodeDef.input[name]
 			NodeEditField(name, inputDef, currentValue) { setNodeConfig(name, it) }
 		}
 	}
@@ -90,8 +85,7 @@ fun NodeEditField(
 		is ConfigurationValue.TEXT -> {
 			if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
 			UserSettingsItem(
-				item = currentValue,
-				defaultItem = inputDefinition.defaultValue,
+				item = currentValue ?: inputDefinition.defaultValue,
 				displayName = name,
 				description = inputDefinition.description,
 				validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,

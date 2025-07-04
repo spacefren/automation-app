@@ -5,7 +5,7 @@ import java.time.Instant
 
 class ExecutionFlowContext(
 	val scope: String,
-	initialVariables: Set<VariableDef<*>>,
+	initialVariables: Set<VariableDef>,
 ) {
 	private val variables = initialVariables.toMutableSet()
 	lateinit var executionStart: Instant
@@ -18,11 +18,11 @@ class ExecutionFlowContext(
 		executionStart = Instant.now()
 	}
 
-	fun getVariables(): Set<VariableDef<*>> {
+	fun getVariables(): Set<VariableDef> {
 		return variables
 	}
 
-	fun getVariable(name: String): VariableDef<*>? {
+	fun getVariable(name: String): VariableDef? {
 		return variables.find { it.name == name }
 	}
 }

@@ -64,7 +64,6 @@ class BottomSheetManager @Inject constructor(
 	}
 
 	fun openVariables() {
-		variablesManager.updateVariableList()
 		_bottomSheetState.update {
 			EditorBottomSheetState.Open(
 				screen = EditorBottomSheetScreen.VARIABLES

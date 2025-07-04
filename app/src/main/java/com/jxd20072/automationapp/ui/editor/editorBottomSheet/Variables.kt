@@ -30,14 +30,15 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun <T> EditorVariableEntry(
-	variableDef: VariableDef<T>,
+fun EditorVariableEntry(
+	variableDef: VariableDef,
 	modifier: Modifier = Modifier,
 	editVariable: () -> Unit,
 	deleteVariable: () -> Unit
@@ -82,10 +83,10 @@ fun <T> EditorVariableEntry(
 				) {
 					Icon(
 						painter = painterResource(
-							when (variableDef) {
-								is VariableDef.BOOL -> R.drawable.round_bool_24
-								is VariableDef.TEXT -> R.drawable.round_text_24
-								is VariableDef.NUMBER -> R.drawable.round_number_24
+							when (variableDef.value) {
+								is VariableDefValue.BOOL -> R.drawable.round_bool_24
+								is VariableDefValue.TEXT -> R.drawable.round_text_24
+								is VariableDefValue.NUMBER -> R.drawable.round_number_24
 							}
 						),
 						contentDescription = "",
@@ -105,7 +106,7 @@ fun <T> EditorVariableEntry(
 			)
 			Box(modifier = Modifier.weight(1f)) {
 				Text(
-					text = variableDef.value.toString(),
+					text = variableDef.value.value.toString(),
 					style = LocalTheme.typography.body.copy(
 						textAlign = TextAlign.End
 					),
@@ -123,6 +124,7 @@ fun <T> EditorVariableEntry(
 @Composable
 fun EditorVariablesScreen(
 	variablesScreenState: VariablesScreenState,
+	filteredVariables: Set<VariableDef>,
 	editVariable: (name: String) -> Unit,
 	deleteVariable: (name: String) -> Unit,
 	searchVariable: (String) -> Unit
@@ -150,11 +152,11 @@ fun EditorVariablesScreen(
 			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier.fillMaxSize()
 		) {
-			items(variablesScreenState.filteredVariables.sortedBy { it.name }, { it.name }) {
+			items(filteredVariables.sortedBy { it.name }, { it.name }) {
 				EditorVariableEntry(
 					variableDef = it,
-					editVariable = { editVariable(it.name) },
-					deleteVariable = { deleteVariable(it.name) },
+					editVariable = { editVariable(it.id) },
+					deleteVariable = { deleteVariable(it.id) },
 					modifier = Modifier
 						.animateItem()
 				)
