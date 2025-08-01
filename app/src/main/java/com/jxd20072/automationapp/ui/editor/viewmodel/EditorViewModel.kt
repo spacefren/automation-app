@@ -3,6 +3,8 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.BottomSheetManager
 import com.jxd20072.automationapp.ui.utils.TimeManager
@@ -59,5 +61,14 @@ class EditorViewModel @Inject constructor(
 		} else {
 			bottomSheetManager.closeBottomSheet()
 		}
+	}
+
+	fun onCreateVariable() {
+		val newVariable = VariableDef(
+			name = "Unnamed variable",
+			value = VariableDefValue.NUMBER("0"),
+		)
+		automationManager.addVariable(newVariable)
+		bottomSheetManager.openVariableEdit(newVariable.id, true)
 	}
 }

@@ -35,7 +35,7 @@ class AutomationsRepository @Inject constructor(
 		),
 		variables = setOf(
 			VariableDef(name = "firstVar", value = VariableDefValue.TEXT("textVariableValue")),
-			VariableDef(name = "secondVar", value = VariableDefValue.NUMBER(10)),
+			VariableDef(name = "secondVar", value = VariableDefValue.NUMBER("10")),
 			VariableDef(name = "justThird", value = VariableDefValue.BOOL(true))
 		),
 		topLevel = listOf(

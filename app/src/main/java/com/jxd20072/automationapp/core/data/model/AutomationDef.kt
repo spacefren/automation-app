@@ -21,18 +21,18 @@ sealed interface VariableDefValue<T> {
 
 	@Serializable
 	data class TEXT(
-		override val value: String,
+		override val value: String = "",
 	) : VariableDefValue<String>
 
 	@Serializable
 	data class BOOL(
-		override val value: Boolean,
+		override val value: Boolean = true,
 	) : VariableDefValue<Boolean>
 
 	@Serializable
 	data class NUMBER(
-		override val value: Int,
-	) : VariableDefValue<Int>
+		override val value: String = "0",
+	) : VariableDefValue<String>
 }
 
 @Serializable

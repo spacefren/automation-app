@@ -29,7 +29,6 @@ fun UserSettingsItemContainerContent(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
 		modifier = modifier
-			.widthIn(max = 220.dp)
 	) {
 		Text(
 			text = displayName,
@@ -67,8 +66,9 @@ fun HorizontalUserSettingsItemContainer(
 				UserSettingsItemContainerContent(
 					displayName = displayName,
 					description = description,
+					modifier = Modifier.widthIn(max = 220.dp)
 				)
-				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel3))
+				Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
 				Box(
 					content = content,
 					modifier = Modifier

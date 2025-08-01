@@ -47,6 +47,7 @@ fun AutomationEditor(
 	val nodeEditState by nodeEditManager.editingNodeState.collectAsState(null)
 	val variablesUiState by variablesManager.variablesUiState.collectAsState()
 	val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
+	val variableEditState by variableEditManager.variableEditState.collectAsState()
 	val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
 
 	val draggableState = rememberDraggable2DState { delta ->
@@ -103,6 +104,8 @@ fun AutomationEditor(
 			searchVariable = variablesManager::changeSearchQuery,
 			editVariable = bottomSheetManager::openVariableEdit,
 			deleteVariable = automationManager::deleteVariable,
+			createVariable = editorViewModel::onCreateVariable,
+			variableEditState = variableEditState,
 			editingVariableDef = editingVariableDef,
 			validateVariableName = automationManager::validateVariableName,
 			changeVariableName = variableEditManager::changeName,

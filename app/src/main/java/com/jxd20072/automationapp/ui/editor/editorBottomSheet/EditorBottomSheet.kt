@@ -20,6 +20,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSh
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariableEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.Layer
 import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
@@ -45,7 +46,9 @@ fun EditorBottomSheet(
 	searchVariable: (query: String) -> Unit,
 	editVariable: (name: String) -> Unit,
 	deleteVariable: (name: String) -> Unit,
+	createVariable: () -> Unit,
 	// Variable edit
+	variableEditState: VariableEditState,
 	editingVariableDef: VariableDef?,
 	validateVariableName: (name: String) -> ValidationResult,
 	changeVariableName: (newName: String) -> Unit,
@@ -126,7 +129,8 @@ fun EditorBottomSheet(
 							filteredVariables = filteredVariables,
 							searchVariable = searchVariable,
 							editVariable = editVariable,
-							deleteVariable = deleteVariable
+							deleteVariable = deleteVariable,
+							createVariable = createVariable
 						)
 					}
 
@@ -135,7 +139,8 @@ fun EditorBottomSheet(
 							editingVariable = editingVariableDef,
 							validateVariableName = validateVariableName,
 							changeVariableName = changeVariableName,
-							changeVariableValue = changeVariableValue
+							changeVariableValue = changeVariableValue,
+							variableEditState = variableEditState
 						)
 					}
 

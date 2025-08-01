@@ -71,13 +71,13 @@ class BottomSheetManager @Inject constructor(
 		}
 	}
 
-	fun openVariableEdit(variableName: String) {
+	fun openVariableEdit(variableID: String, isCreating: Boolean = false) {
 		_bottomSheetState.update {
 			EditorBottomSheetState.Open(
 				screen = EditorBottomSheetScreen.VARIABLE_EDIT
 			)
 		}
-		variableEditManager.startVariableEdit(variableName)
+		variableEditManager.startVariableEdit(variableID, isCreating)
 	}
 
 	fun openLogs() {

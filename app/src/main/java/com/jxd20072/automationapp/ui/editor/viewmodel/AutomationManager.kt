@@ -205,7 +205,7 @@ class AutomationManager @Inject constructor(
 	}
 
 	fun addVariable(variable: VariableDef) {
-		if (findVariable(variable.name) != null) return
+		if (findVariable(variable.id) != null) return
 
 		_automationUiState.update { data ->
 			if (data !is AutomationUiState.Success) return@update data

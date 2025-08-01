@@ -26,12 +26,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
+import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -100,7 +102,7 @@ fun EditorVariableEntry(
 				)
 			}
 			Icon(
-				painter = painterResource(R.drawable.round_arrow_forward_24),
+				painter = painterResource(R.drawable.round_equal_24),
 				contentDescription = "",
 				modifier = Modifier.size(iconSize)
 			)
@@ -127,7 +129,8 @@ fun EditorVariablesScreen(
 	filteredVariables: Set<VariableDef>,
 	editVariable: (name: String) -> Unit,
 	deleteVariable: (name: String) -> Unit,
-	searchVariable: (String) -> Unit
+	searchVariable: (String) -> Unit,
+	createVariable: () -> Unit
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -141,18 +144,32 @@ fun EditorVariablesScreen(
 			style = LocalTheme.typography.subTitle,
 			color = LocalTheme.colorScheme.onBackground
 		)
-		SearchBar(
-			searchText = "Search variables",
-			queryText = variablesScreenState.searchQuery,
-			autoFocus = false,
-			onSearch = searchVariable
-		)
+		Row(
+			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+		) {
+			SearchBar(
+				searchText = "Search variables",
+				queryText = variablesScreenState.searchQuery,
+				autoFocus = false,
+				onSearch = searchVariable,
+				modifier = Modifier.weight(1f)
+			)
+			IconButton(
+				color = LocalTheme.colorScheme.surface,
+				iconColor = LocalTheme.colorScheme.onSurface,
+				drawableRes = R.drawable.round_add_24,
+				cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+				size = 37.dp,
+				padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
+				onClick = createVariable
+			)
+		}
 		LazyColumn(
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
 			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier.fillMaxSize()
 		) {
-			items(filteredVariables.sortedBy { it.name }, { it.name }) {
+			items(filteredVariables.sortedBy { it.name }, { it.id }) {
 				EditorVariableEntry(
 					variableDef = it,
 					editVariable = { editVariable(it.id) },
