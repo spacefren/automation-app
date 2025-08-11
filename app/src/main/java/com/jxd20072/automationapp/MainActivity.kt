@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import com.jxd20072.automationapp.ui.AutomationApp
 import com.jxd20072.automationapp.ui.shared.SnackbarHost
 import com.jxd20072.automationapp.ui.theme.AutomationAppTheme
+import com.jxd20072.automationapp.ui.utils.providers.PermissionRequestProvider
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,8 +18,10 @@ class MainActivity : ComponentActivity() {
 		enableEdgeToEdge()
 		setContent {
 			AutomationAppTheme(dynamicColor = false) {
-				SnackbarHost()
-				AutomationApp()
+				PermissionRequestProvider {
+					SnackbarHost()
+					AutomationApp()
+				}
 			}
 		}
 	}

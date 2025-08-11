@@ -42,7 +42,8 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
 				validate = { ValidationResult.Success }
 			)
 		),
-		outputDefinitions = emptyMap()
+		outputDefinitions = emptyMap(),
+		permissions = emptyList()
 	),
 	factory = { WaitAction(it) }
 )

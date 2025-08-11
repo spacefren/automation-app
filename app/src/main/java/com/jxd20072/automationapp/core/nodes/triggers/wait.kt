@@ -51,7 +51,8 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
 				validate = { ValidationResult.Success }
 			)
 		),
-		outputDefinitions = emptyMap()
+		outputDefinitions = emptyMap(),
+		permissions = emptyList()
 	),
 	factory = { WaitTrigger(it) }
 )

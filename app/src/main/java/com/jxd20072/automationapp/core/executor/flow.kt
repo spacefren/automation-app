@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.core.executor
 
+import android.content.Context
 import android.util.Log
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
@@ -18,18 +19,16 @@ private const val TAG = "APP_ExecutionFlow"
 
 class ExecutionFlow(
 	private val automationDef: AutomationDef,
-	val scope: String = "main"
+	private val appContext: Context,
 ) {
-	lateinit var context: ExecutionFlowContext
-
 	// TODO: Rework this. Should all actions be built here or inside the content of every function/trigger?
 	private var actions: Set<ActionNode> = emptySet()
 	private var triggers: Set<TriggerNode> = emptySet()
 
 	private fun createContext(): ExecutionFlowContext {
 		return ExecutionFlowContext(
-			scope = scope,
 			initialVariables = automationDef.variables,
+			appContext = appContext
 		)
 	}
 
@@ -63,15 +62,10 @@ class ExecutionFlow(
 		return trigger
 	}
 
-	private fun resetState() {
-		context = createContext()
-	}
-
 	suspend fun startExecution() {
 		Log.i(TAG, "STARTING EXECUTION")
 
-		// Setup
-		resetState()
+		val context = createContext()
 		context.onStartExecution()
 
 		coroutineScope {
@@ -80,7 +74,7 @@ class ExecutionFlow(
 			val entryPoint = automationDef.topLevel.find { it.id == "0" }
 			if (entryPoint != null) {
 				async {
-					executeActionPath(entryPoint.content)
+					executeActionPath(entryPoint.content, context)
 					Log.d("APP_A", "actions done!");
 				}
 			}
@@ -94,7 +88,7 @@ class ExecutionFlow(
 					async {
 						trigger.startListening(context) {
 							Log.d("APP_A", "trigger fired!");
-							executeActionPath(trigger.content)
+							executeActionPath(trigger.content, context)
 						}
 					}
 				}
@@ -102,20 +96,24 @@ class ExecutionFlow(
 			Log.d("APP_A", "automation running!");
 		}
 
-		Log.i(
-			TAG, "EXECUTION ENDED in ${
-				Instant.now().toEpochMilli() - context.executionStart.toEpochMilli()
-			} ms"
-		)
+		val executionStart = context.executionStart
+		if (executionStart != null) {
+			Log.i(
+				TAG, "EXECUTION ENDED in ${
+					Instant.now().toEpochMilli() - executionStart.toEpochMilli()
+				} ms"
+			)
+		}
 	}
 
-	fun executeActionPath(nodeDefinitions: List<NodeDef>) {
+	fun executeActionPath(nodeDefinitions: List<NodeDef>, context: ExecutionFlowContext) {
+		Log.d("APP_A", nodeDefinitions.toString())
 		executeActions(nodeDefinitions.map { actionDef ->
 			actions.find { it.id == actionDef.id } ?: buildAction(actionDef)
-		})
+		}, context)
 	}
 
-	fun executeActions(builtActions: List<ActionNode>) {
+	fun executeActions(builtActions: List<ActionNode>, context: ExecutionFlowContext) {
 		builtActions.forEach { it.execute(context) }
 	}
 }

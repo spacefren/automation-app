@@ -2,14 +2,14 @@ package com.jxd20072.automationapp.core.nodes
 
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.actions.LoggerNode
+import com.jxd20072.automationapp.core.nodes.actions.NotificationNode
 import com.jxd20072.automationapp.core.nodes.actions.WaitActionNode
 
-val actionNodes: Map<String, NodeRegistryEntry<ActionNode>> = mapOf(
-	"log" to LoggerNode,
-	"wait" to WaitActionNode,
-	"log1" to LoggerNode,
-	"wait1" to WaitActionNode
-)
+val actionNodes: Map<String, NodeRegistryEntry<ActionNode>> = listOf(
+	LoggerNode,
+	WaitActionNode,
+	NotificationNode
+).associateBy { it.data.name }
 
 /*
 

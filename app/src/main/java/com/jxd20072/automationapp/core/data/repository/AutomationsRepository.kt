@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.core.data.repository
 
+import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
@@ -13,6 +14,7 @@ import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
+import com.jxd20072.automationapp.core.executor.executeAutomation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class AutomationsRepository @Inject constructor(
 	private val automationsStore: AutomationsStore,
 	private val automationsDataStore: DataStore<AutomationsDataMap>,
+	private val context: Context
 ) {
 	private val testingAutomationDef = AutomationDef(
 		metadata = AutomationDefMetadata(
@@ -161,5 +164,9 @@ class AutomationsRepository @Inject constructor(
 				automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
 			}
 		}
+	}
+
+	fun runAutomation(automation: AutomationDef) {
+		executeAutomation(automation, context)
 	}
 }

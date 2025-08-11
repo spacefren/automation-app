@@ -9,7 +9,6 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
-import com.jxd20072.automationapp.core.executor.executeAutomation
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.utils.findAndReplace
@@ -69,7 +68,7 @@ class AutomationManager @Inject constructor(
 	fun runAutomation() {
 		val uiState = automationUiState.value
 		if (uiState is AutomationUiState.Success) {
-			executeAutomation(uiState.automationDraft)
+			automationsRepository.runAutomation(uiState.automationDraft)
 		}
 	}
 

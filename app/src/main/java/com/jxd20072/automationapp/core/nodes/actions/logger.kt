@@ -70,7 +70,8 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
 				validate = { ValidationResult.Success },
 			)
 		),
-		outputDefinitions = emptyMap()
+		outputDefinitions = emptyMap(),
+		permissions = emptyList()
 	),
 	factory = { LoggerAction(it) }
 )

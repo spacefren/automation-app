@@ -20,7 +20,8 @@ data class NodeData(
 	val description: String,
 	val icon: Int,
 	val inputDefinitions: Map<String, NodeInputDefinition<*>>,
-	val outputDefinitions: Map<String, NodeOutputDefinition>
+	val outputDefinitions: Map<String, NodeOutputDefinition>,
+	val permissions: List<String>
 )
 
 abstract class BaseNode(id: String) {
