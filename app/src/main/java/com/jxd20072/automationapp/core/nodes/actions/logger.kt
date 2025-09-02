@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.core.nodes.actions
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
+import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -13,14 +13,14 @@ import com.jxd20072.automationapp.ui.shared.SnackbarData
 import com.jxd20072.automationapp.ui.shared.SnackbarType
 
 class LoggerAction(id: String) : ActionNode(id) {
-	private fun processText(text: String, context: ExecutionFlowContext): String {
+	private fun processText(text: String, context: ExecutionContext): String {
 		return Regex("""@\w*""").replace(text) { matchResult ->
 			(context.getVariable(matchResult.value.removePrefix("@"))?.value ?: matchResult.value)
 				.toString()
 		}
 	}
 
-	override fun execute(context: ExecutionFlowContext) {
+	override fun execute(context: ExecutionContext) {
 		val text = getInput<ConfigurationValue.TEXT>("Text").value
 
 		LocalSnackbarState.showSnackbar(

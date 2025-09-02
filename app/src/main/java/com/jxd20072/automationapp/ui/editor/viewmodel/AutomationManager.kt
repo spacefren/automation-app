@@ -9,6 +9,7 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
+import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.utils.findAndReplace
@@ -65,11 +66,11 @@ class AutomationManager @Inject constructor(
 			.collect { trySaveAutomation() }
 	}
 
-	fun runAutomation() {
+	fun executeAutomation(): AutomationExecutor? {
 		val uiState = automationUiState.value
-		if (uiState is AutomationUiState.Success) {
-			automationsRepository.runAutomation(uiState.automationDraft)
-		}
+		return if (uiState is AutomationUiState.Success) {
+			automationsRepository.executeAutomation(uiState.automationDraft)
+		} else null
 	}
 
 	fun loadAutomation(id: String) {

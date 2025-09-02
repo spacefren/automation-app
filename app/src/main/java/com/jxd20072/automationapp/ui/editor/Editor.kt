@@ -69,7 +69,7 @@ fun AutomationEditor(
 					openVariablesScreen = bottomSheetManager::openVariables,
 					openLogsScreen = bottomSheetManager::openLogs,
 					saveAutomation = { automationManager.trySaveAutomation(true) },
-					runAutomation = automationManager::runAutomation,
+					runAutomation = automationManager::executeAutomation,
 				)
 				EditorNodeTree(
 					automationDraft = (automationState as AutomationUiState.Success).automationDraft,

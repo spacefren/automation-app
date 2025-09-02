@@ -14,7 +14,7 @@ import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.core.executor.executeAutomation
+import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -87,6 +87,8 @@ class AutomationsRepository @Inject constructor(
 	private val _automationsDataFlow =
 		MutableStateFlow<AutomationsDataMap>(AutomationsDataMap.getDefaultInstance())
 	val automationsDataFlow: StateFlow<AutomationsDataMap> = _automationsDataFlow.asStateFlow()
+
+	private val ongoingAutomations = mutableSetOf<AutomationExecutor>()
 
 	private suspend fun startPolling() {
 		while (true) {
@@ -166,7 +168,18 @@ class AutomationsRepository @Inject constructor(
 		}
 	}
 
-	fun runAutomation(automation: AutomationDef) {
-		executeAutomation(automation, context)
+	fun executeAutomation(automation: AutomationDef): AutomationExecutor {
+		val executor = AutomationExecutor(automation, context)
+		ongoingAutomations.add(executor)
+
+		executor.start {
+			ongoingAutomations.removeIf { it.id == executor.id }
+		}
+
+		return executor
+	}
+
+	fun getAutomationExecutor(id: String): AutomationExecutor? {
+		return ongoingAutomations.find { it.id == id }
 	}
 }

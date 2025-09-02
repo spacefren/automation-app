@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
+import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -19,7 +19,7 @@ import com.jxd20072.automationapp.core.system.createNotificationChannel
 class NotificationAction(id: String) : ActionNode(id) {
 	private val CHANNEL_ID = "automationApp_notificationNode"
 
-	override fun execute(context: ExecutionFlowContext) {
+	override fun execute(context: ExecutionContext) {
 		Log.d("APP_A", "A")
 		val title = getInput<ConfigurationValue.TEXT>("Title").value
 		val body = getInput<ConfigurationValue.TEXT>("Body").value
@@ -56,7 +56,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
 		displayName = "Notification",
 		name = "notification",
 		description = "send a system notification",
-		category = "debug",
+		category = "system",
 		editorActionDescription = { input ->
 			listOf(
 				"Send notification: ",

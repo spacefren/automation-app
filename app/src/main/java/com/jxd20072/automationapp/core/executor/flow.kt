@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.executor
 
-import android.content.Context
 import android.util.Log
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
@@ -19,18 +18,9 @@ private const val TAG = "APP_ExecutionFlow"
 
 class ExecutionFlow(
 	private val automationDef: AutomationDef,
-	private val appContext: Context,
 ) {
-	// TODO: Rework this. Should all actions be built here or inside the content of every function/trigger?
 	private var actions: Set<ActionNode> = emptySet()
 	private var triggers: Set<TriggerNode> = emptySet()
-
-	private fun createContext(): ExecutionFlowContext {
-		return ExecutionFlowContext(
-			initialVariables = automationDef.variables,
-			appContext = appContext
-		)
-	}
 
 	private fun <T : BaseNode> buildNode(nodeDef: NodeDef, registryEntry: NodeRegistryEntry<T>): T {
 		val node = registryEntry.factory.invoke(nodeDef.id)
@@ -62,10 +52,9 @@ class ExecutionFlow(
 		return trigger
 	}
 
-	suspend fun startExecution() {
+	suspend fun startExecution(context: ExecutionContext) {
 		Log.i(TAG, "STARTING EXECUTION")
 
-		val context = createContext()
 		context.onStartExecution()
 
 		coroutineScope {
@@ -106,14 +95,14 @@ class ExecutionFlow(
 		}
 	}
 
-	fun executeActionPath(nodeDefinitions: List<NodeDef>, context: ExecutionFlowContext) {
+	fun executeActionPath(nodeDefinitions: List<NodeDef>, context: ExecutionContext) {
 		Log.d("APP_A", nodeDefinitions.toString())
 		executeActions(nodeDefinitions.map { actionDef ->
 			actions.find { it.id == actionDef.id } ?: buildAction(actionDef)
 		}, context)
 	}
 
-	fun executeActions(builtActions: List<ActionNode>, context: ExecutionFlowContext) {
+	fun executeActions(builtActions: List<ActionNode>, context: ExecutionContext) {
 		builtActions.forEach { it.execute(context) }
 	}
 }

@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.core.nodes.triggers
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.executor.ExecutionFlowContext
+import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 
 class WaitTrigger(id: String) : TriggerNode(id) {
 	override fun startListening(
-		context: ExecutionFlowContext,
+		context: ExecutionContext,
 		trigger: (output: Map<String, ConfigurationValue<*>>) -> Unit
 	) {
 		val duration = getInput<ConfigurationValue.NUMBER>("Duration").value

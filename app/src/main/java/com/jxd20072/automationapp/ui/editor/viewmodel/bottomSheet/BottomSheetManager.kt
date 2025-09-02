@@ -26,7 +26,8 @@ class BottomSheetManager @Inject constructor(
 	val nodeSelectManager: NodeSelectManager,
 	val nodeEditManager: NodeEditManager,
 	val variablesManager: VariablesManager,
-	val variableEditManager: VariableEditManager
+	val variableEditManager: VariableEditManager,
+	val logsManager: LogsManager,
 ) {
 	private val _bottomSheetState = MutableStateFlow<EditorBottomSheetState>(
 		EditorBottomSheetState.Closed

@@ -32,6 +32,13 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
+	fun runAutomation() {
+		val executor = automationManager.executeAutomation()
+		if (executor != null) {
+			bottomSheetManager.logsManager
+		}
+	}
+
 	fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
 		dragManager.dragNode(id, nodePosition, pressedPosition)
 		bottomSheetManager.openEmpty()
