@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -52,6 +53,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeType
@@ -83,9 +85,9 @@ fun NodeCard(
 				LocalTheme.layoutSystem.shadows.secondary,
 				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
 			)
+			.widthIn(max = 90.dp)
 			.background(LocalTheme.colorScheme.tertiary)
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
-			.widthIn(max = 90.dp)
 	) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -118,6 +120,7 @@ fun NodeCard(
 			color = LocalTheme.colorScheme.onBackground,
 			style = LocalTheme.typography.header,
 			maxLines = 2,
+			overflow = TextOverflow.Ellipsis,
 		)
 	}
 }
@@ -260,6 +263,7 @@ fun EditorNodeSelectScreen(
 		Column(
 			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
 			modifier = Modifier
+				.fillMaxHeight()
 				.imePadding()
 				.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 		) {
@@ -282,10 +286,9 @@ fun EditorNodeSelectScreen(
 			}
 			LazyColumn(
 				verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-				modifier = Modifier
-					.fillMaxSize()
+				modifier = Modifier.fillMaxSize()
 			) {
-				items(nodeSelectState.nodes) {
+				items(nodeSelectState.nodes, { it.categoryName }) {
 					NodeCategoryContainer(
 						categoryListEntry = it,
 						isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
@@ -293,7 +296,8 @@ fun EditorNodeSelectScreen(
 						onStopDrag = onStopDrag,
 						draggableState = draggableState,
 						onClick = onClick,
-						modifier = Modifier.animateItem()
+						modifier = Modifier
+							.animateItem()
 					)
 				}
 			}

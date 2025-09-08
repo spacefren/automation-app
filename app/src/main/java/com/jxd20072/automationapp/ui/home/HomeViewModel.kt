@@ -72,7 +72,6 @@ class HomeViewModel @Inject constructor(
 	}
 
 	init {
-		automationsRepository.initialize()
 		updateAllFilters()
 
 		viewModelScope.launch {

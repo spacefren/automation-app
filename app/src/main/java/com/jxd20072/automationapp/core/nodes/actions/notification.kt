@@ -2,7 +2,6 @@ package com.jxd20072.automationapp.core.nodes.actions
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,7 +19,6 @@ class NotificationAction(id: String) : ActionNode(id) {
 	private val CHANNEL_ID = "automationApp_notificationNode"
 
 	override fun execute(context: ExecutionContext) {
-		Log.d("APP_A", "A")
 		val title = getInput<ConfigurationValue.TEXT>("Title").value
 		val body = getInput<ConfigurationValue.TEXT>("Body").value
 

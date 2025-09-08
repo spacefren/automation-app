@@ -66,10 +66,10 @@ class AutomationManager @Inject constructor(
 			.collect { trySaveAutomation() }
 	}
 
-	fun executeAutomation(): AutomationExecutor? {
+	suspend fun executeAutomation(): AutomationExecutor? {
 		val uiState = automationUiState.value
 		return if (uiState is AutomationUiState.Success) {
-			automationsRepository.executeAutomation(uiState.automationDraft)
+			automationsRepository.executeAutomation(uiState.automationId)
 		} else null
 	}
 

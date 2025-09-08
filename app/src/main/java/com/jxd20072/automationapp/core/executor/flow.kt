@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.executor
 
-import android.util.Log
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
@@ -10,11 +9,10 @@ import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.core.nodes.triggers.TriggerNode
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
-import java.time.Instant
-
-private const val TAG = "APP_ExecutionFlow"
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 
 class ExecutionFlow(
 	private val automationDef: AutomationDef,
@@ -53,50 +51,40 @@ class ExecutionFlow(
 	}
 
 	suspend fun startExecution(context: ExecutionContext) {
-		Log.i(TAG, "STARTING EXECUTION")
-
 		context.onStartExecution()
+		val jobs = mutableListOf<Job>()
 
 		coroutineScope {
 			// Execute entry actions
-			Log.d("APP_A", "running actions...");
 			val entryPoint = automationDef.topLevel.find { it.id == "0" }
 			if (entryPoint != null) {
-				async {
-					executeActionPath(entryPoint.content, context)
-					Log.d("APP_A", "actions done!");
-				}
+				jobs.add(
+					launch {
+						executeActionPath(entryPoint.content, context)
+					}
+				)
 			}
 
 			// Init triggers
-			Log.d("APP_A", "setting up triggers...");
 			automationDef.topLevel
 				.filter { it.nodeType == NodeType.TRIGGER }
 				.map { buildTrigger(it) }
 				.forEach { trigger ->
-					async {
-						trigger.startListening(context) {
-							Log.d("APP_A", "trigger fired!");
-							executeActionPath(trigger.content, context)
+					jobs.add(
+						launch {
+							trigger.startListening(context) {
+								executeActionPath(trigger.content, context)
+							}
 						}
-					}
+					)
 				}
-
-			Log.d("APP_A", "automation running!");
 		}
 
-		val executionStart = context.executionStart
-		if (executionStart != null) {
-			Log.i(
-				TAG, "EXECUTION ENDED in ${
-					Instant.now().toEpochMilli() - executionStart.toEpochMilli()
-				} ms"
-			)
-		}
+		// Wait for jobs to finish
+		jobs.joinAll()
 	}
 
 	fun executeActionPath(nodeDefinitions: List<NodeDef>, context: ExecutionContext) {
-		Log.d("APP_A", nodeDefinitions.toString())
 		executeActions(nodeDefinitions.map { actionDef ->
 			actions.find { it.id == actionDef.id } ?: buildAction(actionDef)
 		}, context)

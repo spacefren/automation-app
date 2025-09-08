@@ -1,22 +1,13 @@
 package com.jxd20072.automationapp.core.executor
 
 import android.content.Context
-import androidx.compose.runtime.Immutable
+import com.jxd20072.automationapp.core.data.AutomationLogEntry
+import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.Instant
-
-@Immutable
-enum class LogLevel { INFO, WARNING, ERROR }
-
-@Immutable
-data class LogEntry(
-	val level: LogLevel,
-	val time: Instant,
-	val message: String,
-)
 
 class ExecutionContext(
 	val appContext: Context,
@@ -44,10 +35,17 @@ class ExecutionContext(
 		return variables.find { it.name == name }
 	}
 
-	private val _logsState = MutableStateFlow(emptyList<LogEntry>())
+	private val _logsState = MutableStateFlow(emptyList<AutomationLogEntry>())
 	val logs = _logsState.asStateFlow()
 
-	fun log(entry: LogEntry) {
-		_logsState.update { it + entry }
+	fun log(level: LogLevel, message: String) {
+		_logsState.update {
+			it + AutomationLogEntry
+				.newBuilder()
+				.setTime(Instant.now().toString())
+				.setLevel(level)
+				.setMessage(message)
+				.build()
+		}
 	}
 }

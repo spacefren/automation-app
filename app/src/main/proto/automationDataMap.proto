@@ -3,6 +3,18 @@ syntax = "proto3";
 option java_package = "com.jxd20072.automationapp.core.data";
 option java_multiple_files = true;
 
+enum LogLevel {
+  INFO = 0;
+  WARNING = 1;
+  ERROR = 3;
+}
+
+message AutomationLogEntry {
+  LogLevel level = 1;
+  string time = 2;
+  string message = 3;
+}
+
 message AutomationsMapEntry {
   string name = 1;
   string icon = 2;
@@ -10,6 +22,7 @@ message AutomationsMapEntry {
   optional string lastRan = 4;
   optional string lastSaved = 5;
   optional string creationDate = 6;
+  repeated AutomationLogEntry logs = 7;
 }
 
 message AutomationsDataMap {

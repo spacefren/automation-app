@@ -1,6 +1,7 @@
 package com.jxd20072.automationapp.core.nodes.actions
 
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
@@ -22,6 +23,8 @@ class LoggerAction(id: String) : ActionNode(id) {
 
 	override fun execute(context: ExecutionContext) {
 		val text = getInput<ConfigurationValue.TEXT>("Text").value
+
+		context.log(LogLevel.INFO, text)
 
 		LocalSnackbarState.showSnackbar(
 			SnackbarData(

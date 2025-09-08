@@ -15,12 +15,6 @@ import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.executor.AutomationExecutor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -84,24 +78,10 @@ class AutomationsRepository @Inject constructor(
 			),
 		),
 	)
-	private val _automationsDataFlow =
-		MutableStateFlow<AutomationsDataMap>(AutomationsDataMap.getDefaultInstance())
-	val automationsDataFlow: StateFlow<AutomationsDataMap> = _automationsDataFlow.asStateFlow()
+
+	val automationsDataFlow = automationsDataStore.data
 
 	private val ongoingAutomations = mutableSetOf<AutomationExecutor>()
-
-	private suspend fun startPolling() {
-		while (true) {
-			_automationsDataFlow.emit(getAutomationDataMap())
-			delay(10_000)
-		}
-	}
-
-	fun initialize() {
-		CoroutineScope(Dispatchers.IO).launch {
-			startPolling()
-		}
-	}
 
 	suspend fun createAutomation(
 		name: String,
@@ -136,11 +116,19 @@ class AutomationsRepository @Inject constructor(
 		transform: (AutomationsDataMap) -> AutomationsDataMap
 	) {
 		automationsDataStore.updateData(transform = transform)
-		_automationsDataFlow.emit(getAutomationDataMap())
 	}
 
-	private suspend fun getAutomationDataMap(): AutomationsDataMap {
-		return automationsDataStore.data.first()
+	private suspend fun updateAutomationData(
+		id: String,
+		transform: (AutomationsMapEntry) -> AutomationsMapEntry
+	) {
+		updateAutomationDataMap { automationsDataMap ->
+			val automationData =
+				automationsDataMap.automationsMap[id] ?: return@updateAutomationDataMap automationsDataMap
+			automationsDataMap.copy {
+				automations[id] = transform(automationData)
+			}
+		}
 	}
 
 	suspend fun getAutomationMapEntry(id: String): AutomationsMapEntry? {
@@ -168,12 +156,35 @@ class AutomationsRepository @Inject constructor(
 		}
 	}
 
-	fun executeAutomation(automation: AutomationDef): AutomationExecutor {
+	suspend fun executeAutomation(automationID: String): AutomationExecutor? {
+		val automation = getAutomationDef(automationID) ?: return null
+
 		val executor = AutomationExecutor(automation, context)
 		ongoingAutomations.add(executor)
 
+		val logCollectorJob = executor.executorScope.launch {
+			executor.logs.collect { logs ->
+				val emittedLog = logs.lastOrNull()
+
+				if (emittedLog != null) {
+					Log.d(
+						"APP_AutomationLogs",
+						"[${emittedLog.level}] [${emittedLog.time}] ${emittedLog.message}"
+					)
+
+					updateAutomationData(automationID) { automationData ->
+						automationData
+							.toBuilder()
+							.addLogs(emittedLog)
+							.build()
+					}
+				}
+			}
+		}
+
 		executor.start {
 			ongoingAutomations.removeIf { it.id == executor.id }
+			logCollectorJob.cancel()
 		}
 
 		return executor

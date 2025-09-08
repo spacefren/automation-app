@@ -33,9 +33,8 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun runAutomation() {
-		val executor = automationManager.executeAutomation()
-		if (executor != null) {
-			bottomSheetManager.logsManager
+		viewModelScope.launch {
+			automationManager.executeAutomation()
 		}
 	}
 
