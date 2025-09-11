@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.data.model.AutomationDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
@@ -34,6 +35,7 @@ class AutomationExecutor(
 		Log.i(TAG, "STARTING EXECUTION")
 		job = executorScope.launch {
 			executionFlow.startExecution(executionContext)
+			delay(100L) // Let handlers react to the last node before closing the coroutine
 		}
 
 		job?.invokeOnCompletion {

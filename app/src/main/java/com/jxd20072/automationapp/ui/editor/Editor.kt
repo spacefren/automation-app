@@ -38,6 +38,7 @@ fun AutomationEditor(
 	val nodeEditManager = bottomSheetManager.nodeEditManager
 	val variablesManager = bottomSheetManager.variablesManager
 	val variableEditManager = bottomSheetManager.variableEditManager
+	val logsManager = bottomSheetManager.logsManager
 	val dragManager = editorViewModel.dragManager
 
 	val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
@@ -49,6 +50,8 @@ fun AutomationEditor(
 	val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
 	val variableEditState by variableEditManager.variableEditState.collectAsState()
 	val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
+	val logScreenState by logsManager.logsScreenState.collectAsState()
+	val filteredLogs by logsManager.filteredLogs.collectAsState(emptyList())
 
 	val draggableState = rememberDraggable2DState { delta ->
 		editorViewModel.dragManager.dragNodeDelta(delta)
@@ -110,6 +113,10 @@ fun AutomationEditor(
 			validateVariableName = automationManager::validateVariableName,
 			changeVariableName = variableEditManager::changeName,
 			changeVariableValue = variableEditManager::changeValue,
+			logsScreenState = logScreenState,
+			filteredLogs = filteredLogs,
+			searchLogs = logsManager::searchLogs,
+			filterLogs = logsManager::filterLogs,
 			editorDragState = draggingData,
 			onStartDrag = editorViewModel::onCreateNodeDrag,
 			onStopDrag = editorViewModel::onCreateNodeDrop,

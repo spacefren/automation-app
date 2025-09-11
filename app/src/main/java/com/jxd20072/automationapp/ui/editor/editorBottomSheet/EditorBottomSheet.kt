@@ -9,6 +9,8 @@ import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
+import com.jxd20072.automationapp.core.data.AutomationLogEntry
+import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
@@ -18,6 +20,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.LogsScreenState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariableEditState
@@ -53,6 +56,11 @@ fun EditorBottomSheet(
 	validateVariableName: (name: String) -> ValidationResult,
 	changeVariableName: (newName: String) -> Unit,
 	changeVariableValue: (newValue: VariableDefValue<*>) -> Unit,
+	// Logs
+	logsScreenState: LogsScreenState,
+	filteredLogs: List<AutomationLogEntry>,
+	searchLogs: (query: String) -> Unit,
+	filterLogs: (level: LogLevel) -> Unit,
 	// Dragging
 	editorDragState: EditorNodeDragState,
 	draggableState: Draggable2DState,
@@ -145,7 +153,12 @@ fun EditorBottomSheet(
 					}
 
 					state.screen == EditorBottomSheetScreen.LOGS -> {
-						EditorLogsScreen()
+						EditorLogsScreen(
+							logsScreenState = logsScreenState,
+							filteredLogs = filteredLogs,
+							searchLogs = searchLogs,
+							filterLogs = filterLogs
+						)
 					}
 
 					state.screen == EditorBottomSheetScreen.EMPTY -> {}

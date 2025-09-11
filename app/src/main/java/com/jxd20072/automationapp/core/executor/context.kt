@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.Instant
+import java.util.UUID
 
 class ExecutionContext(
 	val appContext: Context,
@@ -42,6 +43,7 @@ class ExecutionContext(
 		_logsState.update {
 			it + AutomationLogEntry
 				.newBuilder()
+				.setId(UUID.randomUUID().toString())
 				.setTime(Instant.now().toString())
 				.setLevel(level)
 				.setMessage(message)
