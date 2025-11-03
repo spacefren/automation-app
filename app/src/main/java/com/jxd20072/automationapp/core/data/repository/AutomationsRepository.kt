@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.core.data.repository
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
+import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.copy
@@ -163,22 +164,13 @@ class AutomationsRepository @Inject constructor(
 		ongoingAutomations.add(executor)
 
 		val logCollectorJob = executor.executorScope.launch {
-			executor.logs.collect { logs ->
-				val emittedLog = logs.lastOrNull()
+			executor.logs.collect { log ->
+				Log.d(
+					"APP_AutomationLogs",
+					"[${log.level}] [${log.time}] ${log.message}"
+				)
 
-				if (emittedLog != null) {
-					Log.d(
-						"APP_AutomationLogs",
-						"[${emittedLog.level}] [${emittedLog.time}] ${emittedLog.message}"
-					)
-
-					updateAutomationData(automationID) { automationData ->
-						automationData
-							.toBuilder()
-							.addLogs(emittedLog)
-							.build()
-					}
-				}
+				addLog(automationID, log)
 			}
 		}
 
@@ -193,4 +185,22 @@ class AutomationsRepository @Inject constructor(
 	fun getAutomationExecutor(id: String): AutomationExecutor? {
 		return ongoingAutomations.find { it.id == id }
 	}
+
+    suspend fun addLog(automationID: String, log: AutomationLogEntry) {
+        updateAutomationData(automationID) { automationData ->
+            automationData
+                .toBuilder()
+                .addLogs(log)
+                .build()
+        }
+    }
+
+    suspend fun removeLog(automationID: String, logID: String) {
+        updateAutomationData(automationID) { automationData ->
+            automationData
+                .toBuilder()
+                .removeLogs(automationData.logsList.indexOfFirst { it.id == logID })
+                .build()
+        }
+    }
 }

@@ -26,7 +26,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
 		nodeType = NodeType.ACTION,
 		displayName = "Wait",
 		name = "wait",
-		category = "Flow",
+		category = "flow",
 		editorActionDescription = { input ->
 			listOf(
 				"Wait",

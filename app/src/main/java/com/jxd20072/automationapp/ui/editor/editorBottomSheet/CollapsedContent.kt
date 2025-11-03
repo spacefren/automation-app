@@ -27,7 +27,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun EditorBottomSheetCollapsedContent(
+fun EditorNodeDropSheet(
 	dragData: EditorNodeDragState,
 	showDelete: Boolean,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,

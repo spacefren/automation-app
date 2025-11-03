@@ -54,27 +54,6 @@ class DragManager @Inject constructor(
 		}
 	}
 
-	fun dropCreateNode(): String? {
-		var nodeID: String? = null
-		_editorNodeDragState.update { state ->
-			if (
-				state !is EditorNodeDragState.Dragging
-				|| state.dropData !is EditorNodeDropData.Moving
-			) return@update EditorNodeDragState.NotDragging
-
-			automationManager.addNode(
-				state.draggingNode,
-				state.dropData.parentId,
-				state.dropData.targetIndex
-			)
-
-			nodeID = state.draggingNode.id
-
-			EditorNodeDragState.NotDragging
-		}
-		return nodeID
-	}
-
 	fun dragNode(id: String, nodePosition: Offset, pressedPosition: Offset) {
 		val nodeDef = automationManager.findNode(id) ?: return
 
@@ -88,15 +67,26 @@ class DragManager @Inject constructor(
 		}
 	}
 
-	fun dragNodeDelta(delta: Offset) {
-		_editorNodeDragState.update { state ->
-			if (state !is EditorNodeDragState.Dragging) return@update state
+    fun dropCreateNode(): String? {
+        var nodeID: String? = null
+        _editorNodeDragState.update { state ->
+            if (
+                state !is EditorNodeDragState.Dragging
+                || state.dropData !is EditorNodeDropData.Moving
+            ) return@update EditorNodeDragState.NotDragging
 
-			state.copy(
-				nodePosition = state.nodePosition + delta
-			)
-		}
-	}
+            automationManager.addNode(
+                state.draggingNode,
+                state.dropData.parentId,
+                state.dropData.targetIndex
+            )
+
+            nodeID = state.draggingNode.id
+
+            EditorNodeDragState.NotDragging
+        }
+        return nodeID
+    }
 
 	fun dropNode() {
 		val state = editorNodeDragState.value
@@ -119,6 +109,16 @@ class DragManager @Inject constructor(
 			EditorNodeDragState.NotDragging
 		}
 	}
+
+    fun dragNodeDelta(delta: Offset) {
+        _editorNodeDragState.update { state ->
+            if (state !is EditorNodeDragState.Dragging) return@update state
+
+            state.copy(
+                nodePosition = state.nodePosition + delta
+            )
+        }
+    }
 
 	fun enterDropLine(index: Int, parentID: String?) {
 		_editorNodeDragState.update { state ->

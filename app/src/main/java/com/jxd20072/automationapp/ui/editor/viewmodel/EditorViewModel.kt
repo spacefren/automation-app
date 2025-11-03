@@ -40,16 +40,11 @@ class EditorViewModel @Inject constructor(
 
 	fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
 		dragManager.dragNode(id, nodePosition, pressedPosition)
-		bottomSheetManager.openEmpty()
-	}
-
-	fun onExistingNodeDrop() {
-		dragManager.dropNode()
-		bottomSheetManager.closeBottomSheet()
-		bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
+		bottomSheetManager.openNodeDrop()
 	}
 
 	fun onCreateNodeDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
+        bottomSheetManager.openNodeDrop()
 		dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
 	}
 
@@ -59,12 +54,23 @@ class EditorViewModel @Inject constructor(
 		bottomSheetManager.openNodeEdit(nodeDef.id)
 	}
 
-	fun onCreateNodeDrop() {
-		bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
-		val nodeID = dragManager.dropCreateNode()
-		if (nodeID != null) {
-			bottomSheetManager.openNodeEdit(nodeID)
+	fun onNodeDrop() {
+        bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
+        val dragData = dragManager.editorNodeDragState.value
+
+        if (dragData !is EditorNodeDragState.Dragging) return
+
+        bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
+
+        if (dragData.isCreatingNode) {
+            val nodeID = dragManager.dropCreateNode()
+            if (nodeID != null) {
+                bottomSheetManager.openNodeEdit(nodeID)
+            } else {
+                bottomSheetManager.closeBottomSheet()
+            }
 		} else {
+            dragManager.dropNode()
 			bottomSheetManager.closeBottomSheet()
 		}
 	}

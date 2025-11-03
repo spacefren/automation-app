@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class EditorBottomSheetScreen {
-	EMPTY, NODE_SELECT, NODE_EDIT, VARIABLES, VARIABLE_EDIT, LOGS
+	EMPTY, NODE_DROP, NODE_SELECT, NODE_EDIT, VARIABLES, VARIABLE_EDIT, LOGS
 }
 
 @Immutable
@@ -54,6 +54,14 @@ class BottomSheetManager @Inject constructor(
 			)
 		}
 	}
+
+    fun openNodeDrop() {
+        _bottomSheetState.update {
+            EditorBottomSheetState.Open(
+                screen = EditorBottomSheetScreen.NODE_DROP
+            )
+        }
+    }
 
 	fun openNodeEdit(nodeID: String) {
 		nodeEditManager.startEditNode(nodeID)

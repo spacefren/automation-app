@@ -23,14 +23,12 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 @Composable
 fun EditorNodeTree(
 	automationDraft: AutomationDef,
-	draggableState: Draggable2DState,
 	draggingData: EditorNodeDragState,
 	onNodeDrag: (
 		id: String,
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
-	onStopDrag: () -> Unit,
 	onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropLineExit: () -> Unit,
 	modifier: Modifier = Modifier
@@ -73,8 +71,6 @@ fun EditorNodeTree(
 				},
 				content = node.content,
 				onDragStart = onNodeDrag,
-				onStopDrag = onStopDrag,
-				draggableState = draggableState,
 				draggingData = draggingData,
 				onDropZoneEnter = onDropLineEnter,
 				onDropZoneExit = onDropLineExit

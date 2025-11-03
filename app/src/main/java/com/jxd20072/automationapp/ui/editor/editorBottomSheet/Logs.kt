@@ -40,17 +40,19 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun LogEntry(
 	entry: AutomationLogEntry,
-	onDismiss: () -> Unit
+	modifier: Modifier = Modifier,
+	deleteLog: () -> Unit,
 ) {
 	SwipeableContainer(
 		icon1 = R.drawable.round_delete_24,
 		icon2 = R.drawable.round_delete_24,
-		backgroundColor1 = LocalTheme.colorScheme.tertiary,
-		backgroundColor2 = LocalTheme.colorScheme.tertiary,
-		onAction1 = onDismiss,
-		onAction2 = onDismiss,
-		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2
-	) {
+		backgroundColor1 = LocalTheme.colorScheme.errorSecondary,
+		backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
+		onAction1 = deleteLog,
+		onAction2 = deleteLog,
+		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+		modifier = modifier,
+		) {
 		val dateTime = remember {
 			LocalDateTime
 				.ofInstant(Instant.parse(entry.time), ZoneOffset.systemDefault())
@@ -58,7 +60,7 @@ fun LogEntry(
 		val timeNow = LocalDateTime.now()
 
 		val format = (if (timeNow.year == dateTime.year && timeNow.dayOfYear == dateTime.dayOfYear)
-			"" else "yyyy/MM/dd @") + "HH:mm:ss"
+			"" else "yyyy/MM/dd @ ") + "HH:mm:ss"
 		val timestamp = dateTime.format(DateTimeFormatter.ofPattern(format))
 
 		Text(
@@ -78,7 +80,13 @@ fun LogEntry(
 			modifier = Modifier
 				.fillMaxWidth()
 				.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-				.background(LocalTheme.colorScheme.surface)
+				.background(
+					when(entry.level) {
+						LogLevel.ERROR -> LocalTheme.colorScheme.errorContainer
+						LogLevel.WARNING -> LocalTheme.colorScheme.warningContainer
+						else -> LocalTheme.colorScheme.surface
+					}
+				)
 				.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
 		)
 	}
@@ -90,6 +98,7 @@ fun EditorLogsScreen(
 	filteredLogs: List<AutomationLogEntry>,
 	searchLogs: (query: String) -> Unit,
 	filterLogs: (level: LogLevel) -> Unit,
+    deleteLog: (logID: String) -> Unit,
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -132,8 +141,13 @@ fun EditorLogsScreen(
 		) {
 			items(filteredLogs, { it.id }) {
 				LogEntry(
-					entry = it
-				) { }
+					entry = it,
+                    deleteLog = {
+                        deleteLog(it.id)
+                    },
+                    modifier = Modifier
+						.animateItem()
+                )
 			}
 		}
 	}

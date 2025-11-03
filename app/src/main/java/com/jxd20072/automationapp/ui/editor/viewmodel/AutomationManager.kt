@@ -1,6 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel
 
 import androidx.compose.runtime.Immutable
+import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeDef
@@ -254,4 +255,22 @@ class AutomationManager @Inject constructor(
 		// TODO
 		return ValidationResult.Success
 	}
+
+    fun addLog(log: AutomationLogEntry) {
+        val data = automationUiState.value
+        if (data !is AutomationUiState.Success) return
+
+        CoroutineScope(Dispatchers.Main).launch {
+            automationsRepository.addLog(data.automationId, log)
+        }
+    }
+
+    fun deleteLog(logID: String) {
+        val data = automationUiState.value
+        if (data !is AutomationUiState.Success) return
+
+        CoroutineScope(Dispatchers.Main).launch {
+            automationsRepository.removeLog(data.automationId, logID)
+        }
+    }
 }

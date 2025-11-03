@@ -4,17 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateBounds
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -23,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,9 +43,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,239 +59,209 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NodeCard(
-	nodeData: NodeData,
-	draggableState: Draggable2DState,
-	modifier: Modifier = Modifier,
-	onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
-	onStopDrag: () -> Unit,
-	onClick: (nodeData: NodeData) -> Unit,
+    nodeData: NodeData,
+    modifier: Modifier = Modifier,
+    onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
+    onClick: (nodeData: NodeData) -> Unit,
 ) {
-	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
+    var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-		modifier = modifier
-			.clickableWithIndication { onClick(nodeData) }
-			.shadow(
-				LocalTheme.layoutSystem.shadows.secondary,
-				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
-			)
-			.widthIn(max = 90.dp)
-			.background(LocalTheme.colorScheme.tertiary)
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
-	) {
-		Row(
-			horizontalArrangement = Arrangement.SpaceBetween,
-			modifier = Modifier
-				.fillMaxWidth()
-				.onGloballyPositioned {
-					rootPosition = it.positionInRoot()
-				}
-		) {
-			NodeHeaderIcons(
-				draggableState = draggableState,
-				onDragStart = {
-					onDragStart(rootPosition, it)
-				},
-				onStopDrag = onStopDrag,
-				icon = nodeData.icon
-			)
-			Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
-			Image(
-				painter = painterResource(R.drawable.round_info_24),
-				contentDescription = "help",
-				colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onSurface),
-				modifier = Modifier
-					.size(18.dp)
-					.clickable {}
-			)
-		}
-		Text(
-			text = nodeData.displayName,
-			color = LocalTheme.colorScheme.onBackground,
-			style = LocalTheme.typography.header,
-			maxLines = 2,
-			overflow = TextOverflow.Ellipsis,
-		)
-	}
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+        modifier = modifier
+            .clickableWithIndication { onClick(nodeData) }
+            .shadow(
+                LocalTheme.layoutSystem.shadows.secondary,
+                RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
+            )
+            .widthIn(max = 90.dp)
+            .background(LocalTheme.colorScheme.tertiary)
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned {
+                    rootPosition = it.positionInRoot()
+                }
+        ) {
+            NodeHeaderIcons(
+                onDragStart = {
+                    onDragStart(rootPosition, it)
+                },
+                icon = nodeData.icon
+            )
+            Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
+            Image(
+                painter = painterResource(R.drawable.round_info_24),
+                contentDescription = "help",
+                colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onSurface),
+                modifier = Modifier
+                    .size(18.dp)
+                    .clickable {}
+            )
+        }
+        Text(
+            text = nodeData.displayName,
+            color = LocalTheme.colorScheme.onBackground,
+            style = LocalTheme.typography.header,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
-@OptIn(
-	ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
-	ExperimentalSharedTransitionApi::class
-)
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun NodeCategoryContainer(
-	categoryListEntry: CategoryListEntry,
-	isSearching: Boolean,
-	draggableState: Draggable2DState,
-	onStartDrag: (
-		nodeData: NodeData,
-		startedPosition: Offset,
-		startedOffset: Offset,
-	) -> Unit,
-	onStopDrag: () -> Unit,
-	onClick: (nodeData: NodeData) -> Unit,
-	modifier: Modifier = Modifier
+    categoryListEntry: CategoryListEntry,
+    isSearching: Boolean,
+    onStartDrag: (
+        nodeData: NodeData,
+        startedPosition: Offset,
+        startedOffset: Offset,
+    ) -> Unit,
+    onClick: (nodeData: NodeData) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-	val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
+    val elementSeparation = LocalTheme.layoutSystem.spacing.paddingLevel2.value
 
-	var expanded by remember { mutableStateOf(false) }
-	val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
+    var expanded by remember { mutableStateOf(false) }
+    val dropdownRotation by animateFloatAsState(if (expanded) 180f else 270f)
 
-	LaunchedEffect(isSearching) {
-		if (isSearching && categoryListEntry.nodes.isNotEmpty()) {
-			expanded = true
-		}
-	}
+    LaunchedEffect(isSearching) {
+        if (isSearching && categoryListEntry.nodes.isNotEmpty()) {
+            expanded = true
+        }
+    }
 
-	Column(
-		modifier = modifier
-			.clickableWithIndication {
-				expanded = !expanded
-			}
-			.shadow(
-				LocalTheme.layoutSystem.shadows.primary,
-				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-			)
-			.fillMaxWidth()
-			.background(LocalTheme.colorScheme.surface)
-			.padding(elementSeparation.dp)
-	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier
-				.fillMaxWidth()
-		) {
-			Image(
-				painter = painterResource(R.drawable.round_arrow_dropdown_24),
-				contentDescription = "dropdown icon",
-				colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
-				modifier = Modifier
-					.size(20.dp)
-					.rotate(dropdownRotation)
-			)
-			Spacer(modifier = Modifier.width(5.dp))
-			Text(
-				text = categoryListEntry.categoryName.replaceFirstChar { it.uppercase() },
-				style = LocalTheme.typography.header,
-				color = LocalTheme.colorScheme.onBackground
-			)
-			Spacer(modifier = Modifier.weight(1f))
-			Image(
-				painter = painterResource(R.drawable.round_bug_24),
-				contentDescription = "category icon",
-				colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
-				modifier = Modifier.size(22.dp)
-			)
-		}
-		AnimatedVisibility(
-			visible = expanded,
-			modifier = Modifier.fillMaxWidth()
-		) {
-			FlowRow(
-				horizontalArrangement = Arrangement.spacedBy(elementSeparation.dp),
-				verticalArrangement = Arrangement.spacedBy(elementSeparation.dp),
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(top = elementSeparation.dp)
-					.animateContentSize()
-			) {
-				LookaheadScope {
-					categoryListEntry.nodes.forEachIndexed { index, node ->
-						key(node.data.name) {
-							NodeCard(
-								nodeData = node.data,
-								draggableState = draggableState,
-								onDragStart = { startedPosition, offset ->
-									onStartDrag(node.data, startedPosition, offset)
-								},
-								onStopDrag = onStopDrag,
-								onClick = onClick,
-								modifier = Modifier
-									.weight(1f)
-									.fillMaxRowHeight(1f)
-									.animateBounds(this@LookaheadScope)
-							)
-						}
-					}
-				}
-			}
-		}
-	}
+    Column(
+        modifier = modifier
+            .clickableWithIndication {
+                expanded = !expanded
+            }
+            .shadow(
+                LocalTheme.layoutSystem.shadows.primary,
+                RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+            )
+            .fillMaxWidth()
+            .background(LocalTheme.colorScheme.surface)
+            .padding(elementSeparation.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Image(
+                painter = painterResource(R.drawable.round_arrow_dropdown_24),
+                contentDescription = "dropdown icon",
+                colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
+                modifier = Modifier
+                    .size(20.dp)
+                    .rotate(dropdownRotation)
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = categoryListEntry.categoryName.replaceFirstChar { it.uppercase() },
+                style = LocalTheme.typography.header,
+                color = LocalTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Image(
+                painter = painterResource(R.drawable.round_bug_24),
+                contentDescription = "category icon",
+                colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(elementSeparation.dp),
+                verticalArrangement = Arrangement.spacedBy(elementSeparation.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = elementSeparation.dp)
+                    .animateContentSize()
+            ) {
+                LookaheadScope {
+                    categoryListEntry.nodes.forEachIndexed { index, node ->
+                        key(node.data.name) {
+                            NodeCard(
+                                nodeData = node.data,
+                                onDragStart = { startedPosition, offset ->
+                                    onStartDrag(node.data, startedPosition, offset)
+                                },
+                                onClick = onClick,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxRowHeight(1f)
+                                    .animateBounds(this@LookaheadScope)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeSelectScreen(
-	nodeSelectState: NodeSelectState,
-	autoOpenKeyboard: Boolean,
-	isCollapsed: Boolean,
-	onStartDrag: (
-		nodeData: NodeData,
-		startedPosition: Offset,
-		startedOffset: Offset,
-	) -> Unit,
-	onStopDrag: () -> Unit,
-	onClick: (nodeData: NodeData) -> Unit,
-	draggableState: Draggable2DState,
-	onNodeSearch: (query: String) -> Unit
+    nodeSelectState: NodeSelectState,
+    autoOpenKeyboard: Boolean,
+    onStartDrag: (
+        nodeData: NodeData,
+        startedPosition: Offset,
+        startedOffset: Offset,
+    ) -> Unit,
+    onClick: (nodeData: NodeData) -> Unit,
+    onNodeSearch: (query: String) -> Unit
 ) {
-	val screenHeight = LocalWindowInfo.current.containerSize.height
-	val screenHeightDp = with(LocalDensity.current) { screenHeight.toDp() }
-	val maxHeight by animateDpAsState(
-		if (isCollapsed) 0.dp else screenHeightDp,
-		spring(stiffness = Spring.StiffnessMediumLow)
-	)
-
-	if (isCollapsed) {
-		LocalFocusManager.current.clearFocus()
-	}
-
-	Box(
-		modifier = Modifier.heightIn(max = maxHeight)
-	) {
-		Column(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-			modifier = Modifier
-				.fillMaxHeight()
-				.imePadding()
-				.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-		) {
-			Text(
-				text = "Select " + when (nodeSelectState.nodeSelectType) {
-					NodeType.ACTION -> "action"
-					NodeType.TRIGGER -> "trigger"
-					NodeType.FUNCTION -> "function"
-				},
-				color = LocalTheme.colorScheme.onBackground,
-				style = LocalTheme.typography.subTitle
-			)
-			SearchBar(
-				searchText = "Search actions or categories",
-				queryText = nodeSelectState.nodeSearchQuery,
-				modifier = Modifier.fillMaxWidth(),
-				autoFocus = autoOpenKeyboard
-			) { query ->
-				onNodeSearch(query)
-			}
-			LazyColumn(
-				verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-				modifier = Modifier.fillMaxSize()
-			) {
-				items(nodeSelectState.nodes, { it.categoryName }) {
-					NodeCategoryContainer(
-						categoryListEntry = it,
-						isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
-						onStartDrag = onStartDrag,
-						onStopDrag = onStopDrag,
-						draggableState = draggableState,
-						onClick = onClick,
-						modifier = Modifier
-							.animateItem()
-					)
-				}
-			}
-		}
-	}
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = Modifier
+            .fillMaxHeight()
+            .imePadding()
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+    ) {
+        Text(
+            text = "Select " + when (nodeSelectState.nodeSelectType) {
+                NodeType.ACTION -> "action"
+                NodeType.TRIGGER -> "trigger"
+                NodeType.FUNCTION -> "function"
+            },
+            color = LocalTheme.colorScheme.onBackground,
+            style = LocalTheme.typography.subTitle
+        )
+        SearchBar(
+            searchText = "Search actions or categories",
+            queryText = nodeSelectState.nodeSearchQuery,
+            modifier = Modifier.fillMaxWidth(),
+            autoFocus = autoOpenKeyboard
+        ) { query ->
+            onNodeSearch(query)
+        }
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(nodeSelectState.nodes, { it.categoryName }) {
+                NodeCategoryContainer(
+                    categoryListEntry = it,
+                    isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
+                    onStartDrag = onStartDrag,
+                    onClick = onClick,
+                    modifier = Modifier
+                        .animateItem()
+                )
+            }
+        }
+    }
 }

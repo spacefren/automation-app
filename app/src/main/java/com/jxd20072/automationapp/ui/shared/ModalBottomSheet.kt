@@ -73,7 +73,7 @@ fun ModalBottomSheet(
 	val gradientStart = remember { Animatable(0f) }
 	val predictiveBackProgress = remember { Animatable(0f) }
 
-	val overlayOpacity = .5f
+	val overlayOpacity = .6f
 
 	LaunchedEffect(state.isOpen, state.isCollapsed) {
 		if (state.isOpen) {
@@ -150,7 +150,7 @@ fun ModalBottomSheet(
 			modifier = Modifier
 				.scale((1 - predictiveBackProgress.value / 10))
 				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = 10.dp)
+				.padding(top = 14.dp)
 				.fillMaxWidth()
 				.align(Alignment.BottomCenter)
 				.onPlaced { mainContentHeight = it.size.height }

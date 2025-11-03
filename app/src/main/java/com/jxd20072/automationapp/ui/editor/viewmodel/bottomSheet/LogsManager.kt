@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.log
 
 @Immutable
 data class LogsScreenState(
@@ -35,9 +36,12 @@ class LogsManager @Inject constructor(
 		if (logs == null) return@combine emptyList()
 
 		(if (state.searchQuery.isBlank()) logs
-		else logs.filter {
-			FuzzySearch.partialRatio(state.searchQuery, it.message.lowercase()) > 50
-		}).filter { state.filterLevel == null || it.level == state.filterLevel }
+		else logs
+			.map { it to FuzzySearch.partialRatio(state.searchQuery, it.message.lowercase()) }
+			.filter { it.second > 40 }
+			.sortedByDescending { it.second }
+			.map { it.first }
+		).filter { state.filterLevel == null || it.level == state.filterLevel }
 	}
 
 	fun searchLogs(query: String) {

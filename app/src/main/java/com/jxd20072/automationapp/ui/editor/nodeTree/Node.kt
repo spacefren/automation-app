@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.foundation.gestures.draggable2D
+import androidx.compose.foundation.gestures.rememberDraggable2DState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -51,16 +52,14 @@ enum class TopLevelNodeType { ENTRYPOINT, FUNCTION, TRIGGER }
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun NodeHeaderIcons(
-	draggableState: Draggable2DState? = null,
 	onDragStart: ((startedPosition: Offset) -> Unit)? = null,
-	onStopDrag: (() -> Unit)? = null,
 	forceShowDragHandle: Boolean = false,
 	icon: Int
 ) {
 	var dragHandlePosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
 	val shouldShowDragHandle =
-		onDragStart != null && onStopDrag != null && draggableState != null
+		onDragStart != null
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(6.dp),
 		verticalAlignment = Alignment.CenterVertically,
@@ -81,13 +80,10 @@ fun NodeHeaderIcons(
 						}
 						.conditional(shouldShowDragHandle, ifTrue = {
 							draggable2D(
-								state = draggableState!!,
+                                state = rememberDraggable2DState { },
 								onDragStarted = {
 									onDragStart!!(dragHandlePosition + it)
 								},
-								onDragStopped = {
-									onStopDrag!!()
-								}
 							)
 						})
 				)
@@ -111,9 +107,7 @@ fun NodeHeader(
 	nodeId: String,
 	icon: Int,
 	level: Int,
-	draggableState: Draggable2DState,
 	onDragStart: ((startedPosition: Offset) -> Unit)? = null,
-	onStopDrag: (() -> Unit)? = null,
 	modifier: Modifier = Modifier,
 ) {
 	Row(
@@ -122,9 +116,7 @@ fun NodeHeader(
 		modifier = modifier.fillMaxWidth()
 	) {
 		NodeHeaderIcons(
-			draggableState = draggableState,
 			onDragStart = onDragStart,
-			onStopDrag = onStopDrag,
 			icon = icon
 		)
 		FlowRow(
@@ -228,20 +220,21 @@ fun TopLevelNode(
 	type: TopLevelNodeType,
 	id: String,
 	displayName: List<String>,
-	draggableState: Draggable2DState,
 	draggingData: EditorNodeDragState,
 	onDragStart: (
 		id: String,
 		nodePosition: Offset,
 		pressedPosition: Offset,
 	) -> Unit,
-	onStopDrag: () -> Unit,
 	onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
 	onDropZoneExit: () -> Unit,
 	modifier: Modifier = Modifier,
 	content: List<NodeDef>
 ) {
-	var dragging by remember { mutableStateOf(false) }
+    val draggingNodeID =
+        if (draggingData is EditorNodeDragState.Dragging) draggingData.draggingNode.id
+        else null
+    val isDragging = draggingNodeID == id
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
 	NodeContainer(
@@ -250,7 +243,7 @@ fun TopLevelNode(
 		onLayout = { layout ->
 			rootPosition = layout.positionInRoot()
 		},
-		disabledForDragging = dragging,
+		disabledForDragging = isDragging,
 		ignoreBottomPadding = true
 	) {
 		Column(
@@ -265,13 +258,7 @@ fun TopLevelNode(
 					TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
 					TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
 				},
-				draggableState = draggableState,
-				onStopDrag = {
-					dragging = false
-					onStopDrag()
-				},
 				onDragStart = {
-					dragging = true
 					onDragStart(id, rootPosition, it)
 				}
 			)
@@ -286,9 +273,8 @@ fun TopLevelNode(
 
 				ActionNode(
 					actionNode = actionNode,
-					draggableState = draggableState,
-					onStopDrag = onStopDrag,
 					onDragStart = onDragStart,
+                    disabledForDragging = actionNode.id == draggingNodeID,
 					modifier = Modifier
 				)
 			}
@@ -307,16 +293,14 @@ fun TopLevelNode(
 @Composable
 fun ActionNode(
 	modifier: Modifier = Modifier,
+    disabledForDragging: Boolean,
 	actionNode: NodeDef,
-	draggableState: Draggable2DState,
-	onStopDrag: (() -> Unit)? = null,
 	onDragStart: ((
 		id: String,
 		position: Offset,
 		startedOffset: Offset,
 	) -> Unit)? = null,
 ) {
-	var dragging by remember { mutableStateOf(false) }
 	var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
 
 	val actionData = actionNodes[actionNode.name]?.data
@@ -327,7 +311,7 @@ fun ActionNode(
 			onLayout = { layout ->
 				rootPosition = layout.positionInRoot()
 			},
-			disabledForDragging = dragging
+			disabledForDragging = disabledForDragging
 		) {
 			NodeHeader(
 				displayName = actionData.editorActionDescription(
@@ -336,15 +320,8 @@ fun ActionNode(
 				level = 2,
 				nodeId = actionNode.id,
 				icon = actionData.icon,
-				draggableState = draggableState,
-				onStopDrag = {
-					onStopDrag?.invoke()
-					dragging = false
-				},
 				onDragStart = {
-					onDragStart
-						?.invoke(actionNode.id, rootPosition, it)
-					dragging = true
+					onDragStart?.invoke(actionNode.id, rootPosition, it)
 				}
 			)
 		}

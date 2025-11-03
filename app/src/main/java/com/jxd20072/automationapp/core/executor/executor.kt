@@ -24,6 +24,7 @@ class AutomationExecutor(
 	)
 	private val executionContext = ExecutionContext(
 		initialVariables = automationDef.variables,
+		coroutineScope = executorScope,
 		appContext = context
 	)
 

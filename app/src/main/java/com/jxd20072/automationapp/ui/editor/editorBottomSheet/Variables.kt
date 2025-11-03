@@ -53,7 +53,7 @@ fun EditorVariableEntry(
 		icon1 = R.drawable.round_edit_24,
 		icon2 = R.drawable.round_delete_24,
 		backgroundColor1 = LocalTheme.colorScheme.tertiary,
-		backgroundColor2 = LocalTheme.colorScheme.errorContainer,
+		backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
 		onAction1 = editVariable,
 		onAction2 = deleteVariable,
 		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,

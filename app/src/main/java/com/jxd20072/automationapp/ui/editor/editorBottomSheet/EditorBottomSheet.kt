@@ -5,7 +5,6 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.Draggable2DState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
@@ -61,9 +60,9 @@ fun EditorBottomSheet(
 	filteredLogs: List<AutomationLogEntry>,
 	searchLogs: (query: String) -> Unit,
 	filterLogs: (level: LogLevel) -> Unit,
+    deleteLog: (logID: String) -> Unit,
 	// Dragging
 	editorDragState: EditorNodeDragState,
-	draggableState: Draggable2DState,
 	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
 	onDropZoneExit: () -> Unit,
 	onStartDrag: (
@@ -71,7 +70,6 @@ fun EditorBottomSheet(
 		startedPosition: Offset,
 		startedOffset: Offset,
 	) -> Unit,
-	onStopDrag: () -> Unit,
 ) {
 	val state = remember { ModalBottomSheetState() }
 	val isCollapsed = bottomSheetState is EditorBottomSheetState.Open
@@ -88,15 +86,6 @@ fun EditorBottomSheet(
 		},
 	) {
 		Layer {
-			if (isCollapsed) {
-				EditorBottomSheetCollapsedContent(
-					dragData = editorDragState,
-					showDelete = !editorDragState.isCreatingNode,
-					onDropZoneEnter = onDropZoneEnter,
-					onDropZoneExit = onDropZoneExit
-				)
-			}
-
 			AnimatedContent(
 				targetState = bottomSheetState,
 				transitionSpec = {
@@ -110,16 +99,22 @@ fun EditorBottomSheet(
 				when {
 					state !is EditorBottomSheetState.Open -> {}
 
+                    state.screen == EditorBottomSheetScreen.NODE_DROP -> {
+                        EditorNodeDropSheet(
+                            dragData = editorDragState,
+                            showDelete = isCollapsed && !editorDragState.isCreatingNode,
+                            onDropZoneEnter = onDropZoneEnter,
+                            onDropZoneExit = onDropZoneExit
+                        )
+                    }
+
 					state.screen == EditorBottomSheetScreen.NODE_SELECT -> {
 						EditorNodeSelectScreen(
 							onNodeSearch = onNodeSearch,
 							nodeSelectState = nodeSelectState,
 							autoOpenKeyboard = autoOpenKeyboard,
 							onStartDrag = onStartDrag,
-							onStopDrag = onStopDrag,
-							isCollapsed = isCollapsed,
 							onClick = onCreateClick,
-							draggableState = draggableState,
 						)
 					}
 
@@ -157,7 +152,8 @@ fun EditorBottomSheet(
 							logsScreenState = logsScreenState,
 							filteredLogs = filteredLogs,
 							searchLogs = searchLogs,
-							filterLogs = filterLogs
+							filterLogs = filterLogs,
+                            deleteLog = deleteLog,
 						)
 					}
 
