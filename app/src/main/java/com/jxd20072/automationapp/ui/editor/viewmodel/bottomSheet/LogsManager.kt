@@ -13,42 +13,45 @@ import kotlinx.coroutines.flow.update
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.log
 
 @Immutable
 data class LogsScreenState(
-	val searchQuery: String = "",
-	val filterLevel: LogLevel? = null,
+    val searchQuery: String = "",
+    val filterLevel: LogLevel? = null,
 )
 
 @Singleton
 class LogsManager @Inject constructor(
-	private val automationManager: AutomationManager,
+    private val automationManager: AutomationManager,
 ) {
-	private val _logsScreenState = MutableStateFlow(LogsScreenState())
-	val logsScreenState = _logsScreenState.asStateFlow()
+    private val _logsScreenState = MutableStateFlow(LogsScreenState())
+    val logsScreenState = _logsScreenState.asStateFlow()
 
-	val filteredLogs = combine(
-		automationManager.automationUiState
-			.map { if (it is AutomationUiState.Success) it.automationData.logsList else null }
-			.distinctUntilChanged(),
-		logsScreenState) { logs, state ->
-		if (logs == null) return@combine emptyList()
+    val filteredLogs = combine(
+        automationManager.automationUiState
+            .map { if (it is AutomationUiState.Success) it.automationData.logsList else null }
+            .distinctUntilChanged(),
+        logsScreenState) { logs, state ->
+        if (logs == null) return@combine emptyList()
 
-		(if (state.searchQuery.isBlank()) logs
-		else logs
-			.map { it to FuzzySearch.partialRatio(state.searchQuery, it.message.lowercase()) }
-			.filter { it.second > 40 }
-			.sortedByDescending { it.second }
-			.map { it.first }
-		).filter { state.filterLevel == null || it.level == state.filterLevel }
-	}
+        if (state.searchQuery.isEmpty()) {
+            logs
+                .sortedByDescending { it.time }
+        } else {
+            logs
+                .map { it to FuzzySearch.partialRatio(state.searchQuery, it.message.lowercase()) }
+                .filter { it.second > 40 }
+                .sortedByDescending { it.second }
+                .map { it.first }
+        }
+            .filter { state.filterLevel == null || it.level == state.filterLevel }
+    }
 
-	fun searchLogs(query: String) {
-		_logsScreenState.update { it.copy(searchQuery = query) }
-	}
+    fun searchLogs(query: String) {
+        _logsScreenState.update { it.copy(searchQuery = query) }
+    }
 
-	fun filterLogs(level: LogLevel) {
-		_logsScreenState.update { it.copy(filterLevel = level) }
-	}
+    fun filterLogs(level: LogLevel) {
+        _logsScreenState.update { it.copy(filterLevel = level) }
+    }
 }

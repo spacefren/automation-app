@@ -1,39 +1,16 @@
 package com.jxd20072.automationapp.ui.editor
 
-import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
-import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.drag
-import androidx.compose.foundation.gestures.draggable2D
-import androidx.compose.foundation.gestures.rememberDraggable2DState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputFilter
-import androidx.compose.ui.input.pointer.PointerInputModifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
@@ -50,35 +27,35 @@ import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AutomationEditor(
-	editorViewModel: EditorViewModel = hiltViewModel(),
-	settingsViewModel: UserSettingsViewModel = hiltViewModel(),
-	returnHome: (saveChanges: Boolean) -> Unit
+    editorViewModel: EditorViewModel = hiltViewModel(),
+    settingsViewModel: UserSettingsViewModel = hiltViewModel(),
+    returnHome: (saveChanges: Boolean) -> Unit
 ) {
-	val currentTime by editorViewModel.currentTime.collectAsState()
-	val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
+    val currentTime by editorViewModel.currentTime.collectAsState()
+    val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
 
-	val automationManager = editorViewModel.automationManager
-	val bottomSheetManager = editorViewModel.bottomSheetManager
-	val nodeSelectManager = bottomSheetManager.nodeSelectManager
-	val nodeEditManager = bottomSheetManager.nodeEditManager
-	val variablesManager = bottomSheetManager.variablesManager
-	val variableEditManager = bottomSheetManager.variableEditManager
-	val logsManager = bottomSheetManager.logsManager
-	val dragManager = editorViewModel.dragManager
+    val automationManager = editorViewModel.automationManager
+    val bottomSheetManager = editorViewModel.bottomSheetManager
+    val nodeSelectManager = bottomSheetManager.nodeSelectManager
+    val nodeEditManager = bottomSheetManager.nodeEditManager
+    val variablesManager = bottomSheetManager.variablesManager
+    val variableEditManager = bottomSheetManager.variableEditManager
+    val logsManager = bottomSheetManager.logsManager
+    val dragManager = editorViewModel.dragManager
 
-	val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
-	val draggingData by dragManager.editorNodeDragState.collectAsState()
-	val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
-	val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
-	val nodeEditState by nodeEditManager.editingNodeState.collectAsState(null)
-	val variablesUiState by variablesManager.variablesUiState.collectAsState()
-	val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
-	val variableEditState by variableEditManager.variableEditState.collectAsState()
-	val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
-	val logScreenState by logsManager.logsScreenState.collectAsState()
-	val filteredLogs by logsManager.filteredLogs.collectAsState(emptyList())
+    val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
+    val draggingData by dragManager.editorNodeDragState.collectAsState()
+    val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
+    val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
+    val nodeEditState by nodeEditManager.editingNodeState.collectAsState(null)
+    val variablesUiState by variablesManager.variablesUiState.collectAsState()
+    val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
+    val variableEditState by variableEditManager.variableEditState.collectAsState()
+    val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
+    val logScreenState by logsManager.logsScreenState.collectAsState()
+    val filteredLogs by logsManager.filteredLogs.collectAsState(emptyList())
 
-	if (automationState is AutomationUiState.Success) {
+    if (automationState is AutomationUiState.Success) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -165,8 +142,8 @@ fun AutomationEditor(
                 onDropZoneEnter = dragManager::enterNodeDropZone,
                 onDropZoneExit = dragManager::exitNodeDropZone,
                 autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
-                    && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
+                        && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
             )
         }
-	}
+    }
 }
