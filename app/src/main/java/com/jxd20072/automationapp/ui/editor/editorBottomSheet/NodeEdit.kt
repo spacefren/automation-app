@@ -1,7 +1,6 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import android.Manifest
-import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +24,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
@@ -35,183 +37,178 @@ import com.jxd20072.automationapp.ui.shared.SettingsResetButton
 import com.jxd20072.automationapp.ui.shared.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
-import com.jxd20072.automationapp.ui.utils.providers.LocalPermissionRequester
 
 @Composable
 fun EditorNodeEditScreen(
-	nodeEditState: NodeEditState?,
-	setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
-	resetDefaultConfig: () -> Unit,
+    nodeEditState: NodeEditState?,
+    setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
+    resetDefaultConfig: () -> Unit,
 ) {
-	if (nodeEditState == null) return
-	val localContext = LocalContext.current
+    if (nodeEditState == null) return
+    val localContext = LocalContext.current
 
-	val permissions = nodeEditState.nodeData.permissions.associateWith {
-		localContext.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
-	}
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = Modifier
+            .imePadding()
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
+                    NodeType.ACTION -> "action"
+                    NodeType.TRIGGER -> "trigger"
+                    NodeType.FUNCTION -> "function"
+                },
+                style = LocalTheme.typography.subTitle,
+                color = LocalTheme.colorScheme.onBackground
+            )
+            SettingsResetButton(resetDefaultConfig)
+        }
 
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = Modifier
-			.imePadding()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.windowInsetsPadding(WindowInsets.navigationBars)
-	) {
-		Row(
-			horizontalArrangement = Arrangement.SpaceBetween,
-			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier.fillMaxWidth()
-		) {
-			Text(
-				text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
-					NodeType.ACTION -> "action"
-					NodeType.TRIGGER -> "trigger"
-					NodeType.FUNCTION -> "function"
-				},
-				style = LocalTheme.typography.subTitle,
-				color = LocalTheme.colorScheme.onBackground
-			)
-			SettingsResetButton(resetDefaultConfig)
-		}
+        RequiredPermissionsCard(
+            permissions = nodeEditState.nodeData.permissions
+        )
 
-		AnimatedVisibility(
-			nodeEditState.nodeData.permissions.isNotEmpty() && permissions.values.any { !it }
-		) {
-			RequiredPermissionsCard(
-				permissions = permissions
-			)
-		}
-
-		nodeEditState.nodeData.inputDefinitions.forEach { inputDef ->
-			val name = inputDef.key
-			val inputDef = inputDef.value
-			val currentValue = nodeEditState.nodeDef.input[name]
-			NodeEditField(name, inputDef, currentValue) { setNodeConfig(name, it) }
-		}
-	}
+        nodeEditState.nodeData.inputDefinitions.forEach { inputDef ->
+            val name = inputDef.key
+            val inputDef = inputDef.value
+            val currentValue = nodeEditState.nodeDef.input[name]
+            NodeEditField(name, inputDef, currentValue) { setNodeConfig(name, it) }
+        }
+    }
 }
 
 @Composable
 fun NodeEditField(
-	name: String,
-	inputDefinition: NodeInputDefinition<*>,
-	currentValue: ConfigurationValue<*>?, // Should be T but kotlin is just dumb
-	onValueChanged: (ConfigurationValue<*>) -> Unit
+    name: String,
+    inputDefinition: NodeInputDefinition<*>,
+    currentValue: ConfigurationValue<*>?, // Should be T but kotlin is just dumb
+    onValueChanged: (ConfigurationValue<*>) -> Unit
 ) {
-	when (inputDefinition.defaultValue) {
-		is ConfigurationValue.BOOL -> {
-			if (currentValue != null && currentValue !is ConfigurationValue.BOOL) return
-			UserSettingsItem(
-				item = currentValue ?: inputDefinition.defaultValue,
-				displayName = name,
-				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationValue.BOOL) -> ValidationResult,
-				onValueChanged = onValueChanged
-			)
-		}
+    when (inputDefinition.defaultValue) {
+        is ConfigurationValue.BOOL -> {
+            if (currentValue != null && currentValue !is ConfigurationValue.BOOL) return
+            UserSettingsItem(
+                item = currentValue ?: inputDefinition.defaultValue,
+                displayName = name,
+                description = inputDefinition.description,
+                validate = inputDefinition.validate as (ConfigurationValue.BOOL) -> ValidationResult,
+                onValueChanged = onValueChanged
+            )
+        }
 
-		is ConfigurationValue.TEXT -> {
-			if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
-			UserSettingsItem(
-				item = currentValue ?: inputDefinition.defaultValue,
-				displayName = name,
-				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,
-				onValueChanged = onValueChanged
-			)
-		}
+        is ConfigurationValue.TEXT -> {
+            if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
+            UserSettingsItem(
+                item = currentValue ?: inputDefinition.defaultValue,
+                displayName = name,
+                description = inputDefinition.description,
+                validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,
+                onValueChanged = onValueChanged
+            )
+        }
 
-		is ConfigurationValue.NUMBER -> {
-			if (currentValue != null && currentValue !is ConfigurationValue.NUMBER) return
-			UserSettingsItem(
-				item = currentValue,
-				defaultItem = inputDefinition.defaultValue,
-				displayName = name,
-				description = inputDefinition.description,
-				validate = inputDefinition.validate as (ConfigurationValue.NUMBER) -> ValidationResult,
-				onValueChanged = onValueChanged
-			)
-		}
+        is ConfigurationValue.NUMBER -> {
+            if (currentValue != null && currentValue !is ConfigurationValue.NUMBER) return
+            UserSettingsItem(
+                item = currentValue,
+                defaultItem = inputDefinition.defaultValue,
+                displayName = name,
+                description = inputDefinition.description,
+                validate = inputDefinition.validate as (ConfigurationValue.NUMBER) -> ValidationResult,
+                onValueChanged = onValueChanged
+            )
+        }
 
-		else -> {}
-	}
+        else -> {}
+    }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequiredPermissionsCard(
-	permissions: Map<String, Boolean>
+    permissions: List<String>
 ) {
-	val permissionRequester = LocalPermissionRequester.current
+    val permissionState = permissions.map { it to rememberPermissionState(it) }
 
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-		modifier = Modifier
-			.fillMaxWidth()
-			.shadow(
-				LocalTheme.layoutSystem.shadows.primary,
-				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-			)
-			.background(LocalTheme.colorScheme.errorContainer)
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
-	) {
-		Row(
-			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier.fillMaxWidth()
-		) {
-			Icon(
-				painter = painterResource(R.drawable.round_error_24),
-				contentDescription = "errorIcon",
-				modifier = Modifier
-					.size(
-						with(LocalDensity.current) {
-							LocalTheme.typography.header.fontSize.toDp()
-						}
-					)
-			)
-			Text(
-				text = "Required permissions",
-				style = LocalTheme.typography.header,
-				color = LocalTheme.colorScheme.onBackground
-			)
-		}
-		permissions.map { (permission, isGranted) ->
-			val displayName = when (permission) {
-				Manifest.permission.POST_NOTIFICATIONS -> "Notifications"
-				else -> permission.substringAfterLast('.')
-			}
+    AnimatedVisibility(
+        permissionState.any { !it.second.status.isGranted }
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(
+                    LocalTheme.layoutSystem.shadows.primary,
+                    RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+                )
+                .background(LocalTheme.colorScheme.errorContainer)
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.round_error_24),
+                    contentDescription = "errorIcon",
+                    modifier = Modifier
+                        .size(
+                            with(LocalDensity.current) {
+                                LocalTheme.typography.header.fontSize.toDp()
+                            }
+                        )
+                )
+                Text(
+                    text = "Required permissions",
+                    style = LocalTheme.typography.header,
+                    color = LocalTheme.colorScheme.onBackground
+                )
+            }
+            permissionState
+                .filter { (_, state) -> !state.status.isGranted }
+                .map { (permission, state) ->
+                    val displayName = when (permission) {
+                        Manifest.permission.POST_NOTIFICATIONS -> "Notifications"
+                        else -> permission.substringAfterLast('.')
+                    }
 
-			Row(
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier
-					.clickableWithIndication {
-						permissionRequester.launch(permission)
-					}
-					.fillMaxWidth()
-					.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-					.background(LocalTheme.colorScheme.errorSecondary)
-					.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
-			) {
-				Text(
-					text = displayName,
-					style = LocalTheme.typography.body,
-					color = LocalTheme.colorScheme.onBackground
-				)
-				Icon(
-					painter = painterResource(
-						if (isGranted) R.drawable.round_check_24
-						else R.drawable.round_arrow_forward_24
-					),
-					contentDescription = "warningIcon",
-					modifier = Modifier
-						.size(
-							with(LocalDensity.current) {
-								LocalTheme.typography.body.fontSize.toDp()
-							}
-						)
-				)
-			}
-		}
-	}
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickableWithIndication {
+                                state.launchPermissionRequest()
+                            }
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                            .background(LocalTheme.colorScheme.errorSecondary)
+                            .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+                    ) {
+                        Text(
+                            text = displayName,
+                            style = LocalTheme.typography.body,
+                            color = LocalTheme.colorScheme.onBackground
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.round_arrow_forward_24),
+                            contentDescription = "warningIcon",
+                            modifier = Modifier
+                                .size(
+                                    with(LocalDensity.current) {
+                                        LocalTheme.typography.body.fontSize.toDp()
+                                    }
+                                )
+                        )
+                    }
+                }
+        }
+    }
 }
