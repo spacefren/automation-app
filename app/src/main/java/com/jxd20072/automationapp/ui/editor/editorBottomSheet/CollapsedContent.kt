@@ -22,37 +22,37 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorNodeDropSheet(
-	dragData: EditorNodeDragState,
-	showDelete: Boolean,
-	onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
-	onDropZoneExit: () -> Unit,
+    dragData: EditorNodeDragState,
+    showDelete: Boolean,
+    onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
+    onDropZoneExit: () -> Unit,
 ) {
-	val screenHeight = LocalWindowInfo.current.containerSize.height
-	val navBarsHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
-	var edgePosition by remember { mutableIntStateOf(0) }
-	var expanded by remember { mutableStateOf(false) }
-	val maxHeight by animateDpAsState(if (expanded) 75.dp else 0.dp)
+    val screenHeight = LocalWindowInfo.current.containerSize.height
+    val navBarsHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
+    var edgePosition by remember { mutableIntStateOf(0) }
+    var expanded by remember { mutableStateOf(false) }
+    val maxHeight by animateDpAsState(if (expanded) 75.dp else 0.dp)
 
-	@Composable
-	fun shouldExpand(): Boolean {
-		return if (dragData is EditorNodeDragState.Dragging) {
-			val dragPos = dragData.nodePosition + dragData.inputOffset
-			val extraSpace = with(LocalDensity.current) { 25.dp.toPx() }
-			dragPos.y > edgePosition - extraSpace
-		} else false
-	}
+    @Composable
+    fun shouldExpand(): Boolean {
+        return if (dragData is EditorNodeDragState.Dragging) {
+            val dragPos = dragData.nodePosition + dragData.inputOffset
+            val extraSpace = with(LocalDensity.current) { 25.dp.toPx() }
+            dragPos.y > edgePosition - extraSpace
+        } else false
+    }
 
-	expanded = shouldExpand()
+    expanded = shouldExpand()
 
-	Row(
-		horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = Modifier
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = Modifier
 			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.windowInsetsPadding(WindowInsets.navigationBars)
 			.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1))
@@ -60,30 +60,30 @@ fun EditorNodeDropSheet(
 				edgePosition = screenHeight - navBarsHeight - it.size.height
 			}
 			.heightIn(max = maxHeight)
-	) {
-		NodeDropZone(
-			dragData = dragData,
-			onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Cancelling) },
-			onDropZoneExit = onDropZoneExit,
-			mainColor = LocalTheme.colorScheme.surface,
-			accentColor = LocalTheme.colorScheme.secondary,
-			text = "Drop here to cancel",
-			icon = R.drawable.round_close_24,
-			modifier = Modifier
-				.weight(1f)
-		)
-		if (showDelete) {
-			NodeDropZone(
-				dragData = dragData,
-				onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },
-				onDropZoneExit = onDropZoneExit,
-				mainColor = LocalTheme.colorScheme.errorContainer,
-				accentColor = LocalTheme.colorScheme.error,
-				text = "Drop here to delete",
-				icon = R.drawable.round_delete_24,
-				modifier = Modifier
-					.weight(1f)
-			)
-		}
-	}
+    ) {
+        NodeDropZone(
+            dragData = dragData,
+            onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Cancelling) },
+            onDropZoneExit = onDropZoneExit,
+            mainColor = LocalTheme.colorScheme.surface,
+            accentColor = LocalTheme.colorScheme.secondary,
+            text = "Drop here to cancel",
+            icon = R.drawable.round_close_24,
+            modifier = Modifier
+                .weight(1f)
+        )
+        if (showDelete) {
+            NodeDropZone(
+                dragData = dragData,
+                onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },
+                onDropZoneExit = onDropZoneExit,
+                mainColor = LocalTheme.colorScheme.errorContainer,
+                accentColor = LocalTheme.colorScheme.error,
+                text = "Drop here to delete",
+                icon = R.drawable.round_delete_24,
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
+    }
 }

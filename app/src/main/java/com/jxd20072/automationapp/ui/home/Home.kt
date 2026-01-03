@@ -27,13 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
-import com.jxd20072.automationapp.ui.shared.AppScreen
-import com.jxd20072.automationapp.ui.shared.SearchBar
-import com.jxd20072.automationapp.ui.shared.clickableWithIndication
+import com.jxd20072.automationapp.ui.home.components.AutomationCard
+import com.jxd20072.automationapp.ui.home.components.FilterChips
+import com.jxd20072.automationapp.ui.home.components.FloatingNewButton
+import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
+import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
+import com.jxd20072.automationapp.ui.shared.components.SearchBar
+import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
-import com.jxd20072.automationapp.ui.utils.getRelativeTime
+import com.jxd20072.automationapp.utils.getRelativeTime
 import java.time.Instant
 
 @Composable

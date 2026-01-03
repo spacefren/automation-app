@@ -27,10 +27,10 @@ import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.LogLevel
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.LogsScreenState
-import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.shared.SearchBar
-import com.jxd20072.automationapp.ui.shared.SwipeableContainer
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
+import com.jxd20072.automationapp.ui.shared.components.IconButton
+import com.jxd20072.automationapp.ui.shared.components.SearchBar
+import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import java.time.Instant
 import java.time.LocalDateTime
@@ -39,116 +39,116 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun LogEntry(
-	entry: AutomationLogEntry,
-	modifier: Modifier = Modifier,
-	deleteLog: () -> Unit,
+    entry: AutomationLogEntry,
+    modifier: Modifier = Modifier,
+    deleteLog: () -> Unit,
 ) {
-	SwipeableContainer(
-		icon1 = R.drawable.round_delete_24,
-		icon2 = R.drawable.round_delete_24,
-		backgroundColor1 = LocalTheme.colorScheme.errorSecondary,
-		backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
-		onAction1 = deleteLog,
-		onAction2 = deleteLog,
-		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
-		modifier = modifier,
-		) {
-		val dateTime = remember {
-			LocalDateTime
-				.ofInstant(Instant.parse(entry.time), ZoneOffset.systemDefault())
-		}
-		val timeNow = LocalDateTime.now()
+    SwipeableContainer(
+        icon1 = R.drawable.round_delete_24,
+        icon2 = R.drawable.round_delete_24,
+        backgroundColor1 = LocalTheme.colorScheme.errorSecondary,
+        backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
+        onAction1 = deleteLog,
+        onAction2 = deleteLog,
+        containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+        modifier = modifier,
+    ) {
+        val dateTime = remember {
+            LocalDateTime
+                .ofInstant(Instant.parse(entry.time), ZoneOffset.systemDefault())
+        }
+        val timeNow = LocalDateTime.now()
 
-		val format = (if (timeNow.year == dateTime.year && timeNow.dayOfYear == dateTime.dayOfYear)
-			"" else "yyyy/MM/dd @ ") + "HH:mm:ss"
-		val timestamp = dateTime.format(DateTimeFormatter.ofPattern(format))
+        val format = (if (timeNow.year == dateTime.year && timeNow.dayOfYear == dateTime.dayOfYear)
+            "" else "yyyy/MM/dd @ ") + "HH:mm:ss"
+        val timestamp = dateTime.format(DateTimeFormatter.ofPattern(format))
 
-		Text(
-			text = buildAnnotatedString {
-				withStyle(
-					SpanStyle(
-						color = LocalTheme.colorScheme.onSurface
-					)
-				) {
-					append("[$timestamp] ")
-				}
-				append(entry.message)
-			},
-			style = LocalTheme.typography.body.copy(
-				fontFamily = FontFamily.Monospace
-			),
-			modifier = Modifier
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        color = LocalTheme.colorScheme.onSurface
+                    )
+                ) {
+                    append("[$timestamp] ")
+                }
+                append(entry.message)
+            },
+            style = LocalTheme.typography.body.copy(
+                fontFamily = FontFamily.Monospace
+            ),
+            modifier = Modifier
 				.fillMaxWidth()
 				.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
 				.background(
-					when(entry.level) {
+					when (entry.level) {
 						LogLevel.ERROR -> LocalTheme.colorScheme.errorContainer
 						LogLevel.WARNING -> LocalTheme.colorScheme.warningContainer
 						else -> LocalTheme.colorScheme.surface
 					}
 				)
 				.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
-		)
-	}
+        )
+    }
 }
 
 @Composable
 fun EditorLogsScreen(
-	logsScreenState: LogsScreenState,
-	filteredLogs: List<AutomationLogEntry>,
-	searchLogs: (query: String) -> Unit,
-	filterLogs: (level: LogLevel) -> Unit,
+    logsScreenState: LogsScreenState,
+    filteredLogs: List<AutomationLogEntry>,
+    searchLogs: (query: String) -> Unit,
+    filterLogs: (level: LogLevel) -> Unit,
     deleteLog: (logID: String) -> Unit,
 ) {
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = Modifier
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = Modifier
 			.fillMaxSize()
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.windowInsetsPadding(WindowInsets.navigationBars)
-	) {
-		Text(
-			text = "Logs",
-			style = LocalTheme.typography.subTitle,
-			color = LocalTheme.colorScheme.onBackground
-		)
-		Row(
-			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-		) {
-			SearchBar(
-				searchText = "Search logs",
-				queryText = logsScreenState.searchQuery,
-				autoFocus = false,
-				onSearch = searchLogs,
-				modifier = Modifier.weight(1f)
-			)
-			IconButton(
-				color = LocalTheme.colorScheme.surface,
-				iconColor = LocalTheme.colorScheme.onSurface,
-				drawableRes = R.drawable.round_filter_24,
-				cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-				size = 37.dp,
-				padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-				onClick = {
+    ) {
+        Text(
+            text = "Logs",
+            style = LocalTheme.typography.subTitle,
+            color = LocalTheme.colorScheme.onBackground
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+        ) {
+            SearchBar(
+                searchText = "Search logs",
+                queryText = logsScreenState.searchQuery,
+                autoFocus = false,
+                onSearch = searchLogs,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                color = LocalTheme.colorScheme.surface,
+                iconColor = LocalTheme.colorScheme.onSurface,
+                drawableRes = R.drawable.round_filter_24,
+                cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+                size = 37.dp,
+                padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
+                onClick = {
 
-				}
-			)
-		}
-		LazyColumn(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
-			modifier = Modifier.fillMaxSize()
-		) {
-			items(filteredLogs, { it.id }) {
-				LogEntry(
-					entry = it,
+                }
+            )
+        }
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(filteredLogs, { it.id }) {
+                LogEntry(
+                    entry = it,
                     deleteLog = {
                         deleteLog(it.id)
                     },
                     modifier = Modifier
-						.animateItem()
+                        .animateItem()
                 )
-			}
-		}
-	}
+            }
+        }
+    }
 }

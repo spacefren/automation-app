@@ -33,54 +33,54 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.shared.getTextSize
+import com.jxd20072.automationapp.ui.shared.modifiers.conditional
+import com.jxd20072.automationapp.ui.shared.modifiers.dashedBorder
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.utils.conditional
-import com.jxd20072.automationapp.ui.utils.dashedBorder
 
 @Composable
 fun NodeDropZone(
-	dragData: EditorNodeDragState,
-	onDropZoneEnter: () -> Unit,
-	onDropZoneExit: () -> Unit,
-	mainColor: Color,
-	accentColor: Color,
-	text: String,
-	icon: Int,
-	modifier: Modifier = Modifier
+    dragData: EditorNodeDragState,
+    onDropZoneEnter: () -> Unit,
+    onDropZoneExit: () -> Unit,
+    mainColor: Color,
+    accentColor: Color,
+    text: String,
+    icon: Int,
+    modifier: Modifier = Modifier
 ) {
-	var isHovering by remember { mutableStateOf(false) }
+    var isHovering by remember { mutableStateOf(false) }
 
-	val scale by animateFloatAsState(if (isHovering) 1f else .95f)
-	var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }
-	var size by remember { mutableStateOf(IntSize(0, 0)) }
-	var textWidth by remember { mutableFloatStateOf(0f) }
+    val scale by animateFloatAsState(if (isHovering) 1f else .95f)
+    var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }
+    var size by remember { mutableStateOf(IntSize(0, 0)) }
+    var textWidth by remember { mutableFloatStateOf(0f) }
 
-	@Composable
-	fun checkHovering(): Boolean {
-		return if (dragData is EditorNodeDragState.Dragging) {
-			val dragPos = dragData.nodePosition + dragData.inputOffset
+    @Composable
+    fun checkHovering(): Boolean {
+        return if (dragData is EditorNodeDragState.Dragging) {
+            val dragPos = dragData.nodePosition + dragData.inputOffset
 
-			dragPos.y > positionInRoot.y && dragPos.y < positionInRoot.y + size.height
-				&& dragPos.x > positionInRoot.x && dragPos.x < positionInRoot.x + size.width
-		} else false
-	}
+            dragPos.y > positionInRoot.y && dragPos.y < positionInRoot.y + size.height
+                    && dragPos.x > positionInRoot.x && dragPos.x < positionInRoot.x + size.width
+        } else false
+    }
 
-	isHovering = checkHovering()
+    isHovering = checkHovering()
 
-	LaunchedEffect(isHovering) {
-		if (isHovering) {
-			onDropZoneEnter()
-		} else {
-			onDropZoneExit()
-		}
-	}
+    LaunchedEffect(isHovering) {
+        if (isHovering) {
+            onDropZoneEnter()
+        } else {
+            onDropZoneExit()
+        }
+    }
 
-	Row(
-		horizontalArrangement = Arrangement.Center,
-		verticalAlignment = Alignment.CenterVertically,
-		modifier = modifier
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
 			.graphicsLayer(scaleX = scale, scaleY = scale)
 			.fillMaxSize()
 			.onGloballyPositioned { layout ->
@@ -102,26 +102,26 @@ fun NodeDropZone(
 				gapLength = 8.dp
 			)
 			.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-	) {
-		Image(
-			painter = painterResource(icon),
-			contentDescription = "$text icon",
-			colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
-			modifier = Modifier
-				.size(24.dp)
-		)
-		Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
-		Text(
-			text = text,
-			color = LocalTheme.colorScheme.onBackground,
-			fontSize = 17.sp,
-			onTextLayout = {
-				textWidth = getTextSize(it)
-			},
-			modifier = Modifier
-				.conditional(textWidth != 0f, ifTrue = {
-					width(with(LocalDensity.current) { textWidth.toDp() })
-				})
-		)
-	}
+    ) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = "$text icon",
+            colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
+            modifier = Modifier
+                .size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
+        Text(
+            text = text,
+            color = LocalTheme.colorScheme.onBackground,
+            fontSize = 17.sp,
+            onTextLayout = {
+                textWidth = getTextSize(it)
+            },
+            modifier = Modifier
+                .conditional(textWidth != 0f, ifTrue = {
+                    width(with(LocalDensity.current) { textWidth.toDp() })
+                })
+        )
+    }
 }

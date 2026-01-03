@@ -1,0 +1,52 @@
+package com.jxd20072.automationapp.ui.settings.settingsItems
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.theme.LocalTheme
+
+@Composable
+fun UserSettingsItem(
+    displayName: String,
+    description: String = "",
+    selectedOption: ConfigurationValue.CHOOSE,
+    options: List<ConfigurationValue.CHOOSE>,
+    modifier: Modifier = Modifier,
+    onValueChanged: (newValue: ConfigurationValue.CHOOSE) -> Unit
+) {
+    VerticalUserSettingsItemContainer(
+        displayName = displayName,
+        description = description,
+        modifier = modifier
+    ) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
+        ) {
+            options.forEach { option ->
+                Text(
+                    text = option.value,
+                    color = if (option == selectedOption) LocalTheme.colorScheme.onBackground
+                    else LocalTheme.colorScheme.onSurface,
+                    style = LocalTheme.typography.body,
+                    modifier = Modifier
+						.clickableWithIndication { onValueChanged(option) }
+						.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+						.background(
+							if (option == selectedOption) LocalTheme.colorScheme.tertiary
+							else LocalTheme.colorScheme.surface
+						)
+						.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                )
+            }
+        }
+    }
+}

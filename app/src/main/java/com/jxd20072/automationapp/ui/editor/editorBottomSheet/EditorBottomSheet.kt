@@ -15,18 +15,18 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDropData
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetScreen
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.EditorBottomSheetState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.LogsScreenState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariableEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
-import com.jxd20072.automationapp.ui.shared.Layer
-import com.jxd20072.automationapp.ui.shared.ModalBottomSheet
-import com.jxd20072.automationapp.ui.shared.ModalBottomSheetState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
+import com.jxd20072.automationapp.ui.shared.components.Layer
+import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
+import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

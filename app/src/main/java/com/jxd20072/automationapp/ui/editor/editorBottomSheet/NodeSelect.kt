@@ -49,11 +49,11 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.ui.editor.nodeTree.NodeHeaderIcons
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.CategoryListEntry
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeSelectState
-import com.jxd20072.automationapp.ui.shared.SearchBar
-import com.jxd20072.automationapp.ui.shared.clickableWithIndication
+import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcons
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.CategoryListEntry
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectState
+import com.jxd20072.automationapp.ui.shared.components.SearchBar
+import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)

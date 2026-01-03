@@ -31,11 +31,11 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.NodeEditState
-import com.jxd20072.automationapp.ui.shared.SettingsResetButton
-import com.jxd20072.automationapp.ui.shared.clickableWithIndication
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
+import com.jxd20072.automationapp.ui.settings.settingsItems.UserSettingsItem
+import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
+import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.userSettings.settingsItems.UserSettingsItem
 
 @Composable
 fun EditorNodeEditScreen(

@@ -5,9 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.jxd20072.automationapp.ui.AutomationApp
-import com.jxd20072.automationapp.ui.shared.SnackbarHost
+import com.jxd20072.automationapp.ui.shared.PermissionRequestProvider
+import com.jxd20072.automationapp.ui.shared.components.SnackbarHost
 import com.jxd20072.automationapp.ui.theme.AutomationAppTheme
-import com.jxd20072.automationapp.ui.utils.providers.PermissionRequestProvider
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

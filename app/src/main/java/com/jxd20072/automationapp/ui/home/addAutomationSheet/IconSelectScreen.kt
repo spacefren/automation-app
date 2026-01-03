@@ -18,64 +18,64 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.shared.SearchBar
+import com.jxd20072.automationapp.ui.shared.components.IconButton
+import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IconSelectScreen(
-	autoOpenKeyboard: Boolean,
-	isSheetOpen: Boolean,
-	filteredIcons: List<String>,
-	iconSearchQuery: String,
-	onIconSearch: (query: String) -> Unit,
-	onIconSelected: (icon: String) -> Unit
+    autoOpenKeyboard: Boolean,
+    isSheetOpen: Boolean,
+    filteredIcons: List<String>,
+    iconSearchQuery: String,
+    onIconSearch: (query: String) -> Unit,
+    onIconSelected: (icon: String) -> Unit
 ) {
-	Column(
-		verticalArrangement = Arrangement.spacedBy(15.dp),
-		modifier = Modifier
+    Column(
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        modifier = Modifier
 			.fillMaxSize()
 			.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
 			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
-	) {
-		Text(
-			text = "Change icon",
-			color = LocalTheme.colorScheme.onBackground,
-			style = LocalTheme.typography.subTitle
-		)
+    ) {
+        Text(
+            text = "Change icon",
+            color = LocalTheme.colorScheme.onBackground,
+            style = LocalTheme.typography.subTitle
+        )
 
-		SearchBar(
-			searchText = "Search icons",
-			queryText = iconSearchQuery,
-			modifier = Modifier.fillMaxWidth(),
-			autoFocus = autoOpenKeyboard
-		) { query ->
-			onIconSearch(query)
-		}
+        SearchBar(
+            searchText = "Search icons",
+            queryText = iconSearchQuery,
+            modifier = Modifier.fillMaxWidth(),
+            autoFocus = autoOpenKeyboard
+        ) { query ->
+            onIconSearch(query)
+        }
 
-		LazyVerticalGrid(
-			columns = GridCells.Fixed(8),
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			contentPadding = PaddingValues(
-				bottom = LocalTheme.layoutSystem.spacing.paddingLevel1
-					+ WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-			)
-		) {
-			items(filteredIcons, { it }) { icon ->
-				IconButton(
-					color = LocalTheme.colorScheme.surface,
-					iconColor = LocalTheme.colorScheme.onSurface,
-					iconName = icon,
-					cornerRadius = 8.dp,
-					padding = 8.dp,
-					size = 43.dp,
-					modifier = Modifier
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(8),
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            contentPadding = PaddingValues(
+                bottom = LocalTheme.layoutSystem.spacing.paddingLevel1
+                        + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            )
+        ) {
+            items(filteredIcons, { it }) { icon ->
+                IconButton(
+                    color = LocalTheme.colorScheme.surface,
+                    iconColor = LocalTheme.colorScheme.onSurface,
+                    iconName = icon,
+                    cornerRadius = 8.dp,
+                    padding = 8.dp,
+                    size = 43.dp,
+                    modifier = Modifier
 						.aspectRatio(1f)
 						.animateItem()
-				) { onIconSelected(icon) }
-			}
-		}
-	}
+                ) { onIconSelected(icon) }
+            }
+        }
+    }
 }

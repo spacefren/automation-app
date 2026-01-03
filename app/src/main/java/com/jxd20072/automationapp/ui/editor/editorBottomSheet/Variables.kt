@@ -32,12 +32,12 @@ import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
-import com.jxd20072.automationapp.ui.shared.DropdownMenu
-import com.jxd20072.automationapp.ui.shared.DropdownOption
-import com.jxd20072.automationapp.ui.shared.IconButton
-import com.jxd20072.automationapp.ui.shared.SearchBar
-import com.jxd20072.automationapp.ui.shared.SwipeableContainer
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
+import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
+import com.jxd20072.automationapp.ui.shared.components.DropdownOption
+import com.jxd20072.automationapp.ui.shared.components.IconButton
+import com.jxd20072.automationapp.ui.shared.components.SearchBar
+import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable

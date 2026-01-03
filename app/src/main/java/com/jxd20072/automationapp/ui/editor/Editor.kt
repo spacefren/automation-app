@@ -12,15 +12,16 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.ui.editor.components.DraggingNode
+import com.jxd20072.automationapp.ui.editor.components.EditorFloatingAddButton
+import com.jxd20072.automationapp.ui.editor.components.EditorNodeTree
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
-import com.jxd20072.automationapp.ui.editor.nodeTree.DraggingNode
-import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
-import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
-import com.jxd20072.automationapp.ui.shared.AppScreen
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
+import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

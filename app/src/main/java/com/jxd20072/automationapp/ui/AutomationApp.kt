@@ -22,13 +22,13 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsScreen
-import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
+import com.jxd20072.automationapp.ui.settings.UserSettingsScreen
+import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
 import kotlinx.serialization.Serializable
 
 val animationSpec: FiniteAnimationSpec<IntOffset> = spring(
-	dampingRatio = Spring.DampingRatioNoBouncy,
-	stiffness = Spring.StiffnessMediumLow
+    dampingRatio = Spring.DampingRatioNoBouncy,
+    stiffness = Spring.StiffnessMediumLow
 )
 
 @Serializable
@@ -42,84 +42,84 @@ data object Editor : NavKey
 
 @Composable
 fun AutomationApp() {
-	val settingsViewModel: UserSettingsViewModel = hiltViewModel()
-	val homeViewModel: HomeViewModel = hiltViewModel()
-	val editorViewModel: EditorViewModel = hiltViewModel()
+    val settingsViewModel: UserSettingsViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val editorViewModel: EditorViewModel = hiltViewModel()
 
-	val backStack = rememberNavBackStack(Home)
+    val backStack = rememberNavBackStack(Home)
 
-	NavDisplay(
-		backStack = backStack,
-		onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
-		modifier = Modifier.background(LocalTheme.colorScheme.background),
-		transitionSpec = {
-			ContentTransform(
-				targetContentEnter = slideIntoContainer(
-					AnimatedContentTransitionScope.SlideDirection.Left,
-					initialOffset = { it / 3 },
-					animationSpec = animationSpec
-				) + fadeIn(),
-				initialContentExit = slideOutOfContainer(
-					AnimatedContentTransitionScope.SlideDirection.Left,
-					targetOffset = { it / 5 },
-					animationSpec = animationSpec
-				)
-			)
-		},
-		popTransitionSpec = {
-			ContentTransform(
-				targetContentEnter = slideIntoContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					initialOffset = { it / 5 },
-					animationSpec = animationSpec
-				),
-				initialContentExit = slideOutOfContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					targetOffset = { it / 3 },
-					animationSpec = animationSpec
-				) + fadeOut()
-			)
-		},
-		predictivePopTransitionSpec = {
-			ContentTransform(
-				targetContentEnter = slideIntoContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					initialOffset = { it / 5 },
-					animationSpec = animationSpec
-				),
-				initialContentExit = slideOutOfContainer(
-					AnimatedContentTransitionScope.SlideDirection.Right,
-					targetOffset = { it / 3 },
-					animationSpec = animationSpec
-				) + fadeOut()
-			)
-		},
-		entryProvider = entryProvider {
-			entry<Home> {
-				HomeScreen(
-					homeViewModel = homeViewModel,
-					settingsViewModel = settingsViewModel,
-					openSettings = { backStack.add(Settings) },
-					runAutomation = {},
-					editAutomation = { id ->
-						editorViewModel.automationManager.loadAutomation(id)
-						backStack.add(Editor)
-					},
-				)
-			}
-			entry<Settings> {
-				UserSettingsScreen(
-					userSettingsViewModel = settingsViewModel,
-					returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
-				)
-			}
-			entry<Editor> {
-				AutomationEditor(
-					editorViewModel = editorViewModel,
-					settingsViewModel = settingsViewModel,
-					returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
-				)
-			}
-		}
-	)
+    NavDisplay(
+        backStack = backStack,
+        onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
+        modifier = Modifier.background(LocalTheme.colorScheme.background),
+        transitionSpec = {
+            ContentTransform(
+                targetContentEnter = slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    initialOffset = { it / 3 },
+                    animationSpec = animationSpec
+                ) + fadeIn(),
+                initialContentExit = slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    targetOffset = { it / 5 },
+                    animationSpec = animationSpec
+                )
+            )
+        },
+        popTransitionSpec = {
+            ContentTransform(
+                targetContentEnter = slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    initialOffset = { it / 5 },
+                    animationSpec = animationSpec
+                ),
+                initialContentExit = slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    targetOffset = { it / 3 },
+                    animationSpec = animationSpec
+                ) + fadeOut()
+            )
+        },
+        predictivePopTransitionSpec = {
+            ContentTransform(
+                targetContentEnter = slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    initialOffset = { it / 5 },
+                    animationSpec = animationSpec
+                ),
+                initialContentExit = slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    targetOffset = { it / 3 },
+                    animationSpec = animationSpec
+                ) + fadeOut()
+            )
+        },
+        entryProvider = entryProvider {
+            entry<Home> {
+                HomeScreen(
+                    homeViewModel = homeViewModel,
+                    settingsViewModel = settingsViewModel,
+                    openSettings = { backStack.add(Settings) },
+                    runAutomation = {},
+                    editAutomation = { id ->
+                        editorViewModel.automationManager.loadAutomation(id)
+                        backStack.add(Editor)
+                    },
+                )
+            }
+            entry<Settings> {
+                UserSettingsScreen(
+                    userSettingsViewModel = settingsViewModel,
+                    returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
+                )
+            }
+            entry<Editor> {
+                AutomationEditor(
+                    editorViewModel = editorViewModel,
+                    settingsViewModel = settingsViewModel,
+                    returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
+                )
+            }
+        }
+    )
 }
