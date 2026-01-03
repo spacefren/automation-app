@@ -12,17 +12,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-		enableEdgeToEdge()
-		setContent {
-			AutomationAppTheme(dynamicColor = false) {
-				PermissionRequestProvider {
-					SnackbarHost()
-					AutomationApp()
-				}
-			}
-		}
-	}
+        enableEdgeToEdge()
+        setContent {
+            AutomationAppTheme(dynamicColor = false) {
+                PermissionRequestProvider {
+                    SnackbarHost()
+                    AutomationApp()
+                }
+            }
+        }
+    }
 }

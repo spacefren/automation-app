@@ -33,6 +33,8 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.bottomSheet.VariablesScreenState
+import com.jxd20072.automationapp.ui.shared.DropdownMenu
+import com.jxd20072.automationapp.ui.shared.DropdownOption
 import com.jxd20072.automationapp.ui.shared.IconButton
 import com.jxd20072.automationapp.ui.shared.SearchBar
 import com.jxd20072.automationapp.ui.shared.SwipeableContainer
@@ -40,144 +42,171 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorVariableEntry(
-	variableDef: VariableDef,
-	modifier: Modifier = Modifier,
-	editVariable: () -> Unit,
-	deleteVariable: () -> Unit
+    variableDef: VariableDef,
+    modifier: Modifier = Modifier,
+    editVariable: () -> Unit,
+    deleteVariable: () -> Unit
 ) {
-	val iconSize = with(LocalDensity.current) {
-		LocalTheme.typography.body.fontSize.toDp()
-	}
+    val iconSize = with(LocalDensity.current) {
+        LocalTheme.typography.body.fontSize.toDp()
+    }
 
-	SwipeableContainer(
-		icon1 = R.drawable.round_edit_24,
-		icon2 = R.drawable.round_delete_24,
-		backgroundColor1 = LocalTheme.colorScheme.tertiary,
-		backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
-		onAction1 = editVariable,
-		onAction2 = deleteVariable,
-		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-		modifier = modifier
-	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier
-				.fillMaxWidth()
-				.height(IntrinsicSize.Min)
-				.shadow(
-					LocalTheme.layoutSystem.shadows.secondary,
-					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-				)
-				.background(LocalTheme.colorScheme.surface)
-				.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-		) {
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
-				modifier = Modifier
-					.weight(1f)
-			) {
-				Box(
-					modifier = Modifier
-						.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-						.background(LocalTheme.colorScheme.tertiary)
-						.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-				) {
-					Icon(
-						painter = painterResource(
-							when (variableDef.value) {
-								is VariableDefValue.BOOL -> R.drawable.round_bool_24
-								is VariableDefValue.TEXT -> R.drawable.round_text_24
-								is VariableDefValue.NUMBER -> R.drawable.round_number_24
-							}
-						),
-						contentDescription = "",
-						modifier = Modifier
-							.size(iconSize)
-					)
-				}
-				Text(
-					text = variableDef.name,
-					style = LocalTheme.typography.body,
-				)
-			}
-			Icon(
-				painter = painterResource(R.drawable.round_equal_24),
-				contentDescription = "",
-				modifier = Modifier.size(iconSize)
-			)
-			Box(modifier = Modifier.weight(1f)) {
-				Text(
-					text = variableDef.value.value.toString(),
-					style = LocalTheme.typography.body.copy(
-						textAlign = TextAlign.End
-					),
-					modifier = Modifier
-						.align(Alignment.CenterEnd)
-						.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-						.background(LocalTheme.colorScheme.tertiary)
-						.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-				)
-			}
-		}
-	}
+    SwipeableContainer(
+        icon1 = R.drawable.round_edit_24,
+        icon2 = R.drawable.round_delete_24,
+        backgroundColor1 = LocalTheme.colorScheme.tertiary,
+        backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
+        onAction1 = editVariable,
+        onAction2 = deleteVariable,
+        containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+        ) {
+            DropdownMenu(
+                options = listOf(
+                    DropdownOption(
+                        icon = R.drawable.round_settings_24,
+                        text = "Settings",
+                        danger = false,
+                        action = { }
+                    ),
+                    DropdownOption(
+                        icon = R.drawable.round_archive_24,
+                        text = "Archive",
+                        danger = false,
+                        action = { }
+                    ),
+                    DropdownOption(
+                        icon = R.drawable.round_delete_24,
+                        text = "Delete",
+                        danger = true,
+                        action = { }
+                    ),
+                )
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .shadow(
+                    LocalTheme.layoutSystem.shadows.secondary,
+                    RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+                )
+                .background(LocalTheme.colorScheme.surface)
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                        .background(LocalTheme.colorScheme.tertiary)
+                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            when (variableDef.value) {
+                                is VariableDefValue.BOOL -> R.drawable.round_bool_24
+                                is VariableDefValue.TEXT -> R.drawable.round_text_24
+                                is VariableDefValue.NUMBER -> R.drawable.round_number_24
+                            }
+                        ),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(iconSize)
+                    )
+                }
+                Text(
+                    text = variableDef.name,
+                    style = LocalTheme.typography.body,
+                )
+            }
+            Icon(
+                painter = painterResource(R.drawable.round_equal_24),
+                contentDescription = "",
+                modifier = Modifier.size(iconSize)
+            )
+            Box(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = variableDef.value.value.toString(),
+                    style = LocalTheme.typography.body.copy(
+                        textAlign = TextAlign.End
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                        .background(LocalTheme.colorScheme.tertiary)
+                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                )
+            }
+        }
+    }
 }
 
 @Composable
 fun EditorVariablesScreen(
-	variablesScreenState: VariablesScreenState,
-	filteredVariables: Set<VariableDef>,
-	editVariable: (name: String) -> Unit,
-	deleteVariable: (name: String) -> Unit,
-	searchVariable: (String) -> Unit,
-	createVariable: () -> Unit
+    variablesScreenState: VariablesScreenState,
+    filteredVariables: Set<VariableDef>,
+    editVariable: (name: String) -> Unit,
+    deleteVariable: (name: String) -> Unit,
+    searchVariable: (String) -> Unit,
+    createVariable: () -> Unit
 ) {
-	Column(
-		verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-		modifier = Modifier
-			.fillMaxSize()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.windowInsetsPadding(WindowInsets.navigationBars)
-	) {
-		Text(
-			text = "Variables",
-			style = LocalTheme.typography.subTitle,
-			color = LocalTheme.colorScheme.onBackground
-		)
-		Row(
-			horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-		) {
-			SearchBar(
-				searchText = "Search variables",
-				queryText = variablesScreenState.searchQuery,
-				autoFocus = false,
-				onSearch = searchVariable,
-				modifier = Modifier.weight(1f)
-			)
-			IconButton(
-				color = LocalTheme.colorScheme.surface,
-				iconColor = LocalTheme.colorScheme.onSurface,
-				drawableRes = R.drawable.round_add_24,
-				cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-				size = 37.dp,
-				padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-				onClick = createVariable
-			)
-		}
-		LazyColumn(
-			verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-			contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
-			modifier = Modifier.fillMaxSize()
-		) {
-			items(filteredVariables.sortedBy { it.name }, { it.id }) {
-				EditorVariableEntry(
-					variableDef = it,
-					editVariable = { editVariable(it.id) },
-					deleteVariable = { deleteVariable(it.id) },
-					modifier = Modifier
-						.animateItem()
-				)
-			}
-		}
-	}
+    Column(
+        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+    ) {
+        Text(
+            text = "Variables",
+            style = LocalTheme.typography.subTitle,
+            color = LocalTheme.colorScheme.onBackground
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+        ) {
+            SearchBar(
+                searchText = "Search variables",
+                queryText = variablesScreenState.searchQuery,
+                autoFocus = false,
+                onSearch = searchVariable,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                color = LocalTheme.colorScheme.surface,
+                iconColor = LocalTheme.colorScheme.onSurface,
+                drawableRes = R.drawable.round_add_24,
+                cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+                size = 37.dp,
+                padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
+                onClick = createVariable
+            )
+        }
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(filteredVariables.sortedBy { it.name }, { it.id }) {
+                EditorVariableEntry(
+                    variableDef = it,
+                    editVariable = { editVariable(it.id) },
+                    deleteVariable = { deleteVariable(it.id) },
+                    modifier = Modifier
+                        .animateItem()
+                )
+            }
+        }
+    }
 }

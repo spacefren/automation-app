@@ -1,7 +1,6 @@
 package com.jxd20072.automationapp.ui.editor
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,8 +18,7 @@ import com.jxd20072.automationapp.ui.editor.nodeTree.EditorNodeTree
 import com.jxd20072.automationapp.ui.editor.viewmodel.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
-import com.jxd20072.automationapp.ui.shared.Layer
-import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.shared.AppScreen
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.userSettings.UserSettingsViewModel
 
@@ -55,34 +53,30 @@ fun AutomationEditor(
     val logScreenState by logsManager.logsScreenState.collectAsState()
     val filteredLogs by logsManager.filteredLogs.collectAsState(emptyList())
 
-    if (automationState is AutomationUiState.Success) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            awaitPointerEvent(PointerEventPass.Initial).changes.forEach { change ->
-                                if (draggingData !is EditorNodeDragState.Dragging) return@forEach
+    AppScreen {
+        if (automationState is AutomationUiState.Success) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent(PointerEventPass.Initial).changes.forEach { change ->
+                                    if (draggingData !is EditorNodeDragState.Dragging) return@forEach
 
-                                val delta = change.position - change.previousPosition
+                                    val delta = change.position - change.previousPosition
 
-                                if (delta.x != 0f || delta.y != 0f) {
-                                    dragManager.dragNodeDelta(delta)
-                                }
+                                    if (delta.x != 0f || delta.y != 0f) {
+                                        dragManager.dragNodeDelta(delta)
+                                    }
 
-                                if (!change.pressed && change.previousPressed) {
-                                    editorViewModel.onNodeDrop()
+                                    if (!change.pressed && change.previousPressed) {
+                                        editorViewModel.onNodeDrop()
+                                    }
                                 }
                             }
                         }
                     }
-                }
-        ) {
-            Layer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(LocalTheme.colorScheme.background)
             ) {
                 Column {
                     EditorTopBar(
@@ -102,48 +96,48 @@ fun AutomationEditor(
                         onDropLineExit = dragManager::exitDropLine
                     )
                 }
+                DraggingNode(
+                    draggingData = draggingData
+                )
+                EditorFloatingAddButton(
+                    hidden = draggingData is EditorNodeDragState.Dragging,
+                    onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeType.ACTION) },
+                    onCreateFunctionPressed = { },
+                    onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeType.TRIGGER) }
+                )
+                EditorBottomSheet(
+                    onDismiss = bottomSheetManager::closeBottomSheet,
+                    bottomSheetState = bottomSheetState,
+                    nodeSelectState = nodeSelectState,
+                    nodeEditScreenState = nodeEditState,
+                    setNodeConfig = nodeEditManager::setConfig,
+                    resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
+                    onNodeSearch = nodeSelectManager::changeNodeSearchQuery,
+                    variablesScreenState = variablesUiState,
+                    filteredVariables = filteredVariables,
+                    searchVariable = variablesManager::changeSearchQuery,
+                    editVariable = bottomSheetManager::openVariableEdit,
+                    deleteVariable = automationManager::deleteVariable,
+                    createVariable = editorViewModel::onCreateVariable,
+                    variableEditState = variableEditState,
+                    editingVariableDef = editingVariableDef,
+                    validateVariableName = automationManager::validateVariableName,
+                    changeVariableName = variableEditManager::changeName,
+                    changeVariableValue = variableEditManager::changeValue,
+                    logsScreenState = logScreenState,
+                    filteredLogs = filteredLogs,
+                    searchLogs = logsManager::searchLogs,
+                    filterLogs = logsManager::filterLogs,
+                    deleteLog = automationManager::deleteLog,
+                    editorDragState = draggingData,
+                    onStartDrag = editorViewModel::onCreateNodeDrag,
+                    onCreateClick = editorViewModel::onCreateNodeClick,
+                    onDropZoneEnter = dragManager::enterNodeDropZone,
+                    onDropZoneExit = dragManager::exitNodeDropZone,
+                    autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
+                            && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
+                )
             }
-            DraggingNode(
-                draggingData = draggingData
-            )
-            EditorFloatingAddButton(
-                hidden = draggingData is EditorNodeDragState.Dragging,
-                onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeType.ACTION) },
-                onCreateFunctionPressed = { },
-                onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeType.TRIGGER) }
-            )
-            EditorBottomSheet(
-                onDismiss = bottomSheetManager::closeBottomSheet,
-                bottomSheetState = bottomSheetState,
-                nodeSelectState = nodeSelectState,
-                nodeEditScreenState = nodeEditState,
-                setNodeConfig = nodeEditManager::setConfig,
-                resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
-                onNodeSearch = nodeSelectManager::changeNodeSearchQuery,
-                variablesScreenState = variablesUiState,
-                filteredVariables = filteredVariables,
-                searchVariable = variablesManager::changeSearchQuery,
-                editVariable = bottomSheetManager::openVariableEdit,
-                deleteVariable = automationManager::deleteVariable,
-                createVariable = editorViewModel::onCreateVariable,
-                variableEditState = variableEditState,
-                editingVariableDef = editingVariableDef,
-                validateVariableName = automationManager::validateVariableName,
-                changeVariableName = variableEditManager::changeName,
-                changeVariableValue = variableEditManager::changeValue,
-                logsScreenState = logScreenState,
-                filteredLogs = filteredLogs,
-                searchLogs = logsManager::searchLogs,
-                filterLogs = logsManager::filterLogs,
-                deleteLog = automationManager::deleteLog,
-                editorDragState = draggingData,
-                onStartDrag = editorViewModel::onCreateNodeDrag,
-                onCreateClick = editorViewModel::onCreateNodeClick,
-                onDropZoneEnter = dragManager::enterNodeDropZone,
-                onDropZoneExit = dragManager::exitNodeDropZone,
-                autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
-                        && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
-            )
         }
     }
 }

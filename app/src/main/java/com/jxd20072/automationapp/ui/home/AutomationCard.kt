@@ -33,104 +33,106 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun getAutomationIconPainter(name: String): Painter {
-	val context = LocalContext.current
+    val context = LocalContext.current
 
-	return rememberAsyncImagePainter(
-		model = ImageRequest.Builder(context)
-			.data("file:///android_asset/icons/$name.svg")
-			.decoderFactory(SvgDecoder.Factory())
-			.build(),
-		imageLoader = (context.applicationContext as AutomationApplication).imageLoader
-	)
+    return rememberAsyncImagePainter(
+        model = ImageRequest.Builder(context)
+            .data("file:///android_asset/icons/$name.svg")
+            .decoderFactory(SvgDecoder.Factory())
+            .build(),
+        imageLoader = (context.applicationContext as AutomationApplication).imageLoader
+    )
 }
 
 @Composable
 fun AutomationCard(
-	name: String,
-	icon: String,
-	lastUsed: String,
-	modifier: Modifier = Modifier,
-	runAutomation: () -> Unit,
-	editAutomation: () -> Unit,
+    name: String,
+    icon: String,
+    lastUsed: String,
+    modifier: Modifier = Modifier,
+    runAutomation: () -> Unit,
+    editAutomation: () -> Unit,
 ) {
-	val iconSize = with(LocalDensity.current) {
-		LocalTheme.typography.header.fontSize.toDp()
-	}
+    val iconSize = with(LocalDensity.current) {
+        LocalTheme.typography.header.fontSize.toDp()
+    }
 
-	SwipeableContainer(
-		icon1 = R.drawable.round_archive_24,
-		backgroundColor1 = LocalTheme.colorScheme.tertiary,
-		containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-		onAction1 = { },
-		modifier = modifier
-	) {
-		Box(
-			modifier = Modifier
-				.fillMaxWidth()
-		) {
-			Row(
-				modifier = Modifier
-					.fillMaxSize()
-					.shadow(
-						LocalTheme.layoutSystem.shadows.primary,
-						RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-					)
-					.background(LocalTheme.colorScheme.surface)
-					.padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
-				horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				Column(
-					verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
-					modifier = Modifier
-						.weight(1f)
-						.fillMaxHeight()
-				) {
-					Row(
-						horizontalArrangement =
-							Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
-					) {
-						Image(
-							painter = getAutomationIconPainter(icon),
-							contentDescription = "",
-							colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
-							modifier = Modifier
-								.size(iconSize)
-						)
-						Text(
-							text = name,
-							color = LocalTheme.colorScheme.onBackground,
-							style = LocalTheme.typography.header,
-						)
-					}
-					Text(
-						text = "Last ran: $lastUsed",
-						color = LocalTheme.colorScheme.onSurface,
-						style = LocalTheme.typography.body
-						//modifier = Modifier.padding(start = 2.dp) // Align with the icon's live area
-					)
-				}
+    SwipeableContainer(
+        icon1 = R.drawable.round_archive_24,
+        backgroundColor1 = LocalTheme.colorScheme.tertiary,
+        containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+        onAction1 = { },
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(
+                        LocalTheme.layoutSystem.shadows.primary,
+                        RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+                    )
+                    .background(LocalTheme.colorScheme.surface)
+                    .padding(LocalTheme.layoutSystem.spacing.paddingLevel2),
+                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+                    Row(
+                        horizontalArrangement =
+                            Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                    ) {
+                        Box {
+                            Image(
+                                painter = getAutomationIconPainter(icon),
+                                contentDescription = "",
+                                colorFilter = ColorFilter.tint(LocalTheme.colorScheme.onBackground),
+                                modifier = Modifier
+                                    .size(iconSize)
+                            )
+                        }
+                        Text(
+                            text = name,
+                            color = LocalTheme.colorScheme.onBackground,
+                            style = LocalTheme.typography.header,
+                        )
+                    }
+                    Text(
+                        text = "Last ran: $lastUsed",
+                        color = LocalTheme.colorScheme.onSurface,
+                        style = LocalTheme.typography.body
+                        //modifier = Modifier.padding(start = 2.dp) // Align with the icon's live area
+                    )
+                }
 
-				IconButton(
-					color = LocalTheme.colorScheme.tertiary,
-					iconColor = LocalTheme.colorScheme.onTertiary,
-					drawableRes = R.drawable.round_edit_24,
-					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
-					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
-					onClick = editAutomation,
-					size = 42.dp,
-				)
+                IconButton(
+                    color = LocalTheme.colorScheme.tertiary,
+                    iconColor = LocalTheme.colorScheme.onTertiary,
+                    drawableRes = R.drawable.round_edit_24,
+                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+                    padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+                    onClick = editAutomation,
+                    size = 42.dp,
+                )
 
-				IconButton(
-					color = LocalTheme.colorScheme.secondary,
-					iconColor = LocalTheme.colorScheme.onSecondary,
-					drawableRes = R.drawable.round_play_arrow_24,
-					cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
-					padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
-					onClick = runAutomation,
-					size = 42.dp,
-				)
-			}
-		}
-	}
+                IconButton(
+                    color = LocalTheme.colorScheme.secondary,
+                    iconColor = LocalTheme.colorScheme.onSecondary,
+                    drawableRes = R.drawable.round_play_arrow_24,
+                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
+                    padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+                    onClick = runAutomation,
+                    size = 42.dp,
+                )
+            }
+        }
+    }
 }

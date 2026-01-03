@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.wear.compose.material.Icon
@@ -45,7 +44,6 @@ fun EditorNodeEditScreen(
     resetDefaultConfig: () -> Unit,
 ) {
     if (nodeEditState == null) return
-    val localContext = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),

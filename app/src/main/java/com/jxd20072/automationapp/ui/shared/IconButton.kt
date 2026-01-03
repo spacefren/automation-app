@@ -33,104 +33,104 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun Button(
-	color: Color,
-	cornerRadius: Dp,
-	onClick: () -> Unit,
-	modifier: Modifier = Modifier,
-	content: @Composable BoxScope.() -> Unit
+    color: Color,
+    cornerRadius: Dp,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
 ) {
-	Box(
-		modifier = modifier
-			.clickableWithIndication(onClick)
-			.shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
-			.background(color),
-		content = content
-	)
+    Box(
+        modifier = modifier
+            .clickableWithIndication(onClick)
+            .shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
+            .background(color),
+        content = content
+    )
 }
 
 @Composable
 fun Modifier.clickableWithIndication(onClick: () -> Unit): Modifier {
-	var isPressed by remember { mutableStateOf(false) }
-	var size by remember { mutableStateOf(IntSize.Zero) }
+    var isPressed by remember { mutableStateOf(false) }
+    var size by remember { mutableStateOf(IntSize.Zero) }
 
-	val scale by animateFloatAsState(
-		if (isPressed && size.width > 0)
-			(size.width - LocalDensity.current.run { 7.dp.toPx() }) / size.width
-		else
-			1f
-	)
+    val scale by animateFloatAsState(
+        if (isPressed && size.width > 0)
+            (size.width - LocalDensity.current.run { 7.dp.toPx() }) / size.width
+        else
+            1f
+    )
 
-	return this then Modifier
-		.onSizeChanged { size = it }
-		.pointerInput(Unit) {
-			detectTapGestures(
-				onTap = { onClick() },
-				onPress = {
-					isPressed = true
-					try {
-						awaitRelease()
-					} finally {
-						isPressed = false
-					}
-				}
-			)
-		}
-		.scale(scaleX = scale, scaleY = scale)
+    return this then Modifier
+        .onSizeChanged { size = it }
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { onClick() },
+                onPress = {
+                    isPressed = true
+                    try {
+                        awaitRelease()
+                    } finally {
+                        isPressed = false
+                    }
+                }
+            )
+        }
+        .scale(scaleX = scale, scaleY = scale)
 }
 
 @Composable
 fun IconButton(
-	color: Color,
-	iconColor: Color,
-	drawableRes: Int,
-	cornerRadius: Dp,
-	padding: Dp,
-	modifier: Modifier = Modifier,
-	size: Dp,
-	onClick: () -> Unit,
+    color: Color,
+    iconColor: Color,
+    drawableRes: Int,
+    cornerRadius: Dp,
+    padding: Dp,
+    modifier: Modifier = Modifier,
+    size: Dp,
+    onClick: () -> Unit,
 ) {
-	Button(
-		color = color,
-		cornerRadius = cornerRadius,
-		onClick = onClick,
-		modifier = modifier
-			.size(size)
-	) {
-		Icon(
-			painter = painterResource(drawableRes),
-			contentDescription = "",
-			tint = iconColor,
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(padding)
-		)
-	}
+    Button(
+        color = color,
+        cornerRadius = cornerRadius,
+        onClick = onClick,
+        modifier = modifier
+            .size(size)
+    ) {
+        Icon(
+            painter = painterResource(drawableRes),
+            contentDescription = "",
+            tint = iconColor,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        )
+    }
 }
 
 @Composable
 fun IconButton(
-	color: Color,
-	iconColor: Color,
-	iconName: String,
-	cornerRadius: Dp,
-	padding: Dp,
-	size: Dp,
-	modifier: Modifier = Modifier,
-	onClick: () -> Unit,
+    color: Color,
+    iconColor: Color,
+    iconName: String,
+    cornerRadius: Dp,
+    padding: Dp,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
-	Button(
-		color = color,
-		cornerRadius = cornerRadius,
-		onClick = onClick,
-		modifier = modifier.size(size)
-	) {
-		Image(
-			painter = getAutomationIconPainter(iconName),
-			contentDescription = "icon: $iconName",
-			colorFilter = ColorFilter.tint(iconColor),
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(padding),
-		)
-	}
+    Button(
+        color = color,
+        cornerRadius = cornerRadius,
+        onClick = onClick,
+        modifier = modifier.size(size)
+    ) {
+        Image(
+            painter = getAutomationIconPainter(iconName),
+            contentDescription = "icon: $iconName",
+            colorFilter = ColorFilter.tint(iconColor),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+        )
+    }
 }
