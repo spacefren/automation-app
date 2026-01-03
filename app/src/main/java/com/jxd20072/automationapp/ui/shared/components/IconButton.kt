@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -41,7 +42,7 @@ fun Button(
 ) {
     Box(
         modifier = modifier
-            .clickableWithIndication(onClick)
+            .clickableWithIndication { onClick() }
             .shadow(LocalTheme.layoutSystem.shadows.secondary, RoundedCornerShape(cornerRadius))
             .background(color),
         content = content
@@ -49,7 +50,10 @@ fun Button(
 }
 
 @Composable
-fun Modifier.clickableWithIndication(onClick: () -> Unit): Modifier {
+fun Modifier.clickableWithIndication(
+    onClick: ((offset: Offset) -> Unit) = { },
+    onLongPress: ((offset: Offset) -> Unit) = { },
+): Modifier {
     var isPressed by remember { mutableStateOf(false) }
     var size by remember { mutableStateOf(IntSize.Zero) }
 
@@ -64,7 +68,8 @@ fun Modifier.clickableWithIndication(onClick: () -> Unit): Modifier {
         .onSizeChanged { size = it }
         .pointerInput(Unit) {
             detectTapGestures(
-                onTap = { onClick() },
+                onTap = { onClick(it) },
+                onLongPress = { onLongPress(it) },
                 onPress = {
                     isPressed = true
                     try {
@@ -77,6 +82,11 @@ fun Modifier.clickableWithIndication(onClick: () -> Unit): Modifier {
         }
         .scale(scaleX = scale, scaleY = scale)
 }
+
+@Composable
+fun Modifier.clickableWithIndication(
+    onClick: (offset: Offset) -> Unit
+) = clickableWithIndication(onClick = onClick, onLongPress = { })
 
 @Composable
 fun IconButton(

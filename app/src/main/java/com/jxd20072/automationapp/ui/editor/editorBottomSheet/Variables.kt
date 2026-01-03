@@ -51,102 +51,102 @@ fun EditorVariableEntry(
         LocalTheme.typography.body.fontSize.toDp()
     }
 
-    SwipeableContainer(
-        icon1 = R.drawable.round_edit_24,
-        icon2 = R.drawable.round_delete_24,
-        backgroundColor1 = LocalTheme.colorScheme.tertiary,
-        backgroundColor2 = LocalTheme.colorScheme.errorSecondary,
-        onAction1 = editVariable,
-        onAction2 = deleteVariable,
-        containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-        modifier = modifier
+    DropdownMenu(
+        longPress = true,
+        onNormalClick = editVariable,
+        options = listOf(
+            DropdownOption(
+                icon = R.drawable.round_settings_24,
+                text = "Settings",
+                danger = false,
+                action = { }
+            ),
+            DropdownOption(
+                icon = R.drawable.round_archive_24,
+                text = "Archive",
+                danger = false,
+                action = { }
+            ),
+            DropdownOption(
+                icon = R.drawable.round_delete_24,
+                text = "Delete",
+                danger = true,
+                action = { }
+            ),
+        ),
+        modifier = modifier,
     ) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
+        SwipeableContainer(
+            icon1 = R.drawable.round_delete_24,
+            backgroundColor1 = LocalTheme.colorScheme.errorSecondary,
+            onAction1 = deleteVariable,
+            containerCornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
         ) {
-            DropdownMenu(
-                options = listOf(
-                    DropdownOption(
-                        icon = R.drawable.round_settings_24,
-                        text = "Settings",
-                        danger = false,
-                        action = { }
-                    ),
-                    DropdownOption(
-                        icon = R.drawable.round_archive_24,
-                        text = "Archive",
-                        danger = false,
-                        action = { }
-                    ),
-                    DropdownOption(
-                        icon = R.drawable.round_delete_24,
-                        text = "Delete",
-                        danger = true,
-                        action = { }
-                    ),
-                )
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .shadow(
-                    LocalTheme.layoutSystem.shadows.secondary,
-                    RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-                )
-                .background(LocalTheme.colorScheme.surface)
-                .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-        ) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+            ) {
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .shadow(
+                        LocalTheme.layoutSystem.shadows.secondary,
+                        RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+                    )
+                    .background(LocalTheme.colorScheme.surface)
+                    .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
             ) {
-                Box(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
                     modifier = Modifier
-                        .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-                        .background(LocalTheme.colorScheme.tertiary)
-                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                        .weight(1f)
                 ) {
-                    Icon(
-                        painter = painterResource(
-                            when (variableDef.value) {
-                                is VariableDefValue.BOOL -> R.drawable.round_bool_24
-                                is VariableDefValue.TEXT -> R.drawable.round_text_24
-                                is VariableDefValue.NUMBER -> R.drawable.round_number_24
-                            }
-                        ),
-                        contentDescription = "",
+                    Box(
                         modifier = Modifier
-                            .size(iconSize)
+                            .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                            .background(LocalTheme.colorScheme.tertiary)
+                            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                when (variableDef.value) {
+                                    is VariableDefValue.BOOL -> R.drawable.round_bool_24
+                                    is VariableDefValue.TEXT -> R.drawable.round_text_24
+                                    is VariableDefValue.NUMBER -> R.drawable.round_number_24
+                                }
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(iconSize)
+                        )
+                    }
+                    Text(
+                        text = variableDef.name,
+                        style = LocalTheme.typography.body,
                     )
                 }
-                Text(
-                    text = variableDef.name,
-                    style = LocalTheme.typography.body,
+                Icon(
+                    painter = painterResource(R.drawable.round_equal_24),
+                    contentDescription = "",
+                    modifier = Modifier.size(iconSize)
                 )
-            }
-            Icon(
-                painter = painterResource(R.drawable.round_equal_24),
-                contentDescription = "",
-                modifier = Modifier.size(iconSize)
-            )
-            Box(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = variableDef.value.value.toString(),
-                    style = LocalTheme.typography.body.copy(
-                        textAlign = TextAlign.End
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-                        .background(LocalTheme.colorScheme.tertiary)
-                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-                )
+                Box(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = variableDef.value.value.toString(),
+                        style = LocalTheme.typography.body.copy(
+                            textAlign = TextAlign.End
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                            .background(LocalTheme.colorScheme.tertiary)
+                            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                    )
+                }
             }
         }
     }

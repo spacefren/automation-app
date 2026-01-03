@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -97,7 +98,7 @@ fun DropdownOption(
             painter = painterResource(option.icon),
             contentDescription = "",
             tint = if (option.danger) LocalTheme.colorScheme.error
-            else LocalTheme.colorScheme.onSurface,
+            else LocalTheme.colorScheme.onBackground,
             modifier = Modifier
                 .size(with(LocalDensity.current) {
                     LocalTheme.typography.body.fontSize.toDp()
@@ -106,7 +107,7 @@ fun DropdownOption(
         Text(
             text = option.text,
             color = if (option.danger) LocalTheme.colorScheme.error
-            else LocalTheme.colorScheme.onSurface,
+            else LocalTheme.colorScheme.onBackground,
             style = LocalTheme.typography.body,
             modifier = Modifier
                 .fillMaxWidth()
@@ -174,23 +175,46 @@ fun DropdownHost(
 @Composable
 fun DropdownMenu(
     options: List<DropdownOption>,
+    longPress: Boolean = false,
+    onNormalClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
 ) {
     var dropdownPosition by remember { mutableStateOf(Offset(0f, 0f)) }
     val localDropdownState = LocalDropdownHostState.current
 
+    fun openMenu(offset: Offset) {
+        localDropdownState.showDropdown(
+            DropdownData(
+                dropdownPosition = dropdownPosition + offset,
+                options = options,
+            )
+        )
+    }
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .onGloballyPositioned {
                 dropdownPosition = it.positionOnScreen()
             }
-            .clickable(interactionSource = null, indication = null) {
-                localDropdownState.showDropdown(
-                    DropdownData(
-                        dropdownPosition = dropdownPosition,
-                        options = options,
-                    )
-                )
-            }
-    )
+            .clickableWithIndication(
+                onClick = {
+                    if (onNormalClick != null) {
+                        onNormalClick()
+                        return@clickableWithIndication
+                    }
+                    if (longPress) return@clickableWithIndication
+
+                    openMenu(it)
+                },
+                onLongPress = {
+                    if (!longPress) return@clickableWithIndication
+
+                    openMenu(it)
+                }
+            )
+    ) {
+        content()
+    }
 }
