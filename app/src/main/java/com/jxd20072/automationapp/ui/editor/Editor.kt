@@ -19,15 +19,15 @@ import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AutomationEditor(
     editorViewModel: EditorViewModel = hiltViewModel(),
-    settingsViewModel: UserSettingsViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
     returnHome: (saveChanges: Boolean) -> Unit
 ) {
     val currentTime by editorViewModel.currentTime.collectAsState()

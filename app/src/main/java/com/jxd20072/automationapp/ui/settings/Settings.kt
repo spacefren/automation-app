@@ -1,11 +1,9 @@
 package com.jxd20072.automationapp.ui.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,30 +23,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.settings.categories.GeneralSettingsCategory
-import com.jxd20072.automationapp.ui.shared.components.Layer
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
 import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsScreen(
-    userSettingsViewModel: UserSettingsViewModel = hiltViewModel(),
+fun SettingsScreen(
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
     returnHome: () -> Unit
 ) {
-    val userSettingsUiState by
-    userSettingsViewModel.userSettingsUiState.collectAsStateWithLifecycle()
+    val settingsUiState by
+    settingsViewModel.userSettingsUiState.collectAsStateWithLifecycle()
 
-    Layer(
-        modifier = Modifier
-			.fillMaxSize()
-			.background(LocalTheme.colorScheme.background)
-    ) {
+    AppScreen {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
             modifier = Modifier
-				.windowInsetsPadding(WindowInsets.statusBars)
-				.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
-				.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
+                .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -64,8 +58,8 @@ fun UserSettingsScreen(
                         contentDescription = "back",
                         tint = LocalTheme.colorScheme.onBackground,
                         modifier = Modifier
-							.size(28.dp)
-							.clickableWithIndication { returnHome() }
+                            .size(28.dp)
+                            .clickableWithIndication { returnHome() }
                     )
                     Text(
                         text = "Settings",
@@ -73,10 +67,10 @@ fun UserSettingsScreen(
                         style = LocalTheme.typography.title
                     )
                 }
-                SettingsResetButton(userSettingsViewModel::resetSettingsToDefault)
+                SettingsResetButton(settingsViewModel::resetSettingsToDefault)
             }
-            if (userSettingsUiState is UserSettingsUiState.Success) {
-                val settings = userSettingsUiState as UserSettingsUiState.Success
+            if (settingsUiState is UserSettingsUiState.Success) {
+                val settings = settingsUiState as UserSettingsUiState.Success
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -85,8 +79,8 @@ fun UserSettingsScreen(
                 ) {
                     GeneralSettingsCategory(
                         userSettingsUiState = settings,
-                        onAutoSaveChanged = userSettingsViewModel::setAutoSaveEnabled,
-                        onAutoOpenKeyboardChanged = userSettingsViewModel::setAutoOpenKeyboard,
+                        onAutoSaveChanged = settingsViewModel::setAutoSaveEnabled,
+                        onAutoOpenKeyboardChanged = settingsViewModel::setAutoOpenKeyboard,
                     )
                 }
             }

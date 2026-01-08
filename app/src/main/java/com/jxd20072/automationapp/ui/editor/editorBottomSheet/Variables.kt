@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
@@ -89,6 +90,7 @@ fun EditorVariableEntry(
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
@@ -126,6 +128,8 @@ fun EditorVariableEntry(
                     }
                     Text(
                         text = variableDef.name,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         style = LocalTheme.typography.body,
                     )
                 }
@@ -140,6 +144,8 @@ fun EditorVariableEntry(
                         style = LocalTheme.typography.body.copy(
                             textAlign = TextAlign.End
                         ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))

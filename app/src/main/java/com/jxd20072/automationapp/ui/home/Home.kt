@@ -30,8 +30,8 @@ import com.jxd20072.automationapp.ui.home.addAutomationSheet.AddAutomationDrawer
 import com.jxd20072.automationapp.ui.home.components.AutomationCard
 import com.jxd20072.automationapp.ui.home.components.FilterChips
 import com.jxd20072.automationapp.ui.home.components.FloatingNewButton
+import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
@@ -103,7 +103,7 @@ private fun AutomationsList(
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
-    settingsViewModel: UserSettingsViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
     openSettings: () -> Unit,
     runAutomation: (id: String) -> Unit,
     editAutomation: (id: String) -> Unit,

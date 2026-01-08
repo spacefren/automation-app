@@ -21,9 +21,9 @@ import com.jxd20072.automationapp.ui.editor.AutomationEditor
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
+import com.jxd20072.automationapp.ui.settings.SettingsScreen
+import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-import com.jxd20072.automationapp.ui.settings.UserSettingsScreen
-import com.jxd20072.automationapp.ui.settings.UserSettingsViewModel
 import kotlinx.serialization.Serializable
 
 val animationSpec: FiniteAnimationSpec<IntOffset> = spring(
@@ -42,7 +42,7 @@ data object Editor : NavKey
 
 @Composable
 fun AutomationApp() {
-    val settingsViewModel: UserSettingsViewModel = hiltViewModel()
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
     val editorViewModel: EditorViewModel = hiltViewModel()
 
@@ -108,8 +108,8 @@ fun AutomationApp() {
                 )
             }
             entry<Settings> {
-                UserSettingsScreen(
-                    userSettingsViewModel = settingsViewModel,
+                SettingsScreen(
+                    settingsViewModel = settingsViewModel,
                     returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
                 )
             }

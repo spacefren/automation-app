@@ -29,7 +29,7 @@ sealed interface UserSettingsUiState {
 }
 
 @HiltViewModel
-class UserSettingsViewModel @Inject constructor(
+class SettingsViewModel @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val automationsRepository: AutomationsRepository
 ) : ViewModel() {
