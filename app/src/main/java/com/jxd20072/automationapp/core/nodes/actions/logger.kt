@@ -22,7 +22,7 @@ class LoggerAction(id: String) : ActionNode(id) {
     }
 
     override fun execute(context: ExecutionContext) {
-        val text = getInput<ConfigurationValue.TEXT>("Text").value
+        val text = getInput<ConfigurationValue.TEXT>("text").value
 
         context.log(LogLevel.INFO, text)
 
@@ -45,18 +45,20 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input ->
             listOf(
                 "Log",
-                "*${input["Text"]?.value}"
+                "*${input["text"]?.value}"
             )
         },
         description = "Append a message to the logs screen",
         icon = R.drawable.round_align_left_24,
         inputDefinitions = mapOf(
-            "Text" to NodeInputDefinition(
+            "text" to NodeInputDefinition(
+                name = "Text",
                 description = "The text to display this is a longer, more complete description",
                 defaultValue = ConfigurationValue.TEXT("default value"),
                 validate = { ValidationResult.Success },
             ),
-            "ValidatedText" to NodeInputDefinition(
+            "validatedText" to NodeInputDefinition(
+                name = "Validated Text",
                 description = "This one doesn't accept any value!",
                 defaultValue = ConfigurationValue.TEXT("default value 2"),
                 validate = { textConfig ->
@@ -67,7 +69,8 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
                     }
                 },
             ),
-            "OtherOption" to NodeInputDefinition(
+            "otherOption" to NodeInputDefinition(
+                name = "Other Option",
                 description = "This is a shorter description.",
                 defaultValue = ConfigurationValue.BOOL(true),
                 validate = { ValidationResult.Success },

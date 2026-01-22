@@ -1,23 +1,29 @@
 package com.jxd20072.automationapp.core.nodes.props
 
+import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 
 sealed class ValidationResult {
-	data object Success : ValidationResult()
-	data class Error(val message: String) : ValidationResult()
+    data object Success : ValidationResult()
+    data class Error(val message: String) : ValidationResult()
 }
 
 data class NodeInputDefinition<T>(
-	val description: String,
-	val defaultValue: T,
-	val validate: ((T) -> ValidationResult)? = null,
+    val name: String,
+    val description: String,
+    val defaultValue: T,
+    val shouldShow: ((
+        input: Map<String, ConfigurationValue<*>>,
+        automationDef: AutomationDef
+    ) -> Boolean)? = { _, _ -> true },
+    val validate: (T) -> ValidationResult = { ValidationResult.Success },
 ) where T : ConfigurationValue<*>
 
 enum class NodeOutputType {
-	TEXT, BOOL, NUMBER
+    TEXT, BOOL, NUMBER
 }
 
 data class NodeOutputDefinition(
-	val description: String,
-	val outputType: NodeOutputType
+    val description: String,
+    val outputType: NodeOutputType
 )

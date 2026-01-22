@@ -22,9 +22,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.svg.SvgDecoder
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.jxd20072.automationapp.AutomationApplication
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.components.IconButton

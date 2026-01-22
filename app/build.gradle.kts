@@ -1,23 +1,13 @@
-import dagger.hilt.android.plugin.util.capitalize
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    // Core
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
-    // Compose
-    alias(libs.plugins.kotlin.compose)
-
-    // Hilt / KSP
-    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
+    alias(libs.plugins.compose.compiler)
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-
-    // Datastore
-    id("com.google.protobuf") version "0.9.4"
-
-    // Serialization
-    id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.protobuf")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -27,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.jxd20072.automationapp"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -46,26 +36,20 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
     }
 }
 
-buildscript {
-    repositories {
-        // other repositories...
-        mavenCentral()
-    }
-    dependencies {
-        // other plugins...
-        classpath(libs.hilt.android.gradle.plugin)
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -74,14 +58,16 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.compose.material)
-    implementation(libs.navigation3.runtime)
+    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+    // Testing
+    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    testImplementation(libs.junit)
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -96,11 +82,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Hilt / KSP
+    // Hilt
     implementation(libs.hilt.android.v252)
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler.v252)
-    ksp(libs.hilt.compiler)
 
     // Datastore
     implementation(libs.androidx.datastore)
@@ -120,33 +105,19 @@ dependencies {
     implementation(libs.fuzzywuzzy)
 }
 
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val capName = variant.name.capitalize()
-            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
-                setSource(tasks.getByName("generate${capName}Proto").outputs)
-            }
-        }
-    }
-}
-
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.26.1"
+        artifact = "com.google.protobuf:protoc:4.28.3"
     }
 
-    // Generates the Java Protobuf-lite code for the Protobufs in this project.
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
-                java {
-                    register("java") {
-                        option("lite")
-                    }
-                    register("kotlin") {
-                        option("lite")
-                    }
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin") {
+                    option("lite")
                 }
             }
         }

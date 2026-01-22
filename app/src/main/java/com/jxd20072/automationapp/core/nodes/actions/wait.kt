@@ -12,38 +12,39 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 class WaitAction(id: String) : ActionNode(id) {
-	override fun execute(context: ExecutionContext) {
-		val duration = getInput<ConfigurationValue.NUMBER>("Duration").value
+    override fun execute(context: ExecutionContext) {
+        val duration = getInput<ConfigurationValue.NUMBER>("duration").value
 
-		runBlocking {
-			delay(duration.toLong())
-		}
-	}
+        runBlocking {
+            delay(duration.toLong())
+        }
+    }
 }
 
 val WaitActionNode = NodeRegistryEntry<ActionNode>(
-	data = NodeData(
-		nodeType = NodeType.ACTION,
-		displayName = "Wait",
-		name = "wait",
-		category = "flow",
-		editorActionDescription = { input ->
-			listOf(
-				"Wait",
-				"*${input["Duration"]?.value}ms"
-			)
-		},
-		description = "Pause the execution for a specified duration",
-		icon = R.drawable.round_play_arrow_24,
-		inputDefinitions = mapOf(
-			"Duration" to NodeInputDefinition(
-				description = "The duration of the pause, in milliseconds",
-				defaultValue = ConfigurationValue.NUMBER("10000"),
-				validate = { ValidationResult.Success }
-			)
-		),
-		outputDefinitions = emptyMap(),
-		permissions = emptyList()
-	),
-	factory = { WaitAction(it) }
+    data = NodeData(
+        nodeType = NodeType.ACTION,
+        displayName = "Wait",
+        name = "wait",
+        category = "flow",
+        editorActionDescription = { input ->
+            listOf(
+                "Wait",
+                "*${input["duration"]?.value}ms"
+            )
+        },
+        description = "Pause the execution for a specified duration",
+        icon = R.drawable.round_play_arrow_24,
+        inputDefinitions = mapOf(
+            "duration" to NodeInputDefinition(
+                name = "Duration",
+                description = "The duration of the pause, in milliseconds",
+                defaultValue = ConfigurationValue.NUMBER("10000"),
+                validate = { ValidationResult.Success }
+            )
+        ),
+        outputDefinitions = emptyMap(),
+        permissions = emptyList()
+    ),
+    factory = { WaitAction(it) }
 )
