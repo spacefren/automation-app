@@ -31,7 +31,7 @@ import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsItem(
+fun SettingsItem(
     item: ConfigurationValue.BOOL,
     displayName: String,
     description: String = "",
@@ -63,7 +63,7 @@ fun UserSettingsItem(
         if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.tertiary,
     )
 
-    HorizontalUserSettingsItemContainer(
+    HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
         modifier = modifier

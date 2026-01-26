@@ -16,7 +16,7 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
-import com.jxd20072.automationapp.ui.settings.settingsItems.UserSettingsItem
+import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 fun getVariableValueName(value: VariableDefValue<*>): String {
@@ -49,9 +49,9 @@ fun VariableEditScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
         modifier = Modifier
-			.imePadding()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.windowInsetsPadding(WindowInsets.navigationBars)
+            .imePadding()
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
         Text(
             text = "${if (variableEditState.isCreating) "Create" else "Edit"} variable",
@@ -59,7 +59,7 @@ fun VariableEditScreen(
             color = LocalTheme.colorScheme.onBackground
         )
 
-        UserSettingsItem(
+        SettingsItem(
             displayName = "Name",
             description = "A unique identifier for your variable. Great names are short and descriptive!",
             item = ConfigurationValue.TEXT(editingVariable.name),
@@ -68,7 +68,7 @@ fun VariableEditScreen(
             changeVariableName(newVal.value)
         }
 
-        UserSettingsItem(
+        SettingsItem(
             displayName = "Variable type",
             description = "The type of data that the variable will hold.",
             selectedOption = ConfigurationValue.CHOOSE(getVariableValueName(editingVariable.value)),
@@ -89,7 +89,7 @@ fun VariableEditScreen(
         ) { value ->
             when (value) {
                 is VariableDefValue.TEXT -> {
-                    UserSettingsItem(
+                    SettingsItem(
                         displayName = "Value",
                         description = "The starting value of your variable.",
                         item = ConfigurationValue.TEXT(value.value),
@@ -100,7 +100,7 @@ fun VariableEditScreen(
                 }
 
                 is VariableDefValue.BOOL -> {
-                    UserSettingsItem(
+                    SettingsItem(
                         displayName = "Value",
                         description = "The starting value of your variable.",
                         item = ConfigurationValue.BOOL(value.value),
@@ -112,11 +112,10 @@ fun VariableEditScreen(
                 }
 
                 is VariableDefValue.NUMBER -> {
-                    UserSettingsItem(
+                    SettingsItem(
                         displayName = "Value",
                         description = "The starting value of your variable.",
                         item = ConfigurationValue.NUMBER(value.value),
-                        defaultItem = ConfigurationValue.NUMBER(VariableDefValue.NUMBER().value),
                         validate = { ValidationResult.Success },
                         onValueChanged = { newVal: ConfigurationValue.NUMBER ->
                             changeVariableValue(VariableDefValue.NUMBER(newVal.value))

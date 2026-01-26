@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.settings.settingsItems.UserSettingsItem
+import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.LocalSnackbarState
 import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
@@ -26,18 +26,18 @@ fun GeneralSettingsCategory(
     SettingsCategory(
         name = "General"
     ) {
-        UserSettingsItem(
+        SettingsItem(
             item = userSettingsUiState.settings.autoSave,
             displayName = "Auto-save automations",
             onValueChanged = onAutoSaveChanged,
         )
-        UserSettingsItem(
+        SettingsItem(
             item = userSettingsUiState.settings.autoOpenKeyboard,
             displayName = "Automatically open keyboard",
             description = "When navigating to a screen with a text field, automatically show the keyboard",
             onValueChanged = onAutoOpenKeyboardChanged
         )
-        UserSettingsItem(
+        SettingsItem(
             displayName = "Open automations folder",
             onActivate = {
                 val appDataPath = "Android%2Fdata%2F${context.packageName}%2Ffiles"

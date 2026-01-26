@@ -43,11 +43,11 @@ fun DraggingNode(
 
         Box(
             modifier = modifier
-				.zIndex(40f)
-				.graphicsLayer {
-					translationX = draggingData.nodePosition.x
-					translationY = draggingData.nodePosition.y
-				}
+                .zIndex(40f)
+                .graphicsLayer {
+                    translationX = draggingData.nodePosition.x
+                    translationY = draggingData.nodePosition.y
+                }
         ) {
             NodeContainer(
                 level = when (draggingData.draggingNode.nodeType) {
@@ -58,6 +58,7 @@ fun DraggingNode(
                 },
                 enabledByDragging = true,
                 onLayout = { _ -> },
+                editNode = { }
             ) {
                 NodeHeaderIcons(
                     icon = when {
@@ -111,13 +112,13 @@ fun EditorNodeDropTarget(
         val height by animateDpAsState(if (shouldShow) 4.dp else 0.dp)
         Box(
             modifier = Modifier
-				.height(height)
-				.fillMaxWidth(.8f)
-				.background(
-					LocalTheme.colorScheme.secondary,
-					RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
-				)
-				.onGloballyPositioned { layout -> positionInRoot = layout.positionInRoot() }
+                .height(height)
+                .fillMaxWidth(.8f)
+                .background(
+                    LocalTheme.colorScheme.secondary,
+                    RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2)
+                )
+                .onGloballyPositioned { layout -> positionInRoot = layout.positionInRoot() }
         )
     }
 

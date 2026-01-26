@@ -9,13 +9,13 @@ import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsItem(
+fun SettingsItem(
     displayName: String,
     description: String = "",
     modifier: Modifier = Modifier,
     onActivate: () -> Unit
 ) {
-    HorizontalUserSettingsItemContainer(
+    HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
         modifier = modifier

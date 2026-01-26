@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.settings.settingsItems
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -9,26 +8,35 @@ import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.components.BaseTextInput
 
 @Composable
-fun UserSettingsItem(
-    item: ConfigurationValue.TEXT,
+fun SettingsItem(
+    item: ConfigurationValue.NUMBER,
     displayName: String,
     description: String = "",
-    validate: ((ConfigurationValue.TEXT) -> ValidationResult)?,
+    validate: ((ConfigurationValue.NUMBER) -> ValidationResult)?,
     modifier: Modifier = Modifier,
-    onValueChanged: (ConfigurationValue.TEXT) -> Unit
+    onValueChanged: (ConfigurationValue.NUMBER) -> Unit
 ) {
-    VerticalUserSettingsItemContainer(
+    fun validationFunction(text: String): ValidationResult {
+        val number = text.toFloatOrNull()
+        return if (number == null) {
+            ValidationResult.Error("Only numbers allowed")
+        } else {
+            validate?.invoke(ConfigurationValue.NUMBER(text)) ?: ValidationResult.Success
+        }
+    }
+
+    HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
-        validationResult = validate?.invoke(item),
+        validationResult = validationFunction(item.value),
         modifier = modifier
     ) {
         BaseTextInput(
             placeholderText = "",
             text = item.value,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier,
             imeAction = ImeAction.Done,
-            onTextChanged = { onValueChanged(ConfigurationValue.TEXT(it)) }
+            onTextChanged = { onValueChanged(ConfigurationValue.NUMBER(it)) }
         )
     }
 }

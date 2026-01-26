@@ -14,7 +14,7 @@ import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsItem(
+fun SettingsItem(
     displayName: String,
     description: String = "",
     selectedOption: ConfigurationValue.CHOOSE,
@@ -22,7 +22,7 @@ fun UserSettingsItem(
     modifier: Modifier = Modifier,
     onValueChanged: (newValue: ConfigurationValue.CHOOSE) -> Unit
 ) {
-    VerticalUserSettingsItemContainer(
+    VerticalSettingsItemContainer(
         displayName = displayName,
         description = description,
         modifier = modifier
@@ -38,13 +38,13 @@ fun UserSettingsItem(
                     else LocalTheme.colorScheme.onSurface,
                     style = LocalTheme.typography.body,
                     modifier = Modifier
-						.clickableWithIndication { onValueChanged(option) }
-						.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-						.background(
-							if (option == selectedOption) LocalTheme.colorScheme.tertiary
-							else LocalTheme.colorScheme.surface
-						)
-						.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                        .clickableWithIndication { onValueChanged(option) }
+                        .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                        .background(
+                            if (option == selectedOption) LocalTheme.colorScheme.tertiary
+                            else LocalTheme.colorScheme.surface
+                        )
+                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
                 )
             }
         }

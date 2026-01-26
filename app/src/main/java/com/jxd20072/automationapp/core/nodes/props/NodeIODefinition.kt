@@ -15,7 +15,7 @@ data class NodeInputDefinition<T>(
     val shouldShow: ((
         input: Map<String, ConfigurationValue<*>>,
         automationDef: AutomationDef
-    ) -> Boolean)? = { _, _ -> true },
+    ) -> Boolean) = { _, _ -> true },
     val validate: (T) -> ValidationResult = { ValidationResult.Success },
 ) where T : ConfigurationValue<*>
 

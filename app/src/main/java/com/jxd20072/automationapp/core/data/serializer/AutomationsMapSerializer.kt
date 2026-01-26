@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.core.data.local
+package com.jxd20072.automationapp.core.data.serializer
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer

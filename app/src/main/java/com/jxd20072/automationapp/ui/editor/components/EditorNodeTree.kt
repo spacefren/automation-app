@@ -30,6 +30,7 @@ fun EditorNodeTree(
     ) -> Unit,
     onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
     onDropLineExit: () -> Unit,
+    editNode: (nodeId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -72,7 +73,8 @@ fun EditorNodeTree(
                 onDragStart = onNodeDrag,
                 draggingData = draggingData,
                 onDropZoneEnter = onDropLineEnter,
-                onDropZoneExit = onDropLineExit
+                onDropZoneExit = onDropLineExit,
+                editNode = editNode
             )
         }
 

@@ -3,8 +3,8 @@ package com.jxd20072.automationapp.core.data.di
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.jxd20072.automationapp.core.data.local.AppSettingsSerializer
-import com.jxd20072.automationapp.core.data.local.AutomationsMapSerializer
+import com.jxd20072.automationapp.core.data.serializer.AppSettingsSerializer
+import com.jxd20072.automationapp.core.data.serializer.AutomationsMapSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

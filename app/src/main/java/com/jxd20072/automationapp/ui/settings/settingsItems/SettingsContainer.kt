@@ -21,7 +21,7 @@ import com.jxd20072.automationapp.ui.shared.components.ValidationMessage
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
-fun UserSettingsItemContainerContent(
+fun SettingsItemContainerContent(
     displayName: String,
     description: String = "",
     modifier: Modifier = Modifier
@@ -46,14 +46,14 @@ fun UserSettingsItemContainerContent(
 }
 
 @Composable
-fun HorizontalUserSettingsItemContainer(
+fun HorizontalSettingsItemContainer(
     displayName: String,
     description: String = "",
     validationResult: ValidationResult? = null,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    GlobalUserSettingsItemContainer(validationResult) {
+    GlobalSettingsItemContainer(validationResult) {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3)
         ) {
@@ -63,7 +63,7 @@ fun HorizontalUserSettingsItemContainer(
                 modifier = modifier
                     .fillMaxWidth()
             ) {
-                UserSettingsItemContainerContent(
+                SettingsItemContainerContent(
                     displayName = displayName,
                     description = description,
                     modifier = Modifier.widthIn(max = 220.dp)
@@ -80,19 +80,19 @@ fun HorizontalUserSettingsItemContainer(
 }
 
 @Composable
-fun VerticalUserSettingsItemContainer(
+fun VerticalSettingsItemContainer(
     displayName: String,
     description: String = "",
     validationResult: ValidationResult? = null,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    GlobalUserSettingsItemContainer(validationResult) {
+    GlobalSettingsItemContainer(validationResult) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
         ) {
-            UserSettingsItemContainerContent(
+            SettingsItemContainerContent(
                 displayName = displayName,
                 description = description,
             )
@@ -107,7 +107,7 @@ fun VerticalUserSettingsItemContainer(
 }
 
 @Composable
-fun GlobalUserSettingsItemContainer(
+fun GlobalSettingsItemContainer(
     validationResult: ValidationResult?,
     content: @Composable () -> Unit
 ) {

@@ -39,7 +39,7 @@ fun EditorBottomSheet(
     nodeSelectState: NodeSelectState,
     onCreateClick: (nodeData: NodeData) -> Unit,
     // Node edit screen
-    nodeEditScreenState: NodeEditState?,
+    nodeEditScreenState: NodeEditState,
     setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
     resetDefaultNodeConfig: () -> Unit,
     // Variables screen

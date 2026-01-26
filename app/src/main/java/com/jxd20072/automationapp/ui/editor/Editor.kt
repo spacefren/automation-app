@@ -19,6 +19,7 @@ import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
@@ -46,7 +47,7 @@ fun AutomationEditor(
     val draggingData by dragManager.editorNodeDragState.collectAsState()
     val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
     val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
-    val nodeEditState by nodeEditManager.editingNodeState.collectAsState(null)
+    val nodeEditState by nodeEditManager.editingNodeState.collectAsState(NodeEditState.NotEditing)
     val variablesUiState by variablesManager.variablesUiState.collectAsState()
     val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
     val variableEditState by variableEditManager.variableEditState.collectAsState()
@@ -94,7 +95,8 @@ fun AutomationEditor(
                         onNodeDrag = editorViewModel::onExistingNodeDrag,
                         draggingData = draggingData,
                         onDropLineEnter = dragManager::enterDropLine,
-                        onDropLineExit = dragManager::exitDropLine
+                        onDropLineExit = dragManager::exitDropLine,
+                        editNode = editorViewModel::startEditNode
                     )
                 }
                 DraggingNode(

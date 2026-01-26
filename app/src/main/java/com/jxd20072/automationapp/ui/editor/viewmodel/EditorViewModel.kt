@@ -86,4 +86,8 @@ class EditorViewModel @Inject constructor(
         automationManager.addVariable(newVariable)
         bottomSheetManager.openVariableEdit(newVariable.id, true)
     }
+
+    fun startEditNode(nodeId: String) {
+        bottomSheetManager.openNodeEdit(nodeId)
+    }
 }

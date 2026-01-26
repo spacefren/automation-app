@@ -43,6 +43,8 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
+import com.jxd20072.automationapp.ui.shared.components.DropdownOption
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
@@ -167,6 +169,7 @@ fun NodeContainer(
     enabledByDragging: Boolean? = false,
     onLayout: (layout: LayoutCoordinates) -> Unit,
     ignoreBottomPadding: Boolean = false,
+    editNode: () -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
     val padding = when (level) {
@@ -175,42 +178,67 @@ fun NodeContainer(
         else -> 0.dp
     }
 
-    Box(
-        content = content,
-        modifier = modifier
-            .graphicsLayer(
-                alpha = if (!disabledForDragging) 1f else .3f
-            )
-            .conditional(enabledByDragging == false, ifTrue = {
-                fillMaxWidth()
-            })
-            .shadow(
-                if (enabledByDragging == true) LocalTheme.layoutSystem.shadows.primary
-                else LocalTheme.layoutSystem.shadows.secondary,
-                RoundedCornerShape(
+    DropdownMenu(
+        onNormalClick = editNode,
+        longPress = true,
+        options = listOf(
+            DropdownOption(
+                icon = R.drawable.round_settings_24,
+                text = "Settings",
+                danger = false,
+                action = { }
+            ),
+            DropdownOption(
+                icon = R.drawable.round_archive_24,
+                text = "Archive",
+                danger = false,
+                action = { }
+            ),
+            DropdownOption(
+                icon = R.drawable.round_delete_24,
+                text = "Delete",
+                danger = true,
+                action = { }
+            ),
+        )
+    ) {
+        Box(
+            content = content,
+            modifier = modifier
+                .graphicsLayer(
+                    alpha = if (!disabledForDragging) 1f else .3f
+                )
+                .conditional(enabledByDragging == false, ifTrue = {
+                    fillMaxWidth()
+                })
+                .shadow(
+                    if (enabledByDragging == true) LocalTheme.layoutSystem.shadows.primary
+                    else LocalTheme.layoutSystem.shadows.secondary,
+                    RoundedCornerShape(
+                        when (level) {
+                            1 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel1
+                            2 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel2
+                            else -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel3
+                        }
+                    )
+                )
+                .background(
                     when (level) {
-                        1 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel1
-                        2 -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel2
-                        else -> LocalTheme.layoutSystem.shapes.cornerRadiusLevel3
+                        1 -> LocalTheme.colorScheme.surface
+                        2 -> LocalTheme.colorScheme.tertiary
+                        else -> Color.Red
                     }
                 )
-            )
-            .background(
-                when (level) {
-                    1 -> LocalTheme.colorScheme.surface
-                    2 -> LocalTheme.colorScheme.tertiary
-                    else -> Color.Red
+                .onGloballyPositioned { layout ->
+                    onLayout(layout)
                 }
-            )
-            .onGloballyPositioned { layout ->
-                onLayout(layout)
-            }
-            .conditional(!ignoreBottomPadding, ifTrue = {
-                padding(padding)
-            }, ifFalse = {
-                padding(start = padding, end = padding, top = padding)
-            })
-    )
+                .conditional(!ignoreBottomPadding, ifTrue = {
+                    padding(padding)
+                }, ifFalse = {
+                    padding(start = padding, end = padding, top = padding)
+                })
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -227,6 +255,7 @@ fun TopLevelNode(
     ) -> Unit,
     onDropZoneEnter: (targetIndex: Int, parentId: String?) -> Unit,
     onDropZoneExit: () -> Unit,
+    editNode: (nodeId: String) -> Unit,
     modifier: Modifier = Modifier,
     content: List<NodeDef>
 ) {
@@ -243,7 +272,8 @@ fun TopLevelNode(
             rootPosition = layout.positionInRoot()
         },
         disabledForDragging = isDragging,
-        ignoreBottomPadding = true
+        ignoreBottomPadding = true,
+        editNode = { editNode(id) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -274,7 +304,8 @@ fun TopLevelNode(
                     actionNode = actionNode,
                     onDragStart = onDragStart,
                     disabledForDragging = actionNode.id == draggingNodeID,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    editNode = { editNode(actionNode.id) }
                 )
             }
             EditorNodeDropTarget(
@@ -294,6 +325,7 @@ fun ActionNode(
     modifier: Modifier = Modifier,
     disabledForDragging: Boolean,
     actionNode: NodeDef,
+    editNode: () -> Unit,
     onDragStart: ((
         id: String,
         position: Offset,
@@ -310,7 +342,8 @@ fun ActionNode(
             onLayout = { layout ->
                 rootPosition = layout.positionInRoot()
             },
-            disabledForDragging = disabledForDragging
+            disabledForDragging = disabledForDragging,
+            editNode = editNode
         ) {
             NodeHeader(
                 displayName = actionData.editorActionDescription(

@@ -14,34 +14,47 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Immutable
-data class NodeEditState(
-    val nodeDef: NodeDef,
-    val nodeData: NodeData,
-)
+sealed interface NodeEditState {
+    object NotEditing : NodeEditState
+    data class Editing(
+        val nodeDef: NodeDef,
+        val nodeData: NodeData,
+    ) : NodeEditState
+}
 
 @Singleton
 class NodeEditManager @Inject constructor(
     private val automationManager: AutomationManager
 ) {
     private val editingNodeID = MutableStateFlow<String?>(null)
+
+    val editingAutomation = automationManager.automationUiState.map { automationUiState ->
+        if (automationUiState is AutomationUiState.Success) automationUiState.automationDraft
+        else null
+    }
+
     val editingNodeState = combine(
-        automationManager.automationUiState.map { automationState ->
-            if (automationState !is AutomationUiState.Success) null
-            else automationState.automationDraft.topLevel +
-                    automationState.automationDraft.topLevel.map { it.content }.flatten()
-        },
+        editingAutomation,
         editingNodeID
-    ) { nodes, nodeID ->
-        val nodeDef = nodes?.find { it.id == nodeID }
+    ) { automationDraft, nodeID ->
+        if (automationDraft == null) return@combine NodeEditState.NotEditing;
+
+        val allNodes = automationDraft.topLevel +
+                automationDraft.topLevel.map { it.content }.flatten()
+        val nodeDef = allNodes.find { it.id == nodeID }
         val nodeData = when (nodeDef?.nodeType) {
             NodeType.ACTION -> actionNodes[nodeDef.name]?.data
             NodeType.TRIGGER -> triggerNodes[nodeDef.name]?.data
             else -> null
         }
-        if (nodeDef == null || nodeData == null) return@combine null
-        NodeEditState(
+        if (nodeDef == null || nodeData == null) return@combine NodeEditState.NotEditing
+        NodeEditState.Editing(
             nodeDef = nodeDef,
-            nodeData = nodeData
+            nodeData = nodeData.copy(
+                inputDefinitions = nodeData.inputDefinitions.filter { (name, inputDef) ->
+                    inputDef.shouldShow(nodeDef.input, automationDraft)
+                }
+            )
         )
     }
 

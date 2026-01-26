@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.shared.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -206,11 +207,13 @@ fun DropdownMenu(
                     }
                     if (longPress) return@clickableWithIndication
 
+                    Log.d("APP_A", "DropdownMenu: AAA")
                     openMenu(it)
                 },
                 onLongPress = {
                     if (!longPress) return@clickableWithIndication
 
+                    Log.d("APP_A", "DropdownMenu: BBB")
                     openMenu(it)
                 }
             )
