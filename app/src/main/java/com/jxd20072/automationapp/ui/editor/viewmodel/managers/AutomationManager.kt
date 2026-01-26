@@ -8,8 +8,8 @@ import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
+import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
-import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -42,7 +42,7 @@ sealed interface AutomationUiState {
 @Singleton
 class AutomationManager @Inject constructor(
     private val automationsRepository: AutomationsRepository,
-    private val settingsRepository: UserSettingsRepository,
+    private val settingsRepository: AppSettingsRepository,
 ) {
     private val _automationUiState = MutableStateFlow<AutomationUiState>(AutomationUiState.Loading)
     val automationUiState = _automationUiState.asStateFlow()

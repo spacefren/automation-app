@@ -1,13 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.compose.compiler)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.protobuf")
-    kotlin("plugin.serialization")
 }
 
 android {
@@ -17,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.jxd20072.automationapp"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -90,7 +89,6 @@ dependencies {
     // Datastore
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.core)
-    implementation(libs.protobuf.javalite)
     implementation(libs.protobuf.kotlin.lite)
 
     // Serialization
@@ -107,18 +105,15 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.28.3"
+        artifact = "com.google.protobuf:protoc:4.33.4"
     }
-
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
                 create("java") {
                     option("lite")
                 }
-                create("kotlin") {
-                    option("lite")
-                }
+                create("kotlin")
             }
         }
     }

@@ -3,8 +3,8 @@ package com.jxd20072.automationapp.core.data.di
 import android.content.Context
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.jxd20072.automationapp.core.data.local.AutomationsDataSerializer
-import com.jxd20072.automationapp.core.data.local.UserSettingsSerializer
+import com.jxd20072.automationapp.core.data.local.AppSettingsSerializer
+import com.jxd20072.automationapp.core.data.local.AutomationsMapSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,25 +16,23 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
 
-	@Provides
-	@Singleton
-	fun providesUserPreferencesDataStore(
-		@ApplicationContext context: Context,
-		userPreferencesSerializer: UserSettingsSerializer
-	) = DataStoreFactory.create(
-		serializer = userPreferencesSerializer
-	) {
-		context.dataStoreFile("user_preferences.pb")
-	}
+    @Provides
+    @Singleton
+    fun providesAppPreferencesDataStore(
+        @ApplicationContext context: Context,
+    ) = DataStoreFactory.create(
+        serializer = AppSettingsSerializer
+    ) {
+        context.dataStoreFile("settings.pb")
+    }
 
-	@Provides
-	@Singleton
-	fun providesAutomationsDataMapStore(
-		@ApplicationContext context: Context,
-		automationsDataSerializer: AutomationsDataSerializer
-	) = DataStoreFactory.create(
-		serializer = automationsDataSerializer
-	) {
-		context.dataStoreFile("automations_data_.pb")
-	}
+    @Provides
+    @Singleton
+    fun providesAutomationsDataMapStore(
+        @ApplicationContext context: Context,
+    ) = DataStoreFactory.create(
+        serializer = AutomationsMapSerializer
+    ) {
+        context.dataStoreFile("automations_map.pb")
+    }
 }

@@ -7,7 +7,7 @@ import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.AutomationsDataMap
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.copy
-import com.jxd20072.automationapp.core.data.local.AutomationsStore
+import com.jxd20072.automationapp.core.data.local.AutomationStore
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.AutomationDefMetadata
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
@@ -23,168 +23,170 @@ import java.util.UUID
 import javax.inject.Inject
 
 class AutomationsRepository @Inject constructor(
-	private val automationsStore: AutomationsStore,
-	private val automationsDataStore: DataStore<AutomationsDataMap>,
-	private val context: Context
+    private val automationsStore: AutomationStore,
+    private val context: Context,
+    private val automationsDataStore: DataStore<AutomationsDataMap>
 ) {
-	private val testingAutomationDef = AutomationDef(
-		metadata = AutomationDefMetadata(
-			version = 0
-		),
-		variables = setOf(
-			VariableDef(name = "firstVar", value = VariableDefValue.TEXT("textVariableValue")),
-			VariableDef(name = "secondVar", value = VariableDefValue.NUMBER("10")),
-			VariableDef(name = "justThird", value = VariableDefValue.BOOL(true))
-		),
-		topLevel = listOf(
-			NodeDef(
-				name = "wait",
-				nodeType = NodeType.TRIGGER,
-				input = mapOf("Duration" to ConfigurationValue.NUMBER("3000")),
-				content = listOf(
-					NodeDef(
-						name = "log",
-						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationValue.TEXT("I waited for this")),
-					),
-				)
-			),
-			NodeDef(
-				name = "onStart",
-				id = "0",
-				nodeType = NodeType.FUNCTION,
-				content = listOf(
-					NodeDef(
-						name = "log",
-						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationValue.TEXT("I didn't wait for this")),
-					),
-				)
-			),
-			NodeDef(
-				name = "myFunction",
-				nodeType = NodeType.FUNCTION,
-				content = listOf(
-					NodeDef(
-						name = "log",
-						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationValue.TEXT("1")),
-					),
-					NodeDef(
-						name = "log",
-						nodeType = NodeType.ACTION,
-						input = mapOf("Text" to ConfigurationValue.TEXT("2")),
-					),
-				)
-			),
-		),
-	)
 
-	val automationsDataFlow = automationsDataStore.data
+    private val testingAutomationDef = AutomationDef(
+        metadata = AutomationDefMetadata(
+            version = 0
+        ),
+        variables = setOf(
+            VariableDef(name = "firstVar", value = VariableDefValue.TEXT("textVariableValue")),
+            VariableDef(name = "secondVar", value = VariableDefValue.NUMBER("10")),
+            VariableDef(name = "justThird", value = VariableDefValue.BOOL(true))
+        ),
+        topLevel = listOf(
+            NodeDef(
+                name = "wait",
+                nodeType = NodeType.TRIGGER,
+                input = mapOf("Duration" to ConfigurationValue.NUMBER("3000")),
+                content = listOf(
+                    NodeDef(
+                        name = "log",
+                        nodeType = NodeType.ACTION,
+                        input = mapOf("Text" to ConfigurationValue.TEXT("I waited for this")),
+                    ),
+                )
+            ),
+            NodeDef(
+                name = "onStart",
+                id = "0",
+                nodeType = NodeType.FUNCTION,
+                content = listOf(
+                    NodeDef(
+                        name = "log",
+                        nodeType = NodeType.ACTION,
+                        input = mapOf("Text" to ConfigurationValue.TEXT("I didn't wait for this")),
+                    ),
+                )
+            ),
+            NodeDef(
+                name = "myFunction",
+                nodeType = NodeType.FUNCTION,
+                content = listOf(
+                    NodeDef(
+                        name = "log",
+                        nodeType = NodeType.ACTION,
+                        input = mapOf("Text" to ConfigurationValue.TEXT("1")),
+                    ),
+                    NodeDef(
+                        name = "log",
+                        nodeType = NodeType.ACTION,
+                        input = mapOf("Text" to ConfigurationValue.TEXT("2")),
+                    ),
+                )
+            ),
+        ),
+    )
 
-	private val ongoingAutomations = mutableSetOf<AutomationExecutor>()
+    val automationsDataFlow = automationsDataStore.data
 
-	suspend fun createAutomation(
-		name: String,
-		icon: String,
-		tags: List<String>
-	): String {
-		val id = UUID.randomUUID().toString()
+    private val ongoingAutomations = mutableSetOf<AutomationExecutor>()
 
-		automationsStore.writeAutomationToFile(
-			name = name,
-			automationDef = testingAutomationDef
-		)
+    suspend fun createAutomation(
+        name: String,
+        icon: String,
+        tags: List<String>
+    ): String {
+        val id = UUID.randomUUID().toString()
 
-		val entry = AutomationsMapEntry.newBuilder()
-			.setName(name)
-			.setIcon(icon)
-			.addAllTags(tags)
-			.setCreationDate(Instant.now().toString())
-			.setLastSaved(Instant.now().toString())
-			.build()
+        automationsStore.writeAutomationToFile(
+            name = name,
+            automationDef = testingAutomationDef
+        )
 
-		updateAutomationDataMap { automationsData ->
-			automationsData.copy {
-				automations[id] = entry
-			}
-		}
+        val entry = AutomationsMapEntry.newBuilder()
+            .setName(name)
+            .setIcon(icon)
+            .addAllTags(tags)
+            .setCreationDate(Instant.now().toString())
+            .setLastSaved(Instant.now().toString())
+            .build()
 
-		return id
-	}
+        updateAutomationDataMap { automationsData ->
+            automationsData.copy {
+                automations[id] = entry
+            }
+        }
 
-	private suspend fun updateAutomationDataMap(
-		transform: (AutomationsDataMap) -> AutomationsDataMap
-	) {
-		automationsDataStore.updateData(transform = transform)
-	}
+        return id
+    }
 
-	private suspend fun updateAutomationData(
-		id: String,
-		transform: (AutomationsMapEntry) -> AutomationsMapEntry
-	) {
-		updateAutomationDataMap { automationsDataMap ->
-			val automationData =
-				automationsDataMap.automationsMap[id] ?: return@updateAutomationDataMap automationsDataMap
-			automationsDataMap.copy {
-				automations[id] = transform(automationData)
-			}
-		}
-	}
+    private suspend fun updateAutomationDataMap(
+        transform: (AutomationsDataMap) -> AutomationsDataMap
+    ) {
+        automationsDataStore.updateData(transform = transform)
+    }
 
-	suspend fun getAutomationMapEntry(id: String): AutomationsMapEntry? {
-		return automationsDataStore.data.first().automationsMap[id]
-	}
+    private suspend fun updateAutomationData(
+        id: String,
+        transform: (AutomationsMapEntry) -> AutomationsMapEntry
+    ) {
+        updateAutomationDataMap { automationsDataMap ->
+            val automationData =
+                automationsDataMap.automationsMap[id]
+                    ?: return@updateAutomationDataMap automationsDataMap
+            automationsDataMap.copy {
+                automations[id] = transform(automationData)
+            }
+        }
+    }
 
-	suspend fun getAutomationDef(id: String): AutomationDef? {
-		val mapEntry = getAutomationMapEntry(id) ?: return null
-		val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
-		return automationDef
-	}
+    suspend fun getAutomationMapEntry(id: String): AutomationsMapEntry? {
+        return automationsDataStore.data.first().automationsMap[id]
+    }
 
-	suspend fun writeAutomation(id: String, automation: AutomationDef) {
-		if (getAutomationDef(id) == automation) return
-		val automationData = getAutomationMapEntry(id) ?: return
+    suspend fun getAutomationDef(id: String): AutomationDef? {
+        val mapEntry = getAutomationMapEntry(id) ?: return null
+        val automationDef = automationsStore.readAutomation(mapEntry.name) ?: return null
+        return automationDef
+    }
 
-		Log.d("APP_A", "saving...")
+    suspend fun writeAutomation(id: String, automation: AutomationDef) {
+        if (getAutomationDef(id) == automation) return
+        val automationData = getAutomationMapEntry(id) ?: return
 
-		automationsStore.writeAutomationToFile(automationData.name, automation)
+        Log.d("APP_A", "saving...")
 
-		updateAutomationDataMap { automationsData ->
-			automationsData.copy {
-				automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
-			}
-		}
-	}
+        automationsStore.writeAutomationToFile(automationData.name, automation)
 
-	suspend fun executeAutomation(automationID: String): AutomationExecutor? {
-		val automation = getAutomationDef(automationID) ?: return null
+        updateAutomationDataMap { automationsData ->
+            automationsData.copy {
+                automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
+            }
+        }
+    }
 
-		val executor = AutomationExecutor(automation, context)
-		ongoingAutomations.add(executor)
+    suspend fun executeAutomation(automationID: String): AutomationExecutor? {
+        val automation = getAutomationDef(automationID) ?: return null
 
-		val logCollectorJob = executor.executorScope.launch {
-			executor.logs.collect { log ->
-				Log.d(
-					"APP_AutomationLogs",
-					"[${log.level}] [${log.time}] ${log.message}"
-				)
+        val executor = AutomationExecutor(automation, context)
+        ongoingAutomations.add(executor)
 
-				addLog(automationID, log)
-			}
-		}
+        val logCollectorJob = executor.executorScope.launch {
+            executor.logs.collect { log ->
+                Log.d(
+                    "APP_AutomationLogs",
+                    "[${log.level}] [${log.time}] ${log.message}"
+                )
 
-		executor.start {
-			ongoingAutomations.removeIf { it.id == executor.id }
-			logCollectorJob.cancel()
-		}
+                addLog(automationID, log)
+            }
+        }
 
-		return executor
-	}
+        executor.start {
+            ongoingAutomations.removeIf { it.id == executor.id }
+            logCollectorJob.cancel()
+        }
 
-	fun getAutomationExecutor(id: String): AutomationExecutor? {
-		return ongoingAutomations.find { it.id == id }
-	}
+        return executor
+    }
+
+    fun getAutomationExecutor(id: String): AutomationExecutor? {
+        return ongoingAutomations.find { it.id == id }
+    }
 
     suspend fun addLog(automationID: String, log: AutomationLogEntry) {
         updateAutomationData(automationID) { automationData ->

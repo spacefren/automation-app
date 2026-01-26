@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
-import com.jxd20072.automationapp.core.data.repository.UserSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +30,7 @@ sealed interface UserSettingsUiState {
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userSettingsRepository: UserSettingsRepository,
+    private val userSettingsRepository: AppSettingsRepository,
     private val automationsRepository: AutomationsRepository
 ) : ViewModel() {
 
@@ -39,10 +39,10 @@ class SettingsViewModel @Inject constructor(
     }
 
     val userSettingsUiState: StateFlow<UserSettingsUiState> =
-        userSettingsRepository.userSettings
-            .map { userSettings ->
+        userSettingsRepository.appSettings
+            .map { appSettings ->
                 UserSettingsUiState.Success(
-                    settings = createUserEditableSettings(userSettings)
+                    settings = createUserEditableSettings(appSettings)
                 )
             }
             .stateIn(

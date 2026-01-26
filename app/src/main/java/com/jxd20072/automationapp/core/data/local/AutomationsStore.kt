@@ -7,7 +7,7 @@ import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
-class AutomationsStore @Inject constructor(
+class AutomationStore @Inject constructor(
     private val context: Context
 ) {
     private fun readAutomationFile(file: File): AutomationDef {
