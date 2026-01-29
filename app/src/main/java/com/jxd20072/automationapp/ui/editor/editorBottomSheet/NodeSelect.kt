@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +47,13 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.CategoryListEntry
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectViewModel
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -214,7 +216,10 @@ fun NodeCategoryContainer(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeSelectScreen(
-    nodeSelectState: NodeSelectState,
+    screenType: NodeSelectScreenType,
+    nodeSelectViewmodel: NodeSelectViewModel = hiltViewModel<NodeSelectViewModel, NodeSelectViewModel.Factory>(
+        creationCallback = { factory -> factory.create(screenType) }
+    ),
     autoOpenKeyboard: Boolean,
     onStartDrag: (
         nodeData: NodeData,
@@ -222,8 +227,10 @@ fun EditorNodeSelectScreen(
         startedOffset: Offset,
     ) -> Unit,
     onClick: (nodeData: NodeData) -> Unit,
-    onNodeSearch: (query: String) -> Unit
 ) {
+    val nodeSelectState by nodeSelectViewmodel.nodeSelectState.collectAsState()
+    val screenType = nodeSelectViewmodel.screenType
+
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
         modifier = Modifier
@@ -232,21 +239,20 @@ fun EditorNodeSelectScreen(
             .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         Text(
-            text = "Select " + when (nodeSelectState.nodeSelectType) {
-                NodeType.ACTION -> "action"
-                NodeType.TRIGGER -> "trigger"
-                NodeType.FUNCTION -> "function"
+            text = "Select " + when (screenType) {
+                NodeSelectScreenType.ACTION -> "action"
+                NodeSelectScreenType.TRIGGER -> "trigger"
             },
             color = LocalTheme.colorScheme.onBackground,
             style = LocalTheme.typography.subTitle
         )
         SearchBar(
-            searchText = "Search actions or categories",
+            searchText = "Search nodes or categories",
             queryText = nodeSelectState.nodeSearchQuery,
             modifier = Modifier.fillMaxWidth(),
             autoFocus = autoOpenKeyboard
         ) { query ->
-            onNodeSearch(query)
+            nodeSelectViewmodel.changeNodeSearchQuery(query)
         }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),

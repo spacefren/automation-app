@@ -1,10 +1,27 @@
 package com.jxd20072.automationapp.ui.settings.settingsItems
 
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.Text
+import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.NestedLevel
+import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun SettingsItem(
@@ -14,13 +31,51 @@ fun SettingsItem(
     description: String = "",
     modifier: Modifier = Modifier,
     validate: ((ConfigurationValue.VARIABLE) -> ValidationResult)? = null,
-    onValueChanged: (ConfigurationValue.VARIABLE) -> Unit
+    onValueChanged: (ConfigurationValue.VARIABLE) -> Unit,
+    promptVariableSelect: ((variableId: String) -> Unit) -> Unit
 ) {
+    val selectedVariable = variablesList.find { it.id == item.value }
+
+    val iconSize = with(LocalDensity.current) {
+        LocalTheme.typography.body.fontSize.toDp()
+    }
+
     HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
         modifier = modifier
     ) {
-        
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+            modifier = Modifier
+                .clickableWithIndication {
+                    promptVariableSelect {
+                        Log.d("APP_A", "SettingsItem: VARIABLE SELECTED?")
+                        onValueChanged(ConfigurationValue.VARIABLE(it))
+                    }
+                }
+                .fillMaxHeight()
+                .borderWithShadow(LocalTheme, NestedLevel.TWO)
+                .background(LocalTheme.colorScheme.surface)
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+        ) {
+            Icon(
+                painter = painterResource(
+                    when (selectedVariable?.value) {
+                        is VariableDefValue.BOOL -> R.drawable.round_bool_24
+                        is VariableDefValue.TEXT -> R.drawable.round_text_24
+                        is VariableDefValue.NUMBER -> R.drawable.round_number_24
+                        else -> R.drawable.round_error_24
+                    }
+                ),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(iconSize)
+            )
+            Text(
+                text = selectedVariable?.name ?: "Unknown",
+                style = LocalTheme.typography.body
+            )
+        }
     }
 }

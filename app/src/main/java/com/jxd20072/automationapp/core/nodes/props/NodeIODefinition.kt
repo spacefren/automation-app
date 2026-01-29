@@ -9,7 +9,7 @@ sealed class ValidationResult {
 }
 
 data class NodeInputDefinition<T>(
-    val name: String,
+    val displayName: String,
     val description: String,
     val defaultValue: T,
     val shouldShow: ((

@@ -52,13 +52,13 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         icon = R.drawable.round_align_left_24,
         inputDefinitions = mapOf(
             "text" to NodeInputDefinition(
-                name = "Text",
+                displayName = "Text",
                 description = "The text to display this is a longer, more complete description",
                 defaultValue = ConfigurationValue.TEXT("default value"),
                 validate = { ValidationResult.Success },
             ),
             "validatedText" to NodeInputDefinition(
-                name = "Validated Text",
+                displayName = "Validated Text",
                 description = "This one doesn't accept any value!",
                 defaultValue = ConfigurationValue.TEXT("default value 2"),
                 validate = { textConfig ->
@@ -70,7 +70,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
                 },
             ),
             "otherOption" to NodeInputDefinition(
-                name = "Other Option",
+                displayName = "Other Option",
                 description = "This is a shorter description.",
                 defaultValue = ConfigurationValue.BOOL(true),
                 validate = { ValidationResult.Success },

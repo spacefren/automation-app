@@ -45,7 +45,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun EditorVariableEntry(
     variableDef: VariableDef,
     modifier: Modifier = Modifier,
-    editVariable: () -> Unit,
+    onClick: () -> Unit,
     deleteVariable: () -> Unit
 ) {
     val iconSize = with(LocalDensity.current) {
@@ -54,7 +54,7 @@ fun EditorVariableEntry(
 
     DropdownMenu(
         longPress = true,
-        onNormalClick = editVariable,
+        onNormalClick = onClick,
         options = listOf(
             DropdownOption(
                 icon = R.drawable.round_settings_24,
@@ -162,7 +162,7 @@ fun EditorVariableEntry(
 fun EditorVariablesScreen(
     variablesScreenState: VariablesScreenState,
     filteredVariables: Set<VariableDef>,
-    editVariable: (name: String) -> Unit,
+    onVariableClick: (name: String) -> Unit,
     deleteVariable: (name: String) -> Unit,
     searchVariable: (String) -> Unit,
     createVariable: () -> Unit
@@ -175,7 +175,7 @@ fun EditorVariablesScreen(
             .windowInsetsPadding(WindowInsets.navigationBars)
     ) {
         Text(
-            text = "Variables",
+            text = if (variablesScreenState.onVariableSelect == null) "Variables" else "Select variable",
             style = LocalTheme.typography.subTitle,
             color = LocalTheme.colorScheme.onBackground
         )
@@ -207,7 +207,7 @@ fun EditorVariablesScreen(
             items(filteredVariables.sortedBy { it.name }, { it.id }) {
                 EditorVariableEntry(
                     variableDef = it,
-                    editVariable = { editVariable(it.id) },
+                    onClick = { onVariableClick(it.id) },
                     deleteVariable = { deleteVariable(it.id) },
                     modifier = Modifier
                         .animateItem()

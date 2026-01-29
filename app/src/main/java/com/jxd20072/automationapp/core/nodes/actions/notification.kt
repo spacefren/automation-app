@@ -64,13 +64,13 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         icon = R.drawable.round_info_24,
         inputDefinitions = mapOf(
             "title" to NodeInputDefinition(
-                name = "Title",
+                displayName = "Title",
                 description = "The notification's title",
                 defaultValue = ConfigurationValue.TEXT("TITLE"),
                 validate = { ValidationResult.Success },
             ),
             "body" to NodeInputDefinition(
-                name = "Body",
+                displayName = "Body",
                 description = "The notification's text body",
                 defaultValue = ConfigurationValue.TEXT("BODY"),
                 validate = { ValidationResult.Success },

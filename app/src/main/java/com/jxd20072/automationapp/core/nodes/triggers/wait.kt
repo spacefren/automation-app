@@ -41,13 +41,13 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         icon = R.drawable.round_electric_bolt_24,
         inputDefinitions = mapOf(
             "Duration" to NodeInputDefinition(
-                name = "Duration",
+                displayName = "Duration",
                 description = "The duration of the delay, in milliseconds",
                 defaultValue = ConfigurationValue.NUMBER("1000"),
                 validate = { ValidationResult.Success }
             ),
             "IsThisWorking" to NodeInputDefinition(
-                name = "IsThisWorking",
+                displayName = "IsThisWorking",
                 description = "if you see this, yes",
                 defaultValue = ConfigurationValue.BOOL(true),
                 validate = { ValidationResult.Success }

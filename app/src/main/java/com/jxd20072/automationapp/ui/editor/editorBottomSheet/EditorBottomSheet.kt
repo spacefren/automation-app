@@ -1,30 +1,33 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.LogLevel
+import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Closed
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Logs
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeDrop
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEdit
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelect
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEdit
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Variables
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
-import com.jxd20072.automationapp.ui.shared.components.Layer
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 
@@ -32,11 +35,12 @@ import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 @Composable
 fun EditorBottomSheet(
     onDismiss: () -> Unit,
+    navigateBack: () -> Unit,
     bottomSheetState: EditorBottomSheetState,
     autoOpenKeyboard: Boolean,
+    // General
+    automationDraft: AutomationDef,
     // Node select screen
-    onNodeSearch: (String) -> Unit,
-    nodeSelectState: NodeSelectState,
     onCreateClick: (nodeData: NodeData) -> Unit,
     // Node edit screen
     nodeEditScreenState: NodeEditState,
@@ -46,9 +50,10 @@ fun EditorBottomSheet(
     variablesScreenState: VariablesScreenState,
     filteredVariables: Set<VariableDef>,
     searchVariable: (query: String) -> Unit,
-    editVariable: (name: String) -> Unit,
+    onVariableClick: (name: String) -> Unit,
     deleteVariable: (name: String) -> Unit,
     createVariable: () -> Unit,
+    promptSelectVariable: (onSelect: (variableId: String) -> Unit) -> Unit,
     // Variable edit
     variableEditState: VariableEditState,
     editingVariableDef: VariableDef?,
@@ -72,10 +77,10 @@ fun EditorBottomSheet(
     ) -> Unit,
 ) {
     val state = remember { ModalBottomSheetState() }
-    val isCollapsed = bottomSheetState is EditorBottomSheetState.Open
+    val isCollapsed = bottomSheetState.backStack.last() != Closed
             && editorDragState is EditorNodeDragState.Dragging
 
-    state.isOpen = bottomSheetState !is EditorBottomSheetState.Closed
+    state.isOpen = bottomSheetState.backStack.last() != Closed
     state.isCollapsed = isCollapsed
 
     ModalBottomSheet(
@@ -85,81 +90,65 @@ fun EditorBottomSheet(
             true
         },
     ) {
-        Layer {
-            AnimatedContent(
-                targetState = bottomSheetState,
-                transitionSpec = {
-                    ContentTransform(
-                        targetContentEnter = fadeIn(),
-                        initialContentExit = fadeOut(),
+        NavDisplay(
+            backStack = bottomSheetState.backStack,
+            onBack = navigateBack,
+            entryProvider = entryProvider {
+                entry<Closed> { }
+                entry<NodeDrop> {
+                    EditorNodeDropSheet(
+                        dragData = editorDragState,
+                        showDelete = isCollapsed && !editorDragState.isCreatingNode,
+                        onDropZoneEnter = onDropZoneEnter,
+                        onDropZoneExit = onDropZoneExit
                     )
-                },
-                contentKey = { it::class }
-            ) { state ->
-                when {
-                    state !is EditorBottomSheetState.Open -> {}
-
-                    state.screen == EditorBottomSheetScreen.NODE_DROP -> {
-                        EditorNodeDropSheet(
-                            dragData = editorDragState,
-                            showDelete = isCollapsed && !editorDragState.isCreatingNode,
-                            onDropZoneEnter = onDropZoneEnter,
-                            onDropZoneExit = onDropZoneExit
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.NODE_SELECT -> {
-                        EditorNodeSelectScreen(
-                            onNodeSearch = onNodeSearch,
-                            nodeSelectState = nodeSelectState,
-                            autoOpenKeyboard = autoOpenKeyboard,
-                            onStartDrag = onStartDrag,
-                            onClick = onCreateClick,
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.NODE_EDIT -> {
-                        EditorNodeEditScreen(
-                            nodeEditState = nodeEditScreenState,
-                            setNodeConfig = setNodeConfig,
-                            resetDefaultConfig = resetDefaultNodeConfig,
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.VARIABLES -> {
-                        EditorVariablesScreen(
-                            variablesScreenState = variablesScreenState,
-                            filteredVariables = filteredVariables,
-                            searchVariable = searchVariable,
-                            editVariable = editVariable,
-                            deleteVariable = deleteVariable,
-                            createVariable = createVariable
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.VARIABLE_EDIT -> {
-                        VariableEditScreen(
-                            editingVariable = editingVariableDef,
-                            validateVariableName = validateVariableName,
-                            changeVariableName = changeVariableName,
-                            changeVariableValue = changeVariableValue,
-                            variableEditState = variableEditState
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.LOGS -> {
-                        EditorLogsScreen(
-                            logsScreenState = logsScreenState,
-                            filteredLogs = filteredLogs,
-                            searchLogs = searchLogs,
-                            filterLogs = filterLogs,
-                            deleteLog = deleteLog,
-                        )
-                    }
-
-                    state.screen == EditorBottomSheetScreen.EMPTY -> {}
+                }
+                entry<NodeSelect> {
+                    EditorNodeSelectScreen(
+                        screenType = it.screenType,
+                        autoOpenKeyboard = autoOpenKeyboard,
+                        onStartDrag = onStartDrag,
+                        onClick = onCreateClick,
+                    )
+                }
+                entry<NodeEdit> {
+                    EditorNodeEditScreen(
+                        nodeEditState = nodeEditScreenState,
+                        automationDraft = automationDraft,
+                        setNodeConfig = setNodeConfig,
+                        resetDefaultConfig = resetDefaultNodeConfig,
+                        promptVariableSelect = promptSelectVariable
+                    )
+                }
+                entry<Variables> {
+                    EditorVariablesScreen(
+                        variablesScreenState = variablesScreenState,
+                        filteredVariables = filteredVariables,
+                        searchVariable = searchVariable,
+                        onVariableClick = onVariableClick,
+                        deleteVariable = deleteVariable,
+                        createVariable = createVariable
+                    )
+                }
+                entry<VariableEdit> {
+                    VariableEditScreen(
+                        editingVariable = editingVariableDef,
+                        validateVariableName = validateVariableName,
+                        changeVariableName = changeVariableName,
+                        changeVariableValue = changeVariableValue,
+                        variableEditState = variableEditState
+                    )
+                }
+                entry<Logs> {
+                    EditorLogsScreen(
+                        logsScreenState = logsScreenState,
+                        filteredLogs = filteredLogs,
+                        searchLogs = searchLogs,
+                        filterLogs = filterLogs,
+                        deleteLog = deleteLog,
+                    )
                 }
             }
-        }
+        )
     }
 }

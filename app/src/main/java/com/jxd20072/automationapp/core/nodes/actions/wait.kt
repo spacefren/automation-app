@@ -37,7 +37,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         icon = R.drawable.round_play_arrow_24,
         inputDefinitions = mapOf(
             "duration" to NodeInputDefinition(
-                name = "Duration",
+                displayName = "Duration",
                 description = "The duration of the pause, in milliseconds",
                 defaultValue = ConfigurationValue.NUMBER("10000"),
                 validate = { ValidationResult.Success }

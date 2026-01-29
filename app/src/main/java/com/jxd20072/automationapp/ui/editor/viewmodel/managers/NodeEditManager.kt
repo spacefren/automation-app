@@ -74,7 +74,7 @@ class NodeEditManager @Inject constructor(
         )
     }
 
-    fun setConfig(name: String, config: ConfigurationValue<*>) {
+    fun setNodeConfig(name: String, config: ConfigurationValue<*>) {
         val nodeID = editingNodeID.value ?: return
         val nodeDef = automationManager.findNode(nodeID) ?: return
 

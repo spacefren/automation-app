@@ -43,32 +43,30 @@ class EditorViewModel @Inject constructor(
 
     fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
         dragManager.dragNode(id, nodePosition, pressedPosition)
-        bottomSheetManager.openNodeDrop()
+        bottomSheetManager.navigateNodeDrop()
     }
 
     fun onCreateNodeDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
-        bottomSheetManager.openNodeDrop()
+        bottomSheetManager.navigateNodeDrop()
         dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
     }
 
     fun onCreateNodeClick(nodeData: NodeData) {
         val nodeDef = automationManager.createNodeDef(nodeData)
         automationManager.addNode(nodeDef)
-        bottomSheetManager.openNodeEdit(nodeDef.id)
+        bottomSheetManager.navigateNodeEdit(nodeDef.id)
     }
 
     fun onNodeDrop() {
-        bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
+        bottomSheetManager.closeBottomSheet()
         val dragData = dragManager.editorNodeDragState.value
 
         if (dragData !is EditorNodeDragState.Dragging) return
 
-        bottomSheetManager.nodeSelectManager.setPageCollapsed(false)
-
         if (dragData.isCreatingNode) {
             val nodeID = dragManager.dropCreateNode()
             if (nodeID != null) {
-                bottomSheetManager.openNodeEdit(nodeID)
+                bottomSheetManager.navigateNodeEdit(nodeID)
             } else {
                 bottomSheetManager.closeBottomSheet()
             }
@@ -84,10 +82,14 @@ class EditorViewModel @Inject constructor(
             value = VariableDefValue.NUMBER("0"),
         )
         automationManager.addVariable(newVariable)
-        bottomSheetManager.openVariableEdit(newVariable.id, true)
+        bottomSheetManager.onVariableClick(newVariable.id, true)
     }
 
     fun startEditNode(nodeId: String) {
-        bottomSheetManager.openNodeEdit(nodeId)
+        bottomSheetManager.navigateNodeEdit(nodeId)
+    }
+
+    fun promptSelectVariable(onSelect: (selected: String) -> Unit) {
+        bottomSheetManager.navigateVariables(onSelect)
     }
 }

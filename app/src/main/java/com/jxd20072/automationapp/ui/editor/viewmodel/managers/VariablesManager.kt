@@ -14,6 +14,7 @@ import javax.inject.Singleton
 @Immutable
 data class VariablesScreenState(
     val searchQuery: String = "",
+    val onVariableSelect: ((variableId: String) -> Unit)? = null,
 )
 
 @Singleton
@@ -44,6 +45,14 @@ class VariablesManager @Inject constructor(
         _variablesUiState.update { state ->
             state.copy(
                 searchQuery = query
+            )
+        }
+    }
+
+    fun overrideVariableSelect(override: ((variableId: String) -> Unit)?) {
+        _variablesUiState.update { state ->
+            state.copy(
+                onVariableSelect = override
             )
         }
     }

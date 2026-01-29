@@ -10,8 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.jxd20072.automationapp.core.data.model.NodeType
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.ui.editor.components.DraggingNode
 import com.jxd20072.automationapp.ui.editor.components.EditorFloatingAddButton
 import com.jxd20072.automationapp.ui.editor.components.EditorNodeTree
@@ -20,6 +19,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
 import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
@@ -36,7 +36,6 @@ fun AutomationEditor(
 
     val automationManager = editorViewModel.automationManager
     val bottomSheetManager = editorViewModel.bottomSheetManager
-    val nodeSelectManager = bottomSheetManager.nodeSelectManager
     val nodeEditManager = bottomSheetManager.nodeEditManager
     val variablesManager = bottomSheetManager.variablesManager
     val variableEditManager = bottomSheetManager.variableEditManager
@@ -46,7 +45,6 @@ fun AutomationEditor(
     val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
     val draggingData by dragManager.editorNodeDragState.collectAsState()
     val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
-    val nodeSelectState by nodeSelectManager.nodeSelectState.collectAsState()
     val nodeEditState by nodeEditManager.editingNodeState.collectAsState(NodeEditState.NotEditing)
     val variablesUiState by variablesManager.variablesUiState.collectAsState()
     val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
@@ -85,7 +83,7 @@ fun AutomationEditor(
                         automationData = (automationState as AutomationUiState.Success).automationData,
                         currentTime = currentTime,
                         returnHome = returnHome,
-                        openVariablesScreen = bottomSheetManager::openVariables,
+                        openVariablesScreen = bottomSheetManager::navigateVariables,
                         openLogsScreen = bottomSheetManager::openLogs,
                         saveAutomation = { automationManager.trySaveAutomation(true) },
                         runAutomation = editorViewModel::runAutomation,
@@ -104,22 +102,26 @@ fun AutomationEditor(
                 )
                 EditorFloatingAddButton(
                     hidden = draggingData is EditorNodeDragState.Dragging,
-                    onCreateNodePressed = { bottomSheetManager.openNodeSelect(NodeType.ACTION) },
+                    onCreateNodePressed = {
+                        bottomSheetManager.navigateNodeSelect(NodeSelectScreenType.ACTION)
+                    },
                     onCreateFunctionPressed = { },
-                    onCreateTriggerPressed = { bottomSheetManager.openNodeSelect(NodeType.TRIGGER) }
+                    onCreateTriggerPressed = {
+                        bottomSheetManager.navigateNodeSelect(NodeSelectScreenType.TRIGGER)
+                    }
                 )
                 EditorBottomSheet(
                     onDismiss = bottomSheetManager::closeBottomSheet,
+                    navigateBack = bottomSheetManager::navigateBack,
                     bottomSheetState = bottomSheetState,
-                    nodeSelectState = nodeSelectState,
+                    automationDraft = (automationState as AutomationUiState.Success).automationDraft,
                     nodeEditScreenState = nodeEditState,
-                    setNodeConfig = nodeEditManager::setConfig,
+                    setNodeConfig = nodeEditManager::setNodeConfig,
                     resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
-                    onNodeSearch = nodeSelectManager::changeNodeSearchQuery,
                     variablesScreenState = variablesUiState,
                     filteredVariables = filteredVariables,
                     searchVariable = variablesManager::changeSearchQuery,
-                    editVariable = bottomSheetManager::openVariableEdit,
+                    onVariableClick = bottomSheetManager::onVariableClick,
                     deleteVariable = automationManager::deleteVariable,
                     createVariable = editorViewModel::onCreateVariable,
                     variableEditState = variableEditState,
@@ -127,6 +129,7 @@ fun AutomationEditor(
                     validateVariableName = automationManager::validateVariableName,
                     changeVariableName = variableEditManager::changeName,
                     changeVariableValue = variableEditManager::changeValue,
+                    promptSelectVariable = editorViewModel::promptSelectVariable,
                     logsScreenState = logScreenState,
                     filteredLogs = filteredLogs,
                     searchLogs = logsManager::searchLogs,

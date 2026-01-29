@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.core.nodes.actions.variables
 
+import android.util.Log
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
@@ -50,12 +51,12 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
         icon = R.drawable.round_data_object_24,
         inputDefinitions = mapOf(
             "variable" to NodeInputDefinition(
-                name = "Variable",
+                displayName = "Variable",
                 description = "The variable to change",
                 defaultValue = ConfigurationValue.VARIABLE(""),
             ),
             "value_bool" to NodeInputDefinition(
-                name = "Value",
+                displayName = "Value",
                 description = "",
                 shouldShow = { input, automationDef ->
                     val variable = input["variable"]
