@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -33,6 +36,7 @@ import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
 import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
@@ -41,13 +45,20 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorNodeEditScreen(
-    nodeEditState: NodeEditState,
-    automationDraft: AutomationDef,
-    setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
-    resetDefaultConfig: () -> Unit,
-    promptVariableSelect: ((selected: String) -> Unit) -> Unit
+    nodeId: String,
+    nodeEditViewModel: NodeEditViewModel = hiltViewModel<NodeEditViewModel, NodeEditViewModel.Factory>(
+        creationCallback = { factory -> factory.create(nodeId) }
+    ),
 ) {
-    if (nodeEditState !is NodeEditState.Editing) return
+    val nodeEditScreenState by nodeEditViewModel.nodeEditScreenState.collectAsState()
+    val automationDraft by nodeEditViewModel.editingAutomationDraft.collectAsState(null)
+
+    if (nodeEditScreenState !is NodeEditState.Success) return
+    if (automationDraft == null) return
+
+    val automation = (automationDraft as AutomationDef)
+    val nodeData = (nodeEditScreenState as NodeEditState.Success).nodeData
+    val nodeDef = (nodeEditScreenState as NodeEditState.Success).nodeDef
 
     AppScreen {
         Column(
@@ -63,7 +74,7 @@ fun EditorNodeEditScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
+                    text = "Edit " + when (nodeDef.nodeType) {
                         NodeType.ACTION -> "action"
                         NodeType.TRIGGER -> "trigger"
                         NodeType.FUNCTION -> "function"
@@ -71,22 +82,22 @@ fun EditorNodeEditScreen(
                     style = LocalTheme.typography.subTitle,
                     color = LocalTheme.colorScheme.onBackground
                 )
-                SettingsResetButton(resetDefaultConfig)
+                SettingsResetButton(nodeEditViewModel::resetDefaultConfig)
             }
 
             RequiredPermissionsCard(
-                permissions = nodeEditState.nodeData.permissions
+                permissions = nodeData.permissions
             )
 
-            nodeEditState.nodeData.inputDefinitions.forEach { (name, inputDef) ->
-                val currentValue = nodeEditState.nodeDef.input[name]
+            nodeData.inputDefinitions.forEach { (name, inputDef) ->
+                val currentValue = nodeDef.input[name]
 
                 NodeEditField(
                     inputDefinition = inputDef,
-                    automationDraft = automationDraft,
+                    automationDraft = automation,
                     currentValue = currentValue,
-                    onValueChanged = { setNodeConfig(name, it) },
-                    promptSelectVariable = promptVariableSelect
+                    onValueChanged = { nodeEditViewModel.setNodeConfig(name, it) },
+                    promptSelectVariable = nodeEditViewModel::promptSelectVariable
                 )
             }
         }

@@ -1,7 +1,9 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.ViewModel
 import com.jxd20072.automationapp.core.data.LogLevel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -10,7 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @Immutable
 data class LogsScreenState(
@@ -18,10 +19,10 @@ data class LogsScreenState(
     val filterLevel: LogLevel? = null,
 )
 
-@Singleton
-class LogsManager @Inject constructor(
+@HiltViewModel
+class LogsViewModel @Inject constructor(
     private val automationManager: AutomationManager,
-) {
+) : ViewModel() {
     private val _logsScreenState = MutableStateFlow(LogsScreenState())
     val logsScreenState = _logsScreenState.asStateFlow()
 
@@ -51,5 +52,9 @@ class LogsManager @Inject constructor(
 
     fun filterLogs(level: LogLevel) {
         _logsScreenState.update { it.copy(filterLevel = level) }
+    }
+
+    fun deleteLog(id: String) {
+        automationManager.deleteLog(id)
     }
 }

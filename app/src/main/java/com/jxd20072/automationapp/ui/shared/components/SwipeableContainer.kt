@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.shared.components
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -65,7 +64,6 @@ fun SwipeableContainer(
     val draggableState = rememberDraggableState {
         isDraggingStartToEnd = totalDelta.targetValue + it > 0f
         coroutineScope.launch {
-            Log.d("APP_A", "SwipeableContainer: Total: ${totalDelta.targetValue}, New: $it")
             totalDelta.snapTo((totalDelta.targetValue + it))
 
             val isAboveThreshold = totalDelta.targetValue.absoluteValue >= actionThreshold

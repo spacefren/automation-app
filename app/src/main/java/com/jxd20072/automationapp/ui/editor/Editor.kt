@@ -19,7 +19,6 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
 import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
@@ -37,22 +36,17 @@ fun AutomationEditor(
 
     val automationManager = editorViewModel.automationManager
     val bottomSheetManager = editorViewModel.bottomSheetManager
-    val nodeEditManager = bottomSheetManager.nodeEditManager
     val variablesManager = bottomSheetManager.variablesManager
     val variableEditManager = bottomSheetManager.variableEditManager
-    val logsManager = bottomSheetManager.logsManager
     val dragManager = editorViewModel.dragManager
 
     val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
     val draggingData by dragManager.editorNodeDragState.collectAsState()
     val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
-    val nodeEditState by nodeEditManager.editingNodeState.collectAsState(NodeEditState.NotEditing)
     val variablesUiState by variablesManager.variablesUiState.collectAsState()
     val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
     val variableEditState by variableEditManager.variableEditState.collectAsState()
     val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
-    val logScreenState by logsManager.logsScreenState.collectAsState()
-    val filteredLogs by logsManager.filteredLogs.collectAsState(emptyList())
 
     AppScreen {
         if (automationState is AutomationUiState.Success) {
@@ -117,10 +111,6 @@ fun AutomationEditor(
                     onDismiss = bottomSheetManager::closeBottomSheet,
                     navigateBack = bottomSheetManager::navigateBack,
                     bottomSheetState = bottomSheetState,
-                    automationDraft = (automationState as AutomationUiState.Success).automationDraft,
-                    nodeEditScreenState = nodeEditState,
-                    setNodeConfig = nodeEditManager::setNodeConfig,
-                    resetDefaultNodeConfig = nodeEditManager::resetDefaultConfig,
                     variablesScreenState = variablesUiState,
                     filteredVariables = filteredVariables,
                     searchVariable = variablesManager::changeSearchQuery,
@@ -133,11 +123,6 @@ fun AutomationEditor(
                     changeVariableName = variableEditManager::changeName,
                     changeVariableValue = variableEditManager::changeValue,
                     promptSelectVariable = editorViewModel::promptSelectVariable,
-                    logsScreenState = logScreenState,
-                    filteredLogs = filteredLogs,
-                    searchLogs = logsManager::searchLogs,
-                    filterLogs = logsManager::filterLogs,
-                    deleteLog = automationManager::deleteLog,
                     editorDragState = draggingData,
                     onDropZoneEnter = dragManager::enterNodeDropZone,
                     onDropZoneExit = dragManager::exitNodeDropZone,

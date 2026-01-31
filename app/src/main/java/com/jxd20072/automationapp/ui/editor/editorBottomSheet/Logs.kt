@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,11 +25,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.LogLevel
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
@@ -95,12 +98,11 @@ fun LogEntry(
 
 @Composable
 fun EditorLogsScreen(
-    logsScreenState: LogsScreenState,
-    filteredLogs: List<AutomationLogEntry>,
-    searchLogs: (query: String) -> Unit,
-    filterLogs: (level: LogLevel) -> Unit,
-    deleteLog: (logID: String) -> Unit,
+    logsViewModel: LogsViewModel = hiltViewModel()
 ) {
+    val logsScreenState by logsViewModel.logsScreenState.collectAsState()
+    val filteredLogs by logsViewModel.filteredLogs.collectAsState(emptyList())
+
     AppScreen {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
@@ -121,7 +123,7 @@ fun EditorLogsScreen(
                     searchText = "Search logs",
                     queryText = logsScreenState.searchQuery,
                     autoFocus = false,
-                    onSearch = searchLogs,
+                    onSearch = logsViewModel::searchLogs,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
@@ -145,7 +147,7 @@ fun EditorLogsScreen(
                     LogEntry(
                         entry = it,
                         deleteLog = {
-                            deleteLog(it.id)
+                            logsViewModel.deleteLog(it.id)
                         },
                         modifier = Modifier
                             .animateItem()

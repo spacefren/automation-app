@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,8 +52,6 @@ fun EditorVariableEntry(
     val iconSize = with(LocalDensity.current) {
         LocalTheme.typography.body.fontSize.toDp()
     }
-
-    Log.d("APP_A", "EditorVariableEntry: Recomposing[${variableDef.name}}]...")
 
     DropdownMenu(
         longPress = true,

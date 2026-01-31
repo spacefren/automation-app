@@ -14,13 +14,17 @@ sealed class EditorBottomSheetScreen {
     data class NodeSelect(
         val screenType: NodeSelectScreenType
     ) : NavKey
+
     data class NodeEdit(
         val nodeID: String
     ) : NavKey
+
     data object Variables : NavKey
+    data object VariableSelect : NavKey
     data class VariableEdit(
         val variableId: String
     ) : NavKey
+
     data object Logs : NavKey
 }
 
@@ -32,10 +36,8 @@ data class EditorBottomSheetState(
 
 @Singleton
 class BottomSheetManager @Inject constructor(
-    val nodeEditManager: NodeEditManager,
     val variablesManager: VariablesManager,
     val variableEditManager: VariableEditManager,
-    val logsManager: LogsManager,
 ) {
     private val _bottomSheetState = MutableStateFlow<EditorBottomSheetState>(
         EditorBottomSheetState()
@@ -81,7 +83,6 @@ class BottomSheetManager @Inject constructor(
     }
 
     fun navigateNodeEdit(nodeID: String) {
-        nodeEditManager.startEditNode(nodeID)
         navigateTo(EditorBottomSheetScreen.NodeEdit(nodeID))
     }
 

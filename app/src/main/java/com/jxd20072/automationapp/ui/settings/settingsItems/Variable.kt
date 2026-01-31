@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.settings.settingsItems
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -50,7 +49,6 @@ fun SettingsItem(
             modifier = Modifier
                 .clickableWithIndication {
                     promptVariableSelect {
-                        Log.d("APP_A", "SettingsItem: VARIABLE SELECTED?")
                         onValueChanged(ConfigurationValue.VARIABLE(it))
                     }
                 }

@@ -6,10 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.jxd20072.automationapp.core.data.AutomationLogEntry
-import com.jxd20072.automationapp.core.data.LogLevel
-import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -17,8 +13,6 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
@@ -36,12 +30,8 @@ fun EditorBottomSheet(
     bottomSheetState: EditorBottomSheetState,
     autoOpenKeyboard: Boolean,
     // General
-    automationDraft: AutomationDef,
     // Node select screen
     // Node edit screen
-    nodeEditScreenState: NodeEditState,
-    setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
-    resetDefaultNodeConfig: () -> Unit,
     // Variables screen
     variablesScreenState: VariablesScreenState,
     filteredVariables: Set<VariableDef>,
@@ -57,11 +47,6 @@ fun EditorBottomSheet(
     changeVariableName: (newName: String) -> Unit,
     changeVariableValue: (newValue: VariableDefValue<*>) -> Unit,
     // Logs
-    logsScreenState: LogsScreenState,
-    filteredLogs: List<AutomationLogEntry>,
-    searchLogs: (query: String) -> Unit,
-    filterLogs: (level: LogLevel) -> Unit,
-    deleteLog: (logID: String) -> Unit,
     // Dragging
     editorDragState: EditorNodeDragState,
     onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
@@ -106,11 +91,7 @@ fun EditorBottomSheet(
                 }
                 entry<EditorBottomSheetScreen.NodeEdit> {
                     EditorNodeEditScreen(
-                        nodeEditState = nodeEditScreenState,
-                        automationDraft = automationDraft,
-                        setNodeConfig = setNodeConfig,
-                        resetDefaultConfig = resetDefaultNodeConfig,
-                        promptVariableSelect = promptSelectVariable
+                        nodeId = it.nodeID
                     )
                 }
                 entry<EditorBottomSheetScreen.Variables> {
@@ -133,13 +114,7 @@ fun EditorBottomSheet(
                     )
                 }
                 entry<EditorBottomSheetScreen.Logs> {
-                    EditorLogsScreen(
-                        logsScreenState = logsScreenState,
-                        filteredLogs = filteredLogs,
-                        searchLogs = searchLogs,
-                        filterLogs = filterLogs,
-                        deleteLog = deleteLog,
-                    )
+                    EditorLogsScreen()
                 }
             }
         )
