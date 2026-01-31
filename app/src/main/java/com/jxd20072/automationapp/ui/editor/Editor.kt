@@ -17,6 +17,7 @@ import com.jxd20072.automationapp.ui.editor.components.EditorNodeTree
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationUiState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
@@ -103,7 +104,9 @@ fun AutomationEditor(
                 EditorFloatingAddButton(
                     hidden = draggingData is EditorNodeDragState.Dragging,
                     onCreateNodePressed = {
-                        bottomSheetManager.navigateNodeSelect(NodeSelectScreenType.ACTION)
+                        bottomSheetManager.navigateTo(
+                            EditorBottomSheetScreen.NodeSelect(NodeSelectScreenType.ACTION)
+                        )
                     },
                     onCreateFunctionPressed = { },
                     onCreateTriggerPressed = {
@@ -136,8 +139,6 @@ fun AutomationEditor(
                     filterLogs = logsManager::filterLogs,
                     deleteLog = automationManager::deleteLog,
                     editorDragState = draggingData,
-                    onStartDrag = editorViewModel::onCreateNodeDrag,
-                    onCreateClick = editorViewModel::onCreateNodeClick,
                     onDropZoneEnter = dragManager::enterNodeDropZone,
                     onDropZoneExit = dragManager::exitNodeDropZone,
                     autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success

@@ -1,6 +1,7 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
@@ -38,31 +39,17 @@ data class NodeSelectState(
 
 @HiltViewModel(assistedFactory = NodeSelectViewModel.Factory::class)
 class NodeSelectViewModel @AssistedInject constructor(
-    @Assisted val screenType: NodeSelectScreenType
+    @Assisted val screenType: NodeSelectScreenType,
+    val bottomSheetManager: BottomSheetManager,
+    val dragManager: DragManager,
+    val automationManager: AutomationManager
 ) : ViewModel() {
     @AssistedFactory
     interface Factory {
         fun create(screenType: NodeSelectScreenType): NodeSelectViewModel
     }
 
-    private val allNodes = when (screenType) {
-        NodeSelectScreenType.ACTION -> actionNodes
-        NodeSelectScreenType.TRIGGER -> triggerNodes
-    }.values
-        .groupBy { it.data.category }
-        .map { category ->
-            CategoryListEntry(
-                categoryName = category.key,
-                nodes = category.value
-                    .map { node ->
-                        NodeListEntry(
-                            searchMatchRatio = 0,
-                            data = node.data
-                        )
-                    },
-                searchMatchRatio = 0
-            )
-        }
+    private val allNodes = getAllNodes()
 
     private val _nodeSelectStateState = MutableStateFlow(
         NodeSelectState(
@@ -70,6 +57,27 @@ class NodeSelectViewModel @AssistedInject constructor(
         )
     )
     val nodeSelectState = _nodeSelectStateState.asStateFlow()
+
+    fun getAllNodes(): List<CategoryListEntry> {
+        return when (screenType) {
+            NodeSelectScreenType.ACTION -> actionNodes
+            NodeSelectScreenType.TRIGGER -> triggerNodes
+        }.values
+            .groupBy { it.data.category }
+            .map { category ->
+                CategoryListEntry(
+                    categoryName = category.key,
+                    nodes = category.value
+                        .map { node ->
+                            NodeListEntry(
+                                searchMatchRatio = 0,
+                                data = node.data
+                            )
+                        },
+                    searchMatchRatio = 0
+                )
+            }
+    }
 
     fun getFilteredNodes(searchQuery: String): List<CategoryListEntry> {
         val lowercaseSearchQuery = searchQuery.lowercase()
@@ -114,6 +122,19 @@ class NodeSelectViewModel @AssistedInject constructor(
             .filter { categoryListEntry ->
                 categoryListEntry.searchMatchRatio > 75 || categoryListEntry.nodes.isNotEmpty()
             }
+    }
+
+    fun onNodeCreateDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
+        bottomSheetManager.navigateNodeDrop()
+        dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
+    }
+
+    fun onCreateNodeClick(nodeData: NodeData) {
+        val nodeDef = automationManager.createNodeDef(nodeData)
+        automationManager.addNode(nodeDef)
+        bottomSheetManager.navigateAndClearStack(
+            EditorBottomSheetScreen.NodeEdit(nodeDef.id)
+        )
     }
 
     fun changeNodeSearchQuery(query: String) {

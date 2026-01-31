@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.shared.components
 
+import android.util.Log
 import androidx.activity.BackEventCompat
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.PredictiveBackHandler
@@ -101,6 +102,7 @@ fun ModalBottomSheet(
     ) { progress: Flow<BackEventCompat> ->
         try {
             progress.collect { backEvent ->
+                Log.d("APP_PB", "ModalBottomSheet: AA")
                 predictiveBackProgress.snapTo(backEvent.progress)
             }
             if (!tryCloseSheet()) {
@@ -211,7 +213,7 @@ fun ModalBottomSheet(
             }
             Column(
                 modifier = Modifier
-                    .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+                    .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
             ) {
                 Box(
                     content = content

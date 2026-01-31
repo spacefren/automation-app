@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.BottomSheetManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.DragManager
@@ -44,17 +43,6 @@ class EditorViewModel @Inject constructor(
     fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
         dragManager.dragNode(id, nodePosition, pressedPosition)
         bottomSheetManager.navigateNodeDrop()
-    }
-
-    fun onCreateNodeDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
-        bottomSheetManager.navigateNodeDrop()
-        dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
-    }
-
-    fun onCreateNodeClick(nodeData: NodeData) {
-        val nodeDef = automationManager.createNodeDef(nodeData)
-        automationManager.addNode(nodeDef)
-        bottomSheetManager.navigateNodeEdit(nodeDef.id)
     }
 
     fun onNodeDrop() {

@@ -115,7 +115,8 @@ fun HomeScreen(
     AppScreen {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
             TopBar(
                 openSettings = openSettings,

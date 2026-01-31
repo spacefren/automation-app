@@ -28,6 +28,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
@@ -78,16 +79,16 @@ fun LogEntry(
                 fontFamily = FontFamily.Monospace
             ),
             modifier = Modifier
-				.fillMaxWidth()
-				.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
-				.background(
-					when (entry.level) {
-						LogLevel.ERROR -> LocalTheme.colorScheme.errorContainer
-						LogLevel.WARNING -> LocalTheme.colorScheme.warningContainer
-						else -> LocalTheme.colorScheme.surface
-					}
-				)
-				.padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
+                .background(
+                    when (entry.level) {
+                        LogLevel.ERROR -> LocalTheme.colorScheme.errorContainer
+                        LogLevel.WARNING -> LocalTheme.colorScheme.warningContainer
+                        else -> LocalTheme.colorScheme.surface
+                    }
+                )
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
         )
     }
 }
@@ -100,54 +101,56 @@ fun EditorLogsScreen(
     filterLogs: (level: LogLevel) -> Unit,
     deleteLog: (logID: String) -> Unit,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-        modifier = Modifier
-			.fillMaxSize()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.windowInsetsPadding(WindowInsets.navigationBars)
-    ) {
-        Text(
-            text = "Logs",
-            style = LocalTheme.typography.subTitle,
-            color = LocalTheme.colorScheme.onBackground
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+    AppScreen {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
-            SearchBar(
-                searchText = "Search logs",
-                queryText = logsScreenState.searchQuery,
-                autoFocus = false,
-                onSearch = searchLogs,
-                modifier = Modifier.weight(1f)
+            Text(
+                text = "Logs",
+                style = LocalTheme.typography.subTitle,
+                color = LocalTheme.colorScheme.onBackground
             )
-            IconButton(
-                color = LocalTheme.colorScheme.surface,
-                iconColor = LocalTheme.colorScheme.onSurface,
-                drawableRes = R.drawable.round_filter_24,
-                cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-                size = 37.dp,
-                padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-                onClick = {
-
-                }
-            )
-        }
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-            contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(filteredLogs, { it.id }) {
-                LogEntry(
-                    entry = it,
-                    deleteLog = {
-                        deleteLog(it.id)
-                    },
-                    modifier = Modifier
-                        .animateItem()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+            ) {
+                SearchBar(
+                    searchText = "Search logs",
+                    queryText = logsScreenState.searchQuery,
+                    autoFocus = false,
+                    onSearch = searchLogs,
+                    modifier = Modifier.weight(1f)
                 )
+                IconButton(
+                    color = LocalTheme.colorScheme.surface,
+                    iconColor = LocalTheme.colorScheme.onSurface,
+                    drawableRes = R.drawable.round_filter_24,
+                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+                    size = 37.dp,
+                    padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
+                    onClick = {
+
+                    }
+                )
+            }
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+                contentPadding = PaddingValues(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(filteredLogs, { it.id }) {
+                    LogEntry(
+                        entry = it,
+                        deleteLog = {
+                            deleteLog(it.id)
+                        },
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                }
             }
         }
     }

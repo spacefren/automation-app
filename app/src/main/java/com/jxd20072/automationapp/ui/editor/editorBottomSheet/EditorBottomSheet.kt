@@ -1,9 +1,9 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
+import androidx.compose.animation.SizeTransform
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Offset
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
@@ -12,24 +12,21 @@ import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Closed
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Logs
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsScreenState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeDrop
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEdit
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelect
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEdit
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.Variables
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
+import com.jxd20072.automationapp.ui.shared.navPopPredictiveTransitionSpec
+import com.jxd20072.automationapp.ui.shared.navPopTransitionSpec
+import com.jxd20072.automationapp.ui.shared.navTransitionSpec
+import com.jxd20072.automationapp.ui.shared.sizeAnimSpec
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,7 +38,6 @@ fun EditorBottomSheet(
     // General
     automationDraft: AutomationDef,
     // Node select screen
-    onCreateClick: (nodeData: NodeData) -> Unit,
     // Node edit screen
     nodeEditScreenState: NodeEditState,
     setNodeConfig: (name: String, config: ConfigurationValue<*>) -> Unit,
@@ -70,17 +66,12 @@ fun EditorBottomSheet(
     editorDragState: EditorNodeDragState,
     onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
     onDropZoneExit: () -> Unit,
-    onStartDrag: (
-        nodeData: NodeData,
-        startedPosition: Offset,
-        startedOffset: Offset,
-    ) -> Unit,
 ) {
     val state = remember { ModalBottomSheetState() }
-    val isCollapsed = bottomSheetState.backStack.last() != Closed
+    val isCollapsed = bottomSheetState.backStack.last() != EditorBottomSheetScreen.Closed
             && editorDragState is EditorNodeDragState.Dragging
 
-    state.isOpen = bottomSheetState.backStack.last() != Closed
+    state.isOpen = bottomSheetState.backStack.last() != EditorBottomSheetScreen.Closed
     state.isCollapsed = isCollapsed
 
     ModalBottomSheet(
@@ -91,11 +82,15 @@ fun EditorBottomSheet(
         },
     ) {
         NavDisplay(
+            sizeTransform = SizeTransform(sizeAnimationSpec = { _, _ -> sizeAnimSpec }),
             backStack = bottomSheetState.backStack,
             onBack = navigateBack,
+            transitionSpec = navTransitionSpec,
+            popTransitionSpec = navPopTransitionSpec,
+            predictivePopTransitionSpec = navPopPredictiveTransitionSpec,
             entryProvider = entryProvider {
-                entry<Closed> { }
-                entry<NodeDrop> {
+                entry<EditorBottomSheetScreen.Closed> { }
+                entry<EditorBottomSheetScreen.NodeDrop> {
                     EditorNodeDropSheet(
                         dragData = editorDragState,
                         showDelete = isCollapsed && !editorDragState.isCreatingNode,
@@ -103,15 +98,13 @@ fun EditorBottomSheet(
                         onDropZoneExit = onDropZoneExit
                     )
                 }
-                entry<NodeSelect> {
+                entry<EditorBottomSheetScreen.NodeSelect> {
                     EditorNodeSelectScreen(
                         screenType = it.screenType,
                         autoOpenKeyboard = autoOpenKeyboard,
-                        onStartDrag = onStartDrag,
-                        onClick = onCreateClick,
                     )
                 }
-                entry<NodeEdit> {
+                entry<EditorBottomSheetScreen.NodeEdit> {
                     EditorNodeEditScreen(
                         nodeEditState = nodeEditScreenState,
                         automationDraft = automationDraft,
@@ -120,7 +113,7 @@ fun EditorBottomSheet(
                         promptVariableSelect = promptSelectVariable
                     )
                 }
-                entry<Variables> {
+                entry<EditorBottomSheetScreen.Variables> {
                     EditorVariablesScreen(
                         variablesScreenState = variablesScreenState,
                         filteredVariables = filteredVariables,
@@ -130,7 +123,7 @@ fun EditorBottomSheet(
                         createVariable = createVariable
                     )
                 }
-                entry<VariableEdit> {
+                entry<EditorBottomSheetScreen.VariableEdit> {
                     VariableEditScreen(
                         editingVariable = editingVariableDef,
                         validateVariableName = validateVariableName,
@@ -139,7 +132,7 @@ fun EditorBottomSheet(
                         variableEditState = variableEditState
                     )
                 }
-                entry<Logs> {
+                entry<EditorBottomSheetScreen.Logs> {
                     EditorLogsScreen(
                         logsScreenState = logsScreenState,
                         filteredLogs = filteredLogs,

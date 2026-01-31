@@ -54,6 +54,7 @@ import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.CategoryListEntry
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectViewModel
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -221,52 +222,48 @@ fun EditorNodeSelectScreen(
         creationCallback = { factory -> factory.create(screenType) }
     ),
     autoOpenKeyboard: Boolean,
-    onStartDrag: (
-        nodeData: NodeData,
-        startedPosition: Offset,
-        startedOffset: Offset,
-    ) -> Unit,
-    onClick: (nodeData: NodeData) -> Unit,
 ) {
     val nodeSelectState by nodeSelectViewmodel.nodeSelectState.collectAsState()
     val screenType = nodeSelectViewmodel.screenType
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-        modifier = Modifier
-            .fillMaxHeight()
-            .imePadding()
-            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-    ) {
-        Text(
-            text = "Select " + when (screenType) {
-                NodeSelectScreenType.ACTION -> "action"
-                NodeSelectScreenType.TRIGGER -> "trigger"
-            },
-            color = LocalTheme.colorScheme.onBackground,
-            style = LocalTheme.typography.subTitle
-        )
-        SearchBar(
-            searchText = "Search nodes or categories",
-            queryText = nodeSelectState.nodeSearchQuery,
-            modifier = Modifier.fillMaxWidth(),
-            autoFocus = autoOpenKeyboard
-        ) { query ->
-            nodeSelectViewmodel.changeNodeSearchQuery(query)
-        }
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
-            modifier = Modifier.fillMaxSize()
+    AppScreen {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+            modifier = Modifier
+                .fillMaxHeight()
+                .imePadding()
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
         ) {
-            items(nodeSelectState.nodes, { it.categoryName }) {
-                NodeCategoryContainer(
-                    categoryListEntry = it,
-                    isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
-                    onStartDrag = onStartDrag,
-                    onClick = onClick,
-                    modifier = Modifier
-                        .animateItem()
-                )
+            Text(
+                text = "Select " + when (screenType) {
+                    NodeSelectScreenType.ACTION -> "action"
+                    NodeSelectScreenType.TRIGGER -> "trigger"
+                },
+                color = LocalTheme.colorScheme.onBackground,
+                style = LocalTheme.typography.subTitle
+            )
+            SearchBar(
+                searchText = "Search nodes or categories",
+                queryText = nodeSelectState.nodeSearchQuery,
+                modifier = Modifier.fillMaxWidth(),
+                autoFocus = autoOpenKeyboard
+            ) { query ->
+                nodeSelectViewmodel.changeNodeSearchQuery(query)
+            }
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(nodeSelectState.nodes, { it.categoryName }) {
+                    NodeCategoryContainer(
+                        categoryListEntry = it,
+                        isSearching = nodeSelectState.nodeSearchQuery.isNotEmpty(),
+                        onStartDrag = nodeSelectViewmodel::onNodeCreateDrag,
+                        onClick = nodeSelectViewmodel::onCreateNodeClick,
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                }
             }
         }
     }

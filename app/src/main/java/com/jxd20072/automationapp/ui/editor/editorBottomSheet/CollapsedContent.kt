@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -50,40 +51,42 @@ fun EditorNodeDropSheet(
 
     expanded = shouldExpand()
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-        modifier = Modifier
-			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.windowInsetsPadding(WindowInsets.navigationBars)
-			.clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1))
-			.onGloballyPositioned {
-				edgePosition = screenHeight - navBarsHeight - it.size.height
-			}
-			.heightIn(max = maxHeight)
-    ) {
-        NodeDropZone(
-            dragData = dragData,
-            onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Cancelling) },
-            onDropZoneExit = onDropZoneExit,
-            mainColor = LocalTheme.colorScheme.surface,
-            accentColor = LocalTheme.colorScheme.secondary,
-            text = "Drop here to cancel",
-            icon = R.drawable.round_close_24,
+    AppScreen {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
             modifier = Modifier
-                .weight(1f)
-        )
-        if (showDelete) {
+                .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1))
+                .onGloballyPositioned {
+                    edgePosition = screenHeight - navBarsHeight - it.size.height
+                }
+                .heightIn(max = maxHeight)
+        ) {
             NodeDropZone(
                 dragData = dragData,
-                onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },
+                onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Cancelling) },
                 onDropZoneExit = onDropZoneExit,
-                mainColor = LocalTheme.colorScheme.errorContainer,
-                accentColor = LocalTheme.colorScheme.error,
-                text = "Drop here to delete",
-                icon = R.drawable.round_delete_24,
+                mainColor = LocalTheme.colorScheme.surface,
+                accentColor = LocalTheme.colorScheme.secondary,
+                text = "Drop here to cancel",
+                icon = R.drawable.round_close_24,
                 modifier = Modifier
                     .weight(1f)
             )
+            if (showDelete) {
+                NodeDropZone(
+                    dragData = dragData,
+                    onDropZoneEnter = { onDropZoneEnter(EditorNodeDropData.Deleting) },
+                    onDropZoneExit = onDropZoneExit,
+                    mainColor = LocalTheme.colorScheme.errorContainer,
+                    accentColor = LocalTheme.colorScheme.error,
+                    text = "Drop here to delete",
+                    icon = R.drawable.round_delete_24,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
         }
     }
 }

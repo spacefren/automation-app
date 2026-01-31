@@ -8,30 +8,26 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
-enum class EditorBottomSheetScreen {
-    EMPTY, NODE_DROP, NODE_SELECT, NODE_EDIT, VARIABLES, VARIABLE_EDIT, LOGS
+sealed class EditorBottomSheetScreen {
+    data object Closed : NavKey
+    data object NodeDrop : NavKey
+    data class NodeSelect(
+        val screenType: NodeSelectScreenType
+    ) : NavKey
+    data class NodeEdit(
+        val nodeID: String
+    ) : NavKey
+    data object Variables : NavKey
+    data class VariableEdit(
+        val variableId: String
+    ) : NavKey
+    data object Logs : NavKey
 }
 
-data object Closed : NavKey
-data object NodeDrop : NavKey
-data class NodeSelect(
-    val screenType: NodeSelectScreenType
-) : NavKey
-
-data class NodeEdit(
-    val nodeID: String
-) : NavKey
-
-data object Variables : NavKey
-data class VariableEdit(
-    val variableId: String
-) : NavKey
-
-data object Logs : NavKey
 
 @Immutable
 data class EditorBottomSheetState(
-    val backStack: List<NavKey> = listOf(Closed)
+    val backStack: List<NavKey> = listOf(EditorBottomSheetScreen.Closed)
 )
 
 @Singleton
@@ -68,21 +64,29 @@ class BottomSheetManager @Inject constructor(
         }
     }
 
+    fun navigateAndClearStack(screen: NavKey) {
+        _bottomSheetState.update { state ->
+            state.copy(
+                backStack = listOf(EditorBottomSheetScreen.Closed, screen)
+            )
+        }
+    }
+
     fun navigateNodeSelect(screenType: NodeSelectScreenType) {
-        navigateTo(NodeSelect(screenType))
+        navigateTo(EditorBottomSheetScreen.NodeSelect(screenType))
     }
 
     fun navigateNodeDrop() {
-        navigateTo(NodeDrop)
+        navigateTo(EditorBottomSheetScreen.NodeDrop)
     }
 
     fun navigateNodeEdit(nodeID: String) {
         nodeEditManager.startEditNode(nodeID)
-        navigateTo(NodeEdit(nodeID))
+        navigateTo(EditorBottomSheetScreen.NodeEdit(nodeID))
     }
 
     fun navigateVariables(onSelectVariable: ((variableId: String) -> Unit)? = null) {
-        navigateTo(Variables)
+        navigateTo(EditorBottomSheetScreen.Variables)
         variablesManager.overrideVariableSelect(onSelectVariable)
     }
 
@@ -92,11 +96,11 @@ class BottomSheetManager @Inject constructor(
             override(variableID)
             return
         }
-        navigateTo(VariableEdit(variableID))
+        navigateTo(EditorBottomSheetScreen.VariableEdit(variableID))
         variableEditManager.startVariableEdit(variableID, isCreating)
     }
 
     fun openLogs() {
-        navigateTo(Logs)
+        navigateTo(EditorBottomSheetScreen.Logs)
     }
 }

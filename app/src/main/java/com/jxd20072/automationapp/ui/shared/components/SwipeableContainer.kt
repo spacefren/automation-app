@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.shared.components
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -7,7 +8,7 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,11 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -64,7 +65,8 @@ fun SwipeableContainer(
     val draggableState = rememberDraggableState {
         isDraggingStartToEnd = totalDelta.targetValue + it > 0f
         coroutineScope.launch {
-            totalDelta.snapTo(totalDelta.targetValue + it)
+            Log.d("APP_A", "SwipeableContainer: Total: ${totalDelta.targetValue}, New: $it")
+            totalDelta.snapTo((totalDelta.targetValue + it))
 
             val isAboveThreshold = totalDelta.targetValue.absoluteValue >= actionThreshold
             if (canDoHaptics && isAboveThreshold) {
@@ -95,55 +97,70 @@ fun SwipeableContainer(
             )
     ) {
         Box(
-            content = content,
-            modifier = Modifier
-                .offset {
-                    val newOffset = exponentialDecay(
-                        totalDelta.value,
-                        maxDisplacement,
-                        !isDraggingStartToEnd
-                    ) * if (isDraggingStartToEnd) 1f else -1f
-                    IntOffset(newOffset.toInt(), 0)
-                }
-                .zIndex(1f)
-        )
-
-        Box(
             modifier = Modifier
                 .background(
                     if (isDraggingStartToEnd) backgroundColor1 else backgroundColor2,
                     RoundedCornerShape(containerCornerRadius)
                 )
-                .matchParentSize()
-                .padding(
-                    start = (exponentialDecay(
-                        totalDelta.value,
-                        maxIconDisplacement,
-                        !isDraggingStartToEnd
-                    )).dp,
-                    end = (exponentialDecay(
-                        totalDelta.value,
-                        maxIconDisplacement,
-                        !isDraggingStartToEnd
-                    )).dp
-                )
+                .fillMaxWidth()
                 .zIndex(0f)
         ) {
-            Icon(
-                painter = painterResource(icon1),
-                contentDescription = "",
-                tint = LocalTheme.colorScheme.onBackground,
+            Box(
                 modifier = Modifier
-                    .size(exponentialDecay(totalDelta.value, maxIconSize, !isDraggingStartToEnd).dp)
-                    .align(Alignment.CenterStart)
-            )
-            Icon(
-                painter = painterResource(icon2),
-                contentDescription = "",
-                tint = LocalTheme.colorScheme.onBackground,
+                    .matchParentSize()
+                    .padding(
+                        start = (exponentialDecay(
+                            totalDelta.value,
+                            maxIconDisplacement,
+                            !isDraggingStartToEnd
+                        )).dp,
+                        end = (exponentialDecay(
+                            totalDelta.value,
+                            maxIconDisplacement,
+                            !isDraggingStartToEnd
+                        )).dp
+                    )
+            ) {
+                Icon(
+                    painter = painterResource(icon1),
+                    contentDescription = "",
+                    tint = LocalTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(
+                            exponentialDecay(
+                                totalDelta.value,
+                                maxIconSize,
+                                !isDraggingStartToEnd
+                            ).dp
+                        )
+                        .align(Alignment.CenterStart)
+                )
+                Icon(
+                    painter = painterResource(icon2),
+                    contentDescription = "",
+                    tint = LocalTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(
+                            exponentialDecay(
+                                totalDelta.value,
+                                maxIconSize,
+                                !isDraggingStartToEnd
+                            ).dp
+                        )
+                        .align(Alignment.CenterEnd)
+                )
+            }
+            Box(
+                content = content,
                 modifier = Modifier
-                    .size(exponentialDecay(totalDelta.value, maxIconSize, !isDraggingStartToEnd).dp)
-                    .align(Alignment.CenterEnd)
+                    .graphicsLayer(
+                        translationX = exponentialDecay(
+                            totalDelta.value,
+                            maxDisplacement,
+                            !isDraggingStartToEnd
+                        ) * if (isDraggingStartToEnd) 1f else -1f
+                    )
+                    .zIndex(10f)
             )
         }
     }

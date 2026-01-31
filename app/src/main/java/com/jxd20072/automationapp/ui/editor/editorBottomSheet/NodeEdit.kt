@@ -34,6 +34,7 @@ import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
 import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -48,44 +49,46 @@ fun EditorNodeEditScreen(
 ) {
     if (nodeEditState !is NodeEditState.Editing) return
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-        modifier = Modifier
-            .imePadding()
-            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-            .windowInsetsPadding(WindowInsets.navigationBars)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    AppScreen {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
+            modifier = Modifier
+                .imePadding()
+                .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
-            Text(
-                text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
-                    NodeType.ACTION -> "action"
-                    NodeType.TRIGGER -> "trigger"
-                    NodeType.FUNCTION -> "function"
-                },
-                style = LocalTheme.typography.subTitle,
-                color = LocalTheme.colorScheme.onBackground
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Edit " + when (nodeEditState.nodeDef.nodeType) {
+                        NodeType.ACTION -> "action"
+                        NodeType.TRIGGER -> "trigger"
+                        NodeType.FUNCTION -> "function"
+                    },
+                    style = LocalTheme.typography.subTitle,
+                    color = LocalTheme.colorScheme.onBackground
+                )
+                SettingsResetButton(resetDefaultConfig)
+            }
+
+            RequiredPermissionsCard(
+                permissions = nodeEditState.nodeData.permissions
             )
-            SettingsResetButton(resetDefaultConfig)
-        }
 
-        RequiredPermissionsCard(
-            permissions = nodeEditState.nodeData.permissions
-        )
+            nodeEditState.nodeData.inputDefinitions.forEach { (name, inputDef) ->
+                val currentValue = nodeEditState.nodeDef.input[name]
 
-        nodeEditState.nodeData.inputDefinitions.forEach { (name, inputDef) ->
-            val currentValue = nodeEditState.nodeDef.input[name]
-
-            NodeEditField(
-                inputDefinition = inputDef,
-                automationDraft = automationDraft,
-                currentValue = currentValue,
-                onValueChanged = { setNodeConfig(name, it) },
-                promptSelectVariable = promptVariableSelect
-            )
+                NodeEditField(
+                    inputDefinition = inputDef,
+                    automationDraft = automationDraft,
+                    currentValue = currentValue,
+                    onValueChanged = { setNodeConfig(name, it) },
+                    promptSelectVariable = promptVariableSelect
+                )
+            }
         }
     }
 }
