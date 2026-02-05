@@ -47,7 +47,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun EditorNodeEditScreen(
     nodeId: String,
     nodeEditViewModel: NodeEditViewModel = hiltViewModel<NodeEditViewModel, NodeEditViewModel.Factory>(
-        creationCallback = { factory -> factory.create(nodeId) }
+        creationCallback = { factory -> factory.create(nodeId) },
     ),
 ) {
     val nodeEditScreenState by nodeEditViewModel.nodeEditScreenState.collectAsState()

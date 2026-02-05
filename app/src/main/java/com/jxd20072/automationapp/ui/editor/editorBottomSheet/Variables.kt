@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,12 +30,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
 import com.jxd20072.automationapp.ui.shared.components.DropdownOption
@@ -157,19 +160,19 @@ fun EditorVariableEntry(
 
 @Composable
 fun EditorVariablesScreen(
-    variablesScreenState: VariablesScreenState,
-    filteredVariables: Set<VariableDef>,
-    onVariableClick: (name: String) -> Unit,
-    deleteVariable: (name: String) -> Unit,
-    searchVariable: (String) -> Unit,
-    createVariable: () -> Unit
+    onVariableSelect: ((variableId: String) -> Unit)? = null,
+    variablesViewModel: VariablesViewModel = hiltViewModel<VariablesViewModel, VariablesViewModel.Factory>(
+        creationCallback = { factory -> factory.create(onVariableSelect) },
+    ),
 ) {
+    val variablesScreenState by variablesViewModel.variablesUiState.collectAsState()
+
     AppScreen {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
         ) {
             Text(
-                text = if (variablesScreenState.onVariableSelect == null) "Variables" else "Select variable",
+                text = if (!variablesScreenState.isSelecting) "Variables" else "Select variable",
                 style = LocalTheme.typography.subTitle,
                 color = LocalTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
@@ -182,7 +185,7 @@ fun EditorVariablesScreen(
                     searchText = "Search variables",
                     queryText = variablesScreenState.searchQuery,
                     autoFocus = false,
-                    onSearch = searchVariable,
+                    onSearch = variablesViewModel::changeSearchQuery,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
@@ -192,7 +195,7 @@ fun EditorVariablesScreen(
                     cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
                     size = 37.dp,
                     padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-                    onClick = createVariable
+                    onClick = variablesViewModel::onCreateVariable
                 )
             }
             LazyColumn(
@@ -207,11 +210,11 @@ fun EditorVariablesScreen(
                 modifier = Modifier
                     .animateContentSize()
             ) {
-                items(filteredVariables.sortedBy { it.name }, { it.id }) {
+                items(variablesScreenState.filteredVariables.sortedBy { it.name }, { it.id }) {
                     EditorVariableEntry(
                         variableDef = it,
-                        onClick = { onVariableClick(it.id) },
-                        deleteVariable = { deleteVariable(it.id) },
+                        onClick = { variablesViewModel.onVariableClick(it.id) },
+                        deleteVariable = { variablesViewModel.deleteVariable(it.id) },
                         modifier = Modifier
                             .animateItem()
                     )

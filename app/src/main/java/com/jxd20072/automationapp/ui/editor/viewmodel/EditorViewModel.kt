@@ -3,8 +3,6 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.BottomSheetManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.DragManager
@@ -62,15 +60,6 @@ class EditorViewModel @Inject constructor(
             dragManager.dropNode()
             bottomSheetManager.closeBottomSheet()
         }
-    }
-
-    fun onCreateVariable() {
-        val newVariable = VariableDef(
-            name = "Unnamed variable",
-            value = VariableDefValue.NUMBER("0"),
-        )
-        automationManager.addVariable(newVariable)
-        bottomSheetManager.onVariableClick(newVariable.id, true)
     }
 
     fun startEditNode(nodeId: String) {

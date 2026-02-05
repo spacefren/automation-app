@@ -36,17 +36,11 @@ fun AutomationEditor(
 
     val automationManager = editorViewModel.automationManager
     val bottomSheetManager = editorViewModel.bottomSheetManager
-    val variablesManager = bottomSheetManager.variablesManager
-    val variableEditManager = bottomSheetManager.variableEditManager
     val dragManager = editorViewModel.dragManager
 
     val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
     val draggingData by dragManager.editorNodeDragState.collectAsState()
     val bottomSheetState by bottomSheetManager.bottomSheetState.collectAsState()
-    val variablesUiState by variablesManager.variablesUiState.collectAsState()
-    val filteredVariables by variablesManager.filteredVariables.collectAsState(emptySet())
-    val variableEditState by variableEditManager.variableEditState.collectAsState()
-    val editingVariableDef by variableEditManager.editingVariableDef.collectAsState(null)
 
     AppScreen {
         if (automationState is AutomationUiState.Success) {
@@ -111,18 +105,6 @@ fun AutomationEditor(
                     onDismiss = bottomSheetManager::closeBottomSheet,
                     navigateBack = bottomSheetManager::navigateBack,
                     bottomSheetState = bottomSheetState,
-                    variablesScreenState = variablesUiState,
-                    filteredVariables = filteredVariables,
-                    searchVariable = variablesManager::changeSearchQuery,
-                    onVariableClick = bottomSheetManager::onVariableClick,
-                    deleteVariable = automationManager::deleteVariable,
-                    createVariable = editorViewModel::onCreateVariable,
-                    variableEditState = variableEditState,
-                    editingVariableDef = editingVariableDef,
-                    validateVariableName = automationManager::validateVariableName,
-                    changeVariableName = variableEditManager::changeName,
-                    changeVariableValue = variableEditManager::changeValue,
-                    promptSelectVariable = editorViewModel::promptSelectVariable,
                     editorDragState = draggingData,
                     onDropZoneEnter = dragManager::enterNodeDropZone,
                     onDropZoneExit = dragManager::exitNodeDropZone,

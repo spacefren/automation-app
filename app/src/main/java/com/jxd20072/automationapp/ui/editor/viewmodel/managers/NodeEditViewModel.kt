@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,7 +39,7 @@ class NodeEditViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(nodeId: String): NodeEditViewModel
+        fun create(editingNodeId: String): NodeEditViewModel
     }
 
     private val _nodeEditScreenState = MutableStateFlow<NodeEditState>(NodeEditState.Loading)
@@ -50,6 +51,7 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     init {
+        Log.d("APP_A", "CREATED")
         viewModelScope.launch {
             editingAutomationDraft.collect { automationDraft ->
                 if (automationDraft == null) return@collect
@@ -102,6 +104,9 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun promptSelectVariable(onSelect: (String) -> Unit) {
-        bottomSheetManager.navigateVariables(onSelect)
+        bottomSheetManager.navigateVariables {
+            onSelect(it)
+            bottomSheetManager.navigateBack()
+        }
     }
 }

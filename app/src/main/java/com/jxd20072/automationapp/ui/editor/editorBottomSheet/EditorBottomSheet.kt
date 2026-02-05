@@ -4,17 +4,14 @@ import androidx.compose.animation.SizeTransform
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetScreen
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesScreenState
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 import com.jxd20072.automationapp.ui.shared.navPopPredictiveTransitionSpec
@@ -33,19 +30,7 @@ fun EditorBottomSheet(
     // Node select screen
     // Node edit screen
     // Variables screen
-    variablesScreenState: VariablesScreenState,
-    filteredVariables: Set<VariableDef>,
-    searchVariable: (query: String) -> Unit,
-    onVariableClick: (name: String) -> Unit,
-    deleteVariable: (name: String) -> Unit,
-    createVariable: () -> Unit,
-    promptSelectVariable: (onSelect: (variableId: String) -> Unit) -> Unit,
     // Variable edit
-    variableEditState: VariableEditState,
-    editingVariableDef: VariableDef?,
-    validateVariableName: (name: String) -> ValidationResult,
-    changeVariableName: (newName: String) -> Unit,
-    changeVariableValue: (newValue: VariableDefValue<*>) -> Unit,
     // Logs
     // Dragging
     editorDragState: EditorNodeDragState,
@@ -73,6 +58,10 @@ fun EditorBottomSheet(
             transitionSpec = navTransitionSpec,
             popTransitionSpec = navPopTransitionSpec,
             predictivePopTransitionSpec = navPopPredictiveTransitionSpec,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
             entryProvider = entryProvider {
                 entry<EditorBottomSheetScreen.Closed> { }
                 entry<EditorBottomSheetScreen.NodeDrop> {
@@ -96,21 +85,13 @@ fun EditorBottomSheet(
                 }
                 entry<EditorBottomSheetScreen.Variables> {
                     EditorVariablesScreen(
-                        variablesScreenState = variablesScreenState,
-                        filteredVariables = filteredVariables,
-                        searchVariable = searchVariable,
-                        onVariableClick = onVariableClick,
-                        deleteVariable = deleteVariable,
-                        createVariable = createVariable
+                        onVariableSelect = it.onVariableSelect
                     )
                 }
                 entry<EditorBottomSheetScreen.VariableEdit> {
                     VariableEditScreen(
-                        editingVariable = editingVariableDef,
-                        validateVariableName = validateVariableName,
-                        changeVariableName = changeVariableName,
-                        changeVariableValue = changeVariableValue,
-                        variableEditState = variableEditState
+                        variableId = it.variableId,
+                        isCreating = it.isCreating
                     )
                 }
                 entry<EditorBottomSheetScreen.Logs> {

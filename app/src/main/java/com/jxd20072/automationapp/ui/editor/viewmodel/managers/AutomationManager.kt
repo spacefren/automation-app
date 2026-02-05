@@ -12,7 +12,6 @@ import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.utils.findAndReplace
 import com.jxd20072.automationapp.utils.findAndTransform
 import com.jxd20072.automationapp.utils.insertAt
@@ -256,11 +255,6 @@ class AutomationManager @Inject constructor(
 
         deleteVariable(id)
         addVariable(variable.copy(value = newValue))
-    }
-
-    fun validateVariableName(name: String): ValidationResult {
-        // TODO
-        return ValidationResult.Success
     }
 
     fun addLog(log: AutomationLogEntry) {

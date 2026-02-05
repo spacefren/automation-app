@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
-import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
 import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -39,13 +42,16 @@ fun getVariableDefaultValue(name: String): VariableDefValue<*>? {
 
 @Composable
 fun VariableEditScreen(
-    variableEditState: VariableEditState,
-    editingVariable: VariableDef?,
-    validateVariableName: (name: String) -> ValidationResult,
-    changeVariableName: (newName: String) -> Unit,
-    changeVariableValue: (newValue: VariableDefValue<*>) -> Unit,
+    variableId: String,
+    isCreating: Boolean,
+    variableEditViewModel: VariableEditViewModel = hiltViewModel<VariableEditViewModel, VariableEditViewModel.Factory>(
+        creationCallback = { factory -> factory.create(variableId, isCreating) }
+    )
 ) {
-    if (editingVariable == null) return
+    val variableEditUiState by variableEditViewModel.variableUiState.collectAsState()
+
+    if (variableEditUiState !is VariableEditUiState.Success) return
+    val variableDef = (variableEditUiState as VariableEditUiState.Success).variableDef
 
     AppScreen {
         Column(
@@ -56,7 +62,7 @@ fun VariableEditScreen(
                 .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             Text(
-                text = "${if (variableEditState.isCreating) "Create" else "Edit"} variable",
+                text = "${if (isCreating) "New" else "Edit"} variable",
                 style = LocalTheme.typography.subTitle,
                 color = LocalTheme.colorScheme.onBackground
             )
@@ -64,16 +70,16 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Name",
                 description = "A unique identifier for your variable. Great names are short and descriptive!",
-                item = ConfigurationValue.TEXT(editingVariable.name),
-                validate = { validateVariableName(it.value) },
+                item = ConfigurationValue.TEXT(variableDef.name),
+                validate = { variableEditViewModel.validateVariableName(it.value) },
             ) { newVal ->
-                changeVariableName(newVal.value)
+                variableEditViewModel.changeName(newVal.value)
             }
 
             SettingsItem(
                 displayName = "Variable type",
                 description = "The type of data that the variable will hold.",
-                selectedOption = ConfigurationValue.CHOOSE(getVariableValueName(editingVariable.value)),
+                selectedOption = ConfigurationValue.CHOOSE(getVariableValueName(variableDef.value)),
                 options = listOf(
                     ConfigurationValue.CHOOSE("text"),
                     ConfigurationValue.CHOOSE("boolean"),
@@ -81,12 +87,12 @@ fun VariableEditScreen(
                 ),
                 onValueChanged = {
                     val newValue = getVariableDefaultValue(it.value)
-                    if (newValue != null) changeVariableValue(newValue)
+                    if (newValue != null) variableEditViewModel.changeValue(newValue)
                 }
             )
 
             AnimatedContent(
-                targetState = editingVariable.value,
+                targetState = variableDef.value,
                 contentKey = { it::class }
             ) { value ->
                 when (value) {
@@ -97,7 +103,7 @@ fun VariableEditScreen(
                             item = ConfigurationValue.TEXT(value.value),
                             validate = { ValidationResult.Success },
                         ) { newVal ->
-                            changeVariableValue(VariableDefValue.TEXT(newVal.value))
+                            variableEditViewModel.changeValue(VariableDefValue.TEXT(newVal.value))
                         }
                     }
 
@@ -108,7 +114,7 @@ fun VariableEditScreen(
                             item = ConfigurationValue.BOOL(value.value),
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal ->
-                                changeVariableValue(VariableDefValue.BOOL(newVal.value))
+                                variableEditViewModel.changeValue(VariableDefValue.BOOL(newVal.value))
                             }
                         )
                     }
@@ -120,7 +126,7 @@ fun VariableEditScreen(
                             item = ConfigurationValue.NUMBER(value.value),
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal: ConfigurationValue.NUMBER ->
-                                changeVariableValue(VariableDefValue.NUMBER(newVal.value))
+                                variableEditViewModel.changeValue(VariableDefValue.NUMBER(newVal.value))
                             }
                         )
                     }

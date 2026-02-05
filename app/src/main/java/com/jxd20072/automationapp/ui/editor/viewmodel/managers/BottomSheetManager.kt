@@ -19,10 +19,13 @@ sealed class EditorBottomSheetScreen {
         val nodeID: String
     ) : NavKey
 
-    data object Variables : NavKey
-    data object VariableSelect : NavKey
+    data class Variables(
+        val onVariableSelect: ((variableId: String) -> Unit)? = null
+    ) : NavKey
+
     data class VariableEdit(
-        val variableId: String
+        val variableId: String,
+        val isCreating: Boolean
     ) : NavKey
 
     data object Logs : NavKey
@@ -35,11 +38,8 @@ data class EditorBottomSheetState(
 )
 
 @Singleton
-class BottomSheetManager @Inject constructor(
-    val variablesManager: VariablesManager,
-    val variableEditManager: VariableEditManager,
-) {
-    private val _bottomSheetState = MutableStateFlow<EditorBottomSheetState>(
+class BottomSheetManager @Inject constructor() {
+    private val _bottomSheetState = MutableStateFlow(
         EditorBottomSheetState()
     )
     val bottomSheetState = _bottomSheetState.asStateFlow()
@@ -87,18 +87,7 @@ class BottomSheetManager @Inject constructor(
     }
 
     fun navigateVariables(onSelectVariable: ((variableId: String) -> Unit)? = null) {
-        navigateTo(EditorBottomSheetScreen.Variables)
-        variablesManager.overrideVariableSelect(onSelectVariable)
-    }
-
-    fun onVariableClick(variableID: String, isCreating: Boolean = false) {
-        val override = variablesManager.variablesUiState.value.onVariableSelect
-        if (override != null) {
-            override(variableID)
-            return
-        }
-        navigateTo(EditorBottomSheetScreen.VariableEdit(variableID))
-        variableEditManager.startVariableEdit(variableID, isCreating)
+        navigateTo(EditorBottomSheetScreen.Variables(onSelectVariable))
     }
 
     fun openLogs() {
