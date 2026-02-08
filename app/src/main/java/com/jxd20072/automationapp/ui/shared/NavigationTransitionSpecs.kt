@@ -67,3 +67,26 @@ val navPopPredictiveTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>
             ) + fadeOut()
         )
     }
+
+val navSheetTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform = {
+    ContentTransform(
+        targetContentEnter = fadeIn(),
+        initialContentExit = fadeOut()
+    )
+}
+
+val navSheetPopTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.() -> ContentTransform =
+    {
+        ContentTransform(
+            targetContentEnter = fadeIn(),
+            initialContentExit = fadeOut()
+        )
+    }
+
+val navSheetPopPredictiveTransitionSpec: AnimatedContentTransitionScope<Scene<NavKey>>.(Int) -> ContentTransform =
+    {
+        ContentTransform(
+            targetContentEnter = fadeIn(),
+            initialContentExit = fadeOut()
+        )
+    }

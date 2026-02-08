@@ -214,7 +214,8 @@ fun ModalBottomSheet(
                     .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1 * 2)
             ) {
                 Box(
-                    content = content
+                    content = content,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

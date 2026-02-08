@@ -47,7 +47,7 @@ fun AddAutomationDrawer(
                         targetContentEnter = fadeIn(),
                         initialContentExit = fadeOut(),
                     )
-                }
+                },
             ) { targetState ->
                 when (targetState) {
                     AddAutomationDrawerScreen.AUTOMATION_ADD -> {

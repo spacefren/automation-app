@@ -2,8 +2,11 @@ package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import androidx.compose.animation.SizeTransform
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -14,9 +17,9 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragSta
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
-import com.jxd20072.automationapp.ui.shared.navPopPredictiveTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navPopTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navTransitionSpec
+import com.jxd20072.automationapp.ui.shared.navSheetPopPredictiveTransitionSpec
+import com.jxd20072.automationapp.ui.shared.navSheetPopTransitionSpec
+import com.jxd20072.automationapp.ui.shared.navSheetTransitionSpec
 import com.jxd20072.automationapp.ui.shared.sizeAnimSpec
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -26,13 +29,6 @@ fun EditorBottomSheet(
     navigateBack: () -> Unit,
     bottomSheetState: EditorBottomSheetState,
     autoOpenKeyboard: Boolean,
-    // General
-    // Node select screen
-    // Node edit screen
-    // Variables screen
-    // Variable edit
-    // Logs
-    // Dragging
     editorDragState: EditorNodeDragState,
     onDropZoneEnter: (dropData: EditorNodeDropData) -> Unit,
     onDropZoneExit: () -> Unit,
@@ -55,15 +51,17 @@ fun EditorBottomSheet(
             sizeTransform = SizeTransform(sizeAnimationSpec = { _, _ -> sizeAnimSpec }),
             backStack = bottomSheetState.backStack,
             onBack = navigateBack,
-            transitionSpec = navTransitionSpec,
-            popTransitionSpec = navPopTransitionSpec,
-            predictivePopTransitionSpec = navPopPredictiveTransitionSpec,
+            transitionSpec = navSheetTransitionSpec,
+            popTransitionSpec = navSheetPopTransitionSpec,
+            predictivePopTransitionSpec = navSheetPopPredictiveTransitionSpec,
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
             ),
             entryProvider = entryProvider {
-                entry<EditorBottomSheetScreen.Closed> { }
+                entry<EditorBottomSheetScreen.Closed> {
+                    Box(modifier = Modifier.fillMaxWidth())
+                }
                 entry<EditorBottomSheetScreen.NodeDrop> {
                     EditorNodeDropSheet(
                         dragData = editorDragState,
