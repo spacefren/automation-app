@@ -15,21 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.nodes.actions.variables.getConfigValueName
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-
-fun getVariableValueName(value: ConfigurationValue<*>): String {
-    return when (value) {
-        is ConfigurationValue.TEXT -> "text"
-        is ConfigurationValue.BOOL -> "boolean"
-        is ConfigurationValue.NUMBER -> "number"
-        else -> TODO()
-    }
-}
 
 fun getVariableDefaultValue(name: String): ConfigurationValue<*>? {
     return when (name) {
@@ -80,7 +72,7 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Variable type",
                 description = "The type of data that the variable will hold.",
-                item = ConfigurationValue.CHOOSE(getVariableValueName(variableDef.value)),
+                item = ConfigurationValue.CHOOSE(getConfigValueName(variableDef.value)),
                 options = listOf(
                     ConfigurationValue.CHOOSE("text"),
                     ConfigurationValue.CHOOSE("boolean"),
@@ -133,7 +125,7 @@ fun VariableEditScreen(
                         )
                     }
 
-                    else -> TODO()
+                    else -> {}
                 }
             }
 

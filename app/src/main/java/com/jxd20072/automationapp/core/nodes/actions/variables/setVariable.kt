@@ -11,6 +11,16 @@ import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
+fun getConfigValueName(value: ConfigurationValue<*>): String {
+    return when (value) {
+        is ConfigurationValue.BOOL -> "bool"
+        is ConfigurationValue.TEXT -> "text"
+        is ConfigurationValue.NUMBER -> "number"
+        is ConfigurationValue.VARIABLE -> "variable"
+        is ConfigurationValue.CHOOSE -> "choose"
+    }
+}
+
 class SetVariable(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext) {
         val variableId = getInput<ConfigurationValue.VARIABLE>("variable", context).value
@@ -21,24 +31,18 @@ class SetVariable(id: String) : ActionNode(id) {
             return
         }
 
-        when (variable.value) {
-            is ConfigurationValue.BOOL -> {
-                val newVal = getInput<ConfigurationValue.BOOL>("value_bool", context)
-                context.setVariable(variable.copy(value = newVal))
-            }
-
-            is ConfigurationValue.TEXT -> {
-                val newVal = getInput<ConfigurationValue.TEXT>("value_text", context)
-                context.setVariable(variable.copy(value = newVal))
-            }
-
-            is ConfigurationValue.NUMBER -> {
-                val newVal = getInput<ConfigurationValue.NUMBER>("value_number", context)
-                context.setVariable(variable.copy(value = newVal))
-            }
-
-            else -> TODO()
+        val newVal = input["value_${getConfigValueName(variable.value)}"]
+        if (newVal == null) {
+            context.log(LogLevel.ERROR, "Could not find new value for ${variable.name}")
+            return
         }
+
+        if (newVal::class != variable.value::class) {
+            context.log(LogLevel.ERROR, "New variable value type doesn't match old type")
+            return
+        }
+
+        context.setVariable(variable.copy(value = newVal))
     }
 }
 
@@ -56,12 +60,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     NodeDescriptionPiece.VariableInput("Unknown Variable"),
                 )
 
-            val valueType = when (variable.value) {
-                is ConfigurationValue.BOOL -> "bool"
-                is ConfigurationValue.TEXT -> "text"
-                is ConfigurationValue.NUMBER -> "number"
-                else -> TODO()
-            }
+            val valueType = getConfigValueName(variable.value)
 
             listOf(
                 NodeDescriptionPiece.Text("Set"),
