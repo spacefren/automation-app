@@ -9,8 +9,8 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
-import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -20,8 +20,8 @@ class NotificationAction(id: String) : ActionNode(id) {
     private val CHANNEL_ID = "automationApp_notificationNode"
 
     override fun execute(context: ExecutionContext) {
-        val title = getInput<ConfigurationValue.TEXT>("title").value
-        val body = getInput<ConfigurationValue.TEXT>("body").value
+        val title = getInput<ConfigurationValue.TEXT>("title", context).value
+        val body = getInput<ConfigurationValue.TEXT>("body", context).value
 
         createNotificationChannel(
             context = context.appContext,

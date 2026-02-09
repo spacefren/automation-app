@@ -4,17 +4,16 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.executor.ExecutionContext
-import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 class SetVariable(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext) {
-        val variableId = getInput<ConfigurationValue.VARIABLE>("variable").value
+        val variableId = getInput<ConfigurationValue.VARIABLE>("variable", context).value
         val variable = context.getVariable(variableId)
 
         if (variable == null) {
@@ -23,20 +22,22 @@ class SetVariable(id: String) : ActionNode(id) {
         }
 
         when (variable.value) {
-            is VariableDefValue.BOOL -> {
-                val newVal = getInput<ConfigurationValue.BOOL>("value_bool").value
-                context.setVariable(variable.copy(value = VariableDefValue.BOOL(newVal)))
+            is ConfigurationValue.BOOL -> {
+                val newVal = getInput<ConfigurationValue.BOOL>("value_bool", context)
+                context.setVariable(variable.copy(value = newVal))
             }
 
-            is VariableDefValue.TEXT -> {
-                val newVal = getInput<ConfigurationValue.TEXT>("value_text").value
-                context.setVariable(variable.copy(value = VariableDefValue.TEXT(newVal)))
+            is ConfigurationValue.TEXT -> {
+                val newVal = getInput<ConfigurationValue.TEXT>("value_text", context)
+                context.setVariable(variable.copy(value = newVal))
             }
 
-            is VariableDefValue.NUMBER -> {
-                val newVal = getInput<ConfigurationValue.NUMBER>("value_number").value
-                context.setVariable(variable.copy(value = VariableDefValue.NUMBER(newVal)))
+            is ConfigurationValue.NUMBER -> {
+                val newVal = getInput<ConfigurationValue.NUMBER>("value_number", context)
+                context.setVariable(variable.copy(value = newVal))
             }
+
+            else -> TODO()
         }
     }
 }
@@ -56,9 +57,10 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                 )
 
             val valueType = when (variable.value) {
-                is VariableDefValue.BOOL -> "bool"
-                is VariableDefValue.TEXT -> "text"
-                is VariableDefValue.NUMBER -> "number"
+                is ConfigurationValue.BOOL -> "bool"
+                is ConfigurationValue.TEXT -> "text"
+                is ConfigurationValue.NUMBER -> "number"
+                else -> TODO()
             }
 
             listOf(
@@ -83,7 +85,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     val variable = input["variable"]
                     if (variable !is ConfigurationValue.VARIABLE) return@NodeInputDefinition false
 
-                    automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.BOOL
+                    automationDef.variables.find { it.id == variable.value }?.value is ConfigurationValue.BOOL
                 },
                 defaultValue = ConfigurationValue.BOOL(true),
             ),
@@ -94,7 +96,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     val variable = input["variable"]
                     if (variable !is ConfigurationValue.VARIABLE) return@NodeInputDefinition false
 
-                    automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.TEXT
+                    automationDef.variables.find { it.id == variable.value }?.value is ConfigurationValue.TEXT
                 },
                 defaultValue = ConfigurationValue.TEXT(""),
             ),
@@ -105,7 +107,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     val variable = input["variable"]
                     if (variable !is ConfigurationValue.VARIABLE) return@NodeInputDefinition false
 
-                    automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.NUMBER
+                    automationDef.variables.find { it.id == variable.value }?.value is ConfigurationValue.NUMBER
                 },
                 defaultValue = ConfigurationValue.NUMBER("0"),
             ),

@@ -14,7 +14,6 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -33,9 +32,9 @@ class AutomationsRepository @Inject constructor(
             version = 0
         ),
         variables = setOf(
-            VariableDef(name = "firstVar", value = VariableDefValue.TEXT("textVariableValue")),
-            VariableDef(name = "secondVar", value = VariableDefValue.NUMBER("10")),
-            VariableDef(name = "justThird", value = VariableDefValue.BOOL(true))
+            VariableDef(name = "firstVar", value = ConfigurationValue.TEXT("textVariableValue")),
+            VariableDef(name = "secondVar", value = ConfigurationValue.NUMBER("10")),
+            VariableDef(name = "justThird", value = ConfigurationValue.BOOL(true))
         ),
         topLevel = listOf(
             NodeDef(

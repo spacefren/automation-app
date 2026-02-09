@@ -34,8 +34,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
@@ -117,9 +117,10 @@ fun EditorVariableEntry(
                         Icon(
                             painter = painterResource(
                                 when (variableDef.value) {
-                                    is VariableDefValue.BOOL -> R.drawable.round_bool_24
-                                    is VariableDefValue.TEXT -> R.drawable.round_text_24
-                                    is VariableDefValue.NUMBER -> R.drawable.round_number_24
+                                    is ConfigurationValue.BOOL -> R.drawable.round_bool_24
+                                    is ConfigurationValue.TEXT -> R.drawable.round_text_24
+                                    is ConfigurationValue.NUMBER -> R.drawable.round_number_24
+                                    else -> TODO()
                                 }
                             ),
                             contentDescription = "",

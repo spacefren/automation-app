@@ -4,8 +4,8 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
-import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -14,7 +14,7 @@ import kotlinx.coroutines.runBlocking
 
 class WaitAction(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext) {
-        val duration = getInput<ConfigurationValue.NUMBER>("duration").value
+        val duration = getInput<ConfigurationValue.NUMBER>("duration", context).value
 
         runBlocking {
             delay(duration.toLong())

@@ -6,8 +6,8 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
-import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
@@ -16,21 +16,14 @@ import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
 
 class LoggerAction(id: String) : ActionNode(id) {
-    private fun processText(text: String, context: ExecutionContext): String {
-        return Regex("""@\w*""").replace(text) { matchResult ->
-            (context.getVariable(matchResult.value.removePrefix("@"))?.value ?: matchResult.value)
-                .toString()
-        }
-    }
-
     override fun execute(context: ExecutionContext) {
-        val text = getInput<ConfigurationValue.TEXT>("text").value
+        val text = getInput<ConfigurationValue.TEXT>("text", context).value
 
         context.log(LogLevel.INFO, text)
 
         LocalSnackbarState.showSnackbar(
             SnackbarData(
-                text = processText(text, context),
+                text = text,
                 type = SnackbarType.INFO,
                 icon = R.drawable.round_align_left_24
             )
@@ -41,12 +34,13 @@ class LoggerAction(id: String) : ActionNode(id) {
 inline fun <reified T> getNodeInputPiece(
     variables: Set<VariableDef>,
     configValue: ConfigurationValue<*>?
-) : NodeDescriptionPiece where T : ConfigurationValue<*> {
+): NodeDescriptionPiece where T : ConfigurationValue<*> {
     return when (configValue) {
         is T -> NodeDescriptionPiece.Input(configValue.value.toString())
         is ConfigurationValue.VARIABLE -> NodeDescriptionPiece.VariableInput(
             variables.find { it.id == configValue.value }?.name ?: "Unknown Variable"
         )
+
         else -> NodeDescriptionPiece.Input(configValue?.value.toString())
     }
 }

@@ -12,28 +12,28 @@ data class AutomationDefMetadata(
 data class VariableDef(
     val name: String,
     val id: String = UUID.randomUUID().toString(),
-    val value: VariableDefValue<*>
+    val value: ConfigurationValue<*>
 )
 
-@Serializable
-sealed interface VariableDefValue<T> {
-    val value: T
-
-    @Serializable
-    data class TEXT(
-        override val value: String = "",
-    ) : VariableDefValue<String>
-
-    @Serializable
-    data class BOOL(
-        override val value: Boolean = true,
-    ) : VariableDefValue<Boolean>
-
-    @Serializable
-    data class NUMBER(
-        override val value: String = "0",
-    ) : VariableDefValue<String>
-}
+//@Serializable
+//sealed interface VariableDefValue<T> {
+//    val value: T
+//
+//    @Serializable
+//    data class TEXT(
+//        override val value: String = "",
+//    ) : VariableDefValue<String>
+//
+//    @Serializable
+//    data class BOOL(
+//        override val value: Boolean = true,
+//    ) : VariableDefValue<Boolean>
+//
+//    @Serializable
+//    data class NUMBER(
+//        override val value: String = "0",
+//    ) : VariableDefValue<String>
+//}
 
 @Serializable
 data class AutomationDef(

@@ -18,7 +18,6 @@ import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
@@ -64,11 +63,12 @@ fun SettingsItem(
                 .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
         ) {
             Icon(
+                // TODO: Duplicated code
                 painter = painterResource(
                     when (selectedVariable?.value) {
-                        is VariableDefValue.BOOL -> R.drawable.round_bool_24
-                        is VariableDefValue.TEXT -> R.drawable.round_text_24
-                        is VariableDefValue.NUMBER -> R.drawable.round_number_24
+                        is ConfigurationValue.BOOL -> R.drawable.round_bool_24
+                        is ConfigurationValue.TEXT -> R.drawable.round_text_24
+                        is ConfigurationValue.NUMBER -> R.drawable.round_number_24
                         else -> R.drawable.round_error_24
                     }
                 ),

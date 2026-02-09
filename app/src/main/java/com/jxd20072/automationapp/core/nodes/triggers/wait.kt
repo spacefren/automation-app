@@ -18,7 +18,7 @@ class WaitTrigger(id: String) : TriggerNode(id) {
         context: ExecutionContext,
         trigger: (output: Map<String, ConfigurationValue<*>>) -> Unit
     ) {
-        val duration = getInput<ConfigurationValue.NUMBER>("Duration").value
+        val duration = getInput<ConfigurationValue.NUMBER>("duration", context).value
 
         runBlocking {
             delay(duration.toLong())

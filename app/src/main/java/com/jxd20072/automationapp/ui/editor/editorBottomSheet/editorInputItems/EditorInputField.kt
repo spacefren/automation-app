@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.components.IconButton
@@ -44,7 +43,7 @@ inline fun <reified T : ConfigurationValue<*>> extendedValidate(
             val variable = automationVariables.find { it.id == item.value }
 
             if (variable != null) {
-                if (variable.value is VariableDefValue.TEXT) {
+                if (variable.value is ConfigurationValue.TEXT) {
                     ValidationResult.Success
                 } else {
                     ValidationResult.Error("Variable type not allowed")
