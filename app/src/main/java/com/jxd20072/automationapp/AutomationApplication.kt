@@ -2,7 +2,7 @@ package com.jxd20072.automationapp
 
 import android.app.Application
 import coil3.ImageLoader
-import com.jxd20072.automationapp.ui.shared.createImageLoader
+import com.jxd20072.automationapp.utils.createImageLoader
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

@@ -6,8 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -32,7 +34,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.ui.editor.editorBottomSheet.editorInputItems.EditorInputField
+import com.jxd20072.automationapp.ui.editor.editorBottomSheet.components.EditorInputField
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
@@ -59,10 +61,10 @@ fun EditorNodeEditScreen(
 
     AppScreen {
         Column(
-            verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
             modifier = Modifier
                 .imePadding()
-                .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .padding(bottom = LocalTheme.layoutSystem.spacing.paddingLevel1)
                 .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             Row(
@@ -86,6 +88,7 @@ fun EditorNodeEditScreen(
                 permissions = nodeData.permissions
             )
 
+            // Spacing already handled below
             nodeData.inputDefinitions.forEach { (name, inputDef) ->
                 val currentValue = nodeDef.input[name]
 
@@ -93,6 +96,8 @@ fun EditorNodeEditScreen(
                     nodeEditViewModel.setNodeConfig(name, inputDef.defaultValue)
                     return@forEach
                 }
+
+                Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel1))
 
                 EditorInputField(
                     inputDefinition = inputDef,
@@ -114,7 +119,9 @@ fun RequiredPermissionsCard(
     val permissionState = permissions.map { it to rememberPermissionState(it) }
 
     AnimatedVisibility(
-        permissionState.any { !it.second.status.isGranted }
+        permissionState.any { !it.second.status.isGranted },
+        modifier = Modifier
+            .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),

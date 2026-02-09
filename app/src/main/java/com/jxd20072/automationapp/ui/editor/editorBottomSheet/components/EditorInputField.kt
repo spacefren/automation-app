@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.editor.editorBottomSheet.editorInputItems
+package com.jxd20072.automationapp.ui.editor.editorBottomSheet.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.aspectRatio
@@ -33,34 +33,6 @@ fun VariableSwitchButton(
     )
 }
 
-inline fun <reified T : ConfigurationValue<*>> extendedValidate(
-    item: ConfigurationValue<*>,
-    automationVariables: Set<VariableDef>,
-    noinline validate: ((T) -> ValidationResult)? = null
-): ValidationResult {
-    return when (item) {
-        is ConfigurationValue.VARIABLE -> {
-            val variable = automationVariables.find { it.id == item.value }
-
-            if (variable != null) {
-                if (variable.value is ConfigurationValue.TEXT) {
-                    ValidationResult.Success
-                } else {
-                    ValidationResult.Error("Variable type not allowed")
-                }
-            } else {
-                ValidationResult.Error("Variable not found")
-            }
-        }
-
-        is T -> {
-            validate?.invoke(item) ?: ValidationResult.Success
-        }
-
-        else -> ValidationResult.Error("Input type not allowed")
-    }
-}
-
 @Composable
 inline fun <T> EditorInputField(
     currentValue: ConfigurationValue<*>,
@@ -80,7 +52,21 @@ inline fun <T> EditorInputField(
                     variablesList = variablesList,
                     displayName = inputDefinition.displayName,
                     description = inputDefinition.description,
-                    validate = { ValidationResult.Success },
+                    validate = {
+                        if (inputDefinition.defaultValue !is ConfigurationValue.VARIABLE) {
+                            val variable = variablesList.find { it.id == targetState.value }
+                            if (variable == null) {
+                                return@SettingsItem ValidationResult.Error("Variable not found")
+                            } else if (variable.value::class != inputDefinition.defaultValue::class) {
+                                return@SettingsItem ValidationResult.Error(
+                                    "Variable type must be ${
+                                        inputDefinition.defaultValue::class.simpleName
+                                    }"
+                                )
+                            }
+                        }
+                        return@SettingsItem ValidationResult.Success
+                    },
                     onValueChanged = { onValueChanged(it) },
                     promptVariableSelect = promptVariableSelect
                 ) {

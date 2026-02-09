@@ -45,6 +45,7 @@ fun SettingsItem(
     HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
+        validationResult = validate?.invoke(item) ?: ValidationResult.Success,
         modifier = modifier,
         trailingContent = trailingContent
     ) {

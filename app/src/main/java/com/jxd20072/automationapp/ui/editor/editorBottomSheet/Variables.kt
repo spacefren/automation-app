@@ -39,7 +39,6 @@ import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
-import com.jxd20072.automationapp.ui.shared.components.DropdownOption
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
@@ -60,26 +59,7 @@ fun EditorVariableEntry(
     DropdownMenu(
         longPress = true,
         onNormalClick = onClick,
-        options = listOf(
-            DropdownOption(
-                icon = R.drawable.round_settings_24,
-                text = "Settings",
-                danger = false,
-                action = { }
-            ),
-            DropdownOption(
-                icon = R.drawable.round_archive_24,
-                text = "Archive",
-                danger = false,
-                action = { }
-            ),
-            DropdownOption(
-                icon = R.drawable.round_delete_24,
-                text = "Delete",
-                danger = true,
-                action = { }
-            ),
-        ),
+        options = listOf(),
         modifier = modifier.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
     ) {
         SwipeableContainer(
