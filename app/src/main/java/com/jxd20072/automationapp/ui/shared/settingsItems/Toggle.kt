@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.settings.settingsItems
+package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -6,8 +6,10 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -37,7 +38,8 @@ fun SettingsItem(
     description: String = "",
     modifier: Modifier = Modifier,
     validate: ((ConfigurationValue.BOOL) -> ValidationResult)? = null,
-    onValueChanged: (ConfigurationValue.BOOL) -> Unit
+    onValueChanged: (ConfigurationValue.BOOL) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null
 ) {
     val enabled = item.value
     var isPressed by remember { mutableStateOf(false) }
@@ -66,6 +68,7 @@ fun SettingsItem(
     HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
+        trailingContent = trailingContent,
         modifier = modifier
     ) {
         Box(
@@ -73,7 +76,7 @@ fun SettingsItem(
                 .onGloballyPositioned {
                     containerSize = it.size
                 }
-                .align(Alignment.CenterEnd)
+                .height(37.dp)
                 .width(60.dp)
                 .fillMaxHeight()
                 .pointerInput(enabled) {

@@ -9,6 +9,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -55,10 +56,10 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         name = "notification",
         description = "send a system notification",
         category = "system",
-        editorActionDescription = { input, _ ->
+        editorActionDescription = { input, variables ->
             listOf(
-                "Send notification: ",
-                "*${input["title"]?.value}"
+                NodeDescriptionPiece.Text("Send notification: "),
+                getNodeInputPiece<ConfigurationValue.TEXT>(variables, input["title"])
             )
         },
         icon = R.drawable.round_info_24,

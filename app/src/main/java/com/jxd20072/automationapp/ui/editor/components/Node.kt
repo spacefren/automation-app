@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
@@ -105,8 +106,7 @@ fun NodeHeaderIcons(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun NodeHeader(
-    displayName: List<String>,
-    nodeId: String,
+    displayName: List<NodeDescriptionPiece>,
     icon: Int,
     level: Int,
     onDragStart: ((startedPosition: Offset) -> Unit)? = null,
@@ -126,35 +126,44 @@ fun NodeHeader(
             verticalArrangement = Arrangement.Top
         ) {
             displayName.forEach { piece ->
-                if (piece.startsWith("*")) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
-                            .background(
-                                when (level) {
-                                    1 -> LocalTheme.colorScheme.background
-                                    2 -> LocalTheme.colorScheme.surface
-                                    else -> LocalTheme.colorScheme.tertiary
-                                }
+                when {
+                    piece is NodeDescriptionPiece.Input || piece is NodeDescriptionPiece.VariableInput -> {
+                        val value = when (piece) {
+                            is NodeDescriptionPiece.Input -> piece.value
+                            is NodeDescriptionPiece.VariableInput -> piece.value
+                            else -> ""
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
+                                .background(
+                                    when (level) {
+                                        1 -> LocalTheme.colorScheme.background
+                                        2 -> LocalTheme.colorScheme.surface
+                                        else -> LocalTheme.colorScheme.tertiary
+                                    }
+                                )
+                                .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                        ) {
+                            Text(
+                                text = value,
+                                color = LocalTheme.colorScheme.onBackground,
+                                style = LocalTheme.typography.body.copy(
+                                    fontStyle = FontStyle.Italic
+                                ),
                             )
-                            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-                    ) {
-                        Text(
-                            text = piece.removePrefix("*"),
-                            color = LocalTheme.colorScheme.onBackground,
-                            style = LocalTheme.typography.body.copy(
-                                fontStyle = FontStyle.Italic
-                            ),
-                        )
+                        }
                     }
-                } else {
-                    piece.split(" ").forEach { word ->
-                        Text(
-                            text = word,
-                            color = LocalTheme.colorScheme.onBackground,
-                            style = LocalTheme.typography.header,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
+
+                    piece is NodeDescriptionPiece.Text -> {
+                        piece.value.split(" ").forEach { word ->
+                            Text(
+                                text = word,
+                                color = LocalTheme.colorScheme.onBackground,
+                                style = LocalTheme.typography.header,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
                     }
                 }
             }
@@ -247,7 +256,7 @@ fun NodeContainer(
 fun TopLevelNode(
     type: TopLevelNodeType,
     id: String,
-    displayName: List<String>,
+    displayName: List<NodeDescriptionPiece>,
     content: List<NodeDef>,
     automationVariables: Set<VariableDef>,
     draggingData: EditorNodeDragState,
@@ -282,7 +291,6 @@ fun TopLevelNode(
         ) {
             NodeHeader(
                 displayName = displayName,
-                nodeId = id,
                 level = 1,
                 icon = when (type) {
                     TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
@@ -355,7 +363,6 @@ fun ActionNode(
                     automationVariables
                 ),
                 level = 2,
-                nodeId = actionNode.id,
                 icon = actionData.icon,
                 onDragStart = {
                     onDragStart?.invoke(actionNode.id, rootPosition, it)

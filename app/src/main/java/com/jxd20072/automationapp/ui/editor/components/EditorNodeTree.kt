@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -64,11 +65,11 @@ fun EditorNodeTree(
                 id = node.id,
                 displayName = when (node.nodeType) {
                     NodeType.TRIGGER -> triggerData!!.editorActionDescription(
-                        triggerData.inputDefinitions.mapValues { it.value.defaultValue } + node.input,
+                        node.input,
                         automationDraft.variables
                     )
 
-                    else -> listOf(node.name)
+                    else -> listOf(NodeDescriptionPiece.Text(node.name))
                 },
                 content = node.content,
                 automationVariables = automationDraft.variables,

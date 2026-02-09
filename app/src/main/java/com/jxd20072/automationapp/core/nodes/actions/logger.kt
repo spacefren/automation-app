@@ -4,7 +4,9 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -36,16 +38,29 @@ class LoggerAction(id: String) : ActionNode(id) {
     }
 }
 
+inline fun <reified T> getNodeInputPiece(
+    variables: Set<VariableDef>,
+    configValue: ConfigurationValue<*>?
+) : NodeDescriptionPiece where T : ConfigurationValue<*> {
+    return when (configValue) {
+        is T -> NodeDescriptionPiece.Input(configValue.value.toString())
+        is ConfigurationValue.VARIABLE -> NodeDescriptionPiece.VariableInput(
+            variables.find { it.id == configValue.value }?.name ?: "Unknown Variable"
+        )
+        else -> NodeDescriptionPiece.Input(configValue?.value.toString())
+    }
+}
+
 val LoggerNode = NodeRegistryEntry<ActionNode>(
     data = NodeData(
         nodeType = NodeType.ACTION,
         displayName = "Log message",
         name = "log",
         category = "debug",
-        editorActionDescription = { input, _ ->
+        editorActionDescription = { input, variables ->
             listOf(
-                "Log",
-                "*${input["text"]?.value}"
+                NodeDescriptionPiece.Text("Log"),
+                getNodeInputPiece<ConfigurationValue.TEXT>(variables, input["text"])
             )
         },
         description = "Append a message to the logs screen",

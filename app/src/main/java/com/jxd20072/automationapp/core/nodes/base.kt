@@ -12,12 +12,29 @@ data class NodeRegistryEntry<T>(
     val factory: (id: String) -> T
 ) where T : BaseNode
 
+sealed class NodeDescriptionPiece {
+    data class Text(
+        val value: String
+    ) : NodeDescriptionPiece()
+
+    data class Input(
+        val value: String
+    ) : NodeDescriptionPiece()
+
+    data class VariableInput(
+        val value: String
+    ) : NodeDescriptionPiece()
+}
+
 data class NodeData(
     val nodeType: NodeType,
     val displayName: String,
     val name: String,
     val category: String,
-    val editorActionDescription: (input: Map<String, ConfigurationValue<*>>, variables: Set<VariableDef>) -> List<String>,
+    val editorActionDescription: (
+        input: Map<String, ConfigurationValue<*>>,
+        variables: Set<VariableDef>
+    ) -> List<NodeDescriptionPiece>,
     val description: String,
     val icon: Int,
     val inputDefinitions: Map<String, NodeInputDefinition<*>>,

@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.settings.settingsItems
+package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight

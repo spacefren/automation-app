@@ -36,7 +36,6 @@ import com.jxd20072.automationapp.ui.shared.components.IconLabelButton
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
-import com.jxd20072.automationapp.ui.shared.modifiers.padding
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
 import kotlinx.coroutines.delay
@@ -155,7 +154,6 @@ fun EditorFloatingAddButton(
                     modifier = Modifier
                         .borderWithShadow(LocalTheme, NestedLevel.ONE)
                         .background(LocalTheme.colorScheme.secondary)
-                        .padding(LocalTheme, NestedLevel.THREE)
                         .clickableWithIndication {
                             showSubButtons = !showSubButtons
                         }

@@ -1,15 +1,18 @@
-package com.jxd20072.automationapp.ui.settings.settingsItems
+package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
@@ -31,7 +34,8 @@ fun SettingsItem(
     modifier: Modifier = Modifier,
     validate: ((ConfigurationValue.VARIABLE) -> ValidationResult)? = null,
     onValueChanged: (ConfigurationValue.VARIABLE) -> Unit,
-    promptVariableSelect: ((variableId: String) -> Unit) -> Unit
+    promptVariableSelect: ((variableId: String) -> Unit) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val selectedVariable = variablesList.find { it.id == item.value }
 
@@ -42,10 +46,12 @@ fun SettingsItem(
     HorizontalSettingsItemContainer(
         displayName = displayName,
         description = description,
-        modifier = modifier
+        modifier = modifier,
+        trailingContent = trailingContent
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clickableWithIndication {
                     promptVariableSelect {
@@ -53,7 +59,7 @@ fun SettingsItem(
                     }
                 }
                 .fillMaxHeight()
-                .borderWithShadow(LocalTheme, NestedLevel.TWO)
+                .borderWithShadow(LocalTheme, NestedLevel.ONE)
                 .background(LocalTheme.colorScheme.surface)
                 .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
         ) {
@@ -72,7 +78,8 @@ fun SettingsItem(
             )
             Text(
                 text = selectedVariable?.name ?: "Unknown",
-                style = LocalTheme.typography.body
+                style = LocalTheme.typography.body,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

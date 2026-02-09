@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
@@ -49,7 +50,10 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input, variables ->
             val variableId = (input["variable"] as? ConfigurationValue.VARIABLE)?.value ?: ""
             val variable = variables.find { it.id == variableId }
-                ?: return@NodeData listOf("Set", "*Unknown Variable")
+                ?: return@NodeData listOf(
+                    NodeDescriptionPiece.Text("Set"),
+                    NodeDescriptionPiece.VariableInput("Unknown Variable"),
+                )
 
             val valueType = when (variable.value) {
                 is VariableDefValue.BOOL -> "bool"
@@ -58,10 +62,10 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
             }
 
             listOf(
-                "Set",
-                "*${variable.name}",
-                "to",
-                "*${input["value_$valueType"]?.value.toString()}"
+                NodeDescriptionPiece.Text("Set"),
+                NodeDescriptionPiece.VariableInput(variable.name),
+                NodeDescriptionPiece.Text("to"),
+                NodeDescriptionPiece.Input(input["value_$valueType"]?.value.toString())
             )
         },
         description = "Pause the execution for a specified duration",

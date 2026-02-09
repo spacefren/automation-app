@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
@@ -27,10 +28,10 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         displayName = "Wait",
         name = "wait",
         category = "flow",
-        editorActionDescription = { input, _ ->
+        editorActionDescription = { input, variables ->
             listOf(
-                "Wait",
-                "*${input["duration"]?.value}ms"
+                NodeDescriptionPiece.Text("Wait"),
+                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["duration"])
             )
         },
         description = "Pause the execution for a specified duration",

@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
-import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.LocalSnackbarState
 import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
+import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 
 @SuppressLint("UseKtx")
 @Composable

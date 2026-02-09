@@ -1,8 +1,9 @@
-package com.jxd20072.automationapp.ui.settings.settingsItems
+package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -17,14 +18,16 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun SettingsItem(
     displayName: String,
     description: String = "",
-    selectedOption: ConfigurationValue.CHOOSE,
+    item: ConfigurationValue.CHOOSE,
     options: List<ConfigurationValue.CHOOSE>,
     modifier: Modifier = Modifier,
-    onValueChanged: (newValue: ConfigurationValue.CHOOSE) -> Unit
+    onValueChanged: (newValue: ConfigurationValue.CHOOSE) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null
 ) {
     VerticalSettingsItemContainer(
         displayName = displayName,
         description = description,
+        trailingContent = trailingContent,
         modifier = modifier
     ) {
         FlowRow(
@@ -34,14 +37,14 @@ fun SettingsItem(
             options.forEach { option ->
                 Text(
                     text = option.value,
-                    color = if (option == selectedOption) LocalTheme.colorScheme.onBackground
+                    color = if (option == item) LocalTheme.colorScheme.onBackground
                     else LocalTheme.colorScheme.onSurface,
                     style = LocalTheme.typography.body,
                     modifier = Modifier
                         .clickableWithIndication { onValueChanged(option) }
                         .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))
                         .background(
-                            if (option == selectedOption) LocalTheme.colorScheme.tertiary
+                            if (option == item) LocalTheme.colorScheme.tertiary
                             else LocalTheme.colorScheme.surface
                         )
                         .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)

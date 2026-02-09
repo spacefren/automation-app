@@ -5,7 +5,9 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.nodes.NodeData
+import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
+import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
@@ -31,22 +33,22 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         displayName = "Wait",
         name = "wait",
         category = "debug",
-        editorActionDescription = { input, _ ->
+        editorActionDescription = { input, variables ->
             listOf(
-                "Wait",
-                "*${input["Duration"]?.value}ms"
+                NodeDescriptionPiece.Text("Wait"),
+                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["duration"])
             )
         },
         description = "Run selected actions after a specified duration",
         icon = R.drawable.round_electric_bolt_24,
         inputDefinitions = mapOf(
-            "Duration" to NodeInputDefinition(
+            "duration" to NodeInputDefinition(
                 displayName = "Duration",
                 description = "The duration of the delay, in milliseconds",
                 defaultValue = ConfigurationValue.NUMBER("1000"),
                 validate = { ValidationResult.Success }
             ),
-            "IsThisWorking" to NodeInputDefinition(
+            "isThisWorking" to NodeInputDefinition(
                 displayName = "IsThisWorking",
                 description = "if you see this, yes",
                 defaultValue = ConfigurationValue.BOOL(true),

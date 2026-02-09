@@ -31,14 +31,10 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.editorInputItems.EditorInputField
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
-import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
@@ -93,75 +89,20 @@ fun EditorNodeEditScreen(
             nodeData.inputDefinitions.forEach { (name, inputDef) ->
                 val currentValue = nodeDef.input[name]
 
-                NodeEditField(
+                if (currentValue == null) {
+                    nodeEditViewModel.setNodeConfig(name, inputDef.defaultValue)
+                    return@forEach
+                }
+
+                EditorInputField(
                     inputDefinition = inputDef,
-                    automationDraft = automation,
+                    variablesList = automation.variables,
                     currentValue = currentValue,
                     onValueChanged = { nodeEditViewModel.setNodeConfig(name, it) },
-                    promptSelectVariable = nodeEditViewModel::promptSelectVariable
+                    promptVariableSelect = nodeEditViewModel::promptSelectVariable
                 )
             }
         }
-    }
-}
-
-@Composable
-fun NodeEditField(
-    automationDraft: AutomationDef,
-    inputDefinition: NodeInputDefinition<*>,
-    currentValue: ConfigurationValue<*>?, // Should be T but kotlin is just dumb
-    onValueChanged: (ConfigurationValue<*>) -> Unit,
-    promptSelectVariable: ((selected: String) -> Unit) -> Unit
-) {
-    when (inputDefinition.defaultValue) {
-        is ConfigurationValue.BOOL -> {
-            if (currentValue != null && currentValue !is ConfigurationValue.BOOL) return
-            SettingsItem(
-                item = currentValue ?: inputDefinition.defaultValue,
-                displayName = inputDefinition.displayName,
-                description = inputDefinition.description,
-                validate = inputDefinition.validate as (ConfigurationValue.BOOL) -> ValidationResult,
-                onValueChanged = onValueChanged
-            )
-        }
-
-        is ConfigurationValue.TEXT -> {
-            if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
-            EditorInputField<ConfigurationValue.TEXT>(
-                item = currentValue ?: inputDefinition.defaultValue,
-                automationVariables = automationDraft.variables,
-                displayName = inputDefinition.displayName,
-                description = inputDefinition.description,
-                validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,
-                onValueChanged = onValueChanged
-            )
-        }
-
-        is ConfigurationValue.NUMBER -> {
-            if (currentValue != null && currentValue !is ConfigurationValue.NUMBER) return
-            SettingsItem(
-                item = currentValue ?: inputDefinition.defaultValue,
-                displayName = inputDefinition.displayName,
-                description = inputDefinition.description,
-                validate = inputDefinition.validate as (ConfigurationValue.NUMBER) -> ValidationResult,
-                onValueChanged = onValueChanged
-            )
-        }
-
-        is ConfigurationValue.VARIABLE -> {
-            if (currentValue != null && currentValue !is ConfigurationValue.VARIABLE) return
-            SettingsItem(
-                item = currentValue ?: inputDefinition.defaultValue,
-                variablesList = automationDraft.variables,
-                displayName = inputDefinition.displayName,
-                description = inputDefinition.description,
-                validate = inputDefinition.validate as (ConfigurationValue.VARIABLE) -> ValidationResult,
-                onValueChanged = onValueChanged,
-                promptVariableSelect = promptSelectVariable
-            )
-        }
-
-        else -> {}
     }
 }
 

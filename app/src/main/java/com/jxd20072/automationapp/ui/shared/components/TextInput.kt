@@ -6,10 +6,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -37,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
@@ -69,7 +66,9 @@ fun BaseTextInput(
         }
     }
 
-    Box(
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .shadow(
                 LocalTheme.layoutSystem.shadows.secondary,
@@ -94,9 +93,7 @@ fun BaseTextInput(
                         .size(iconSize)
                 )
             }
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
+            Box {
                 BasicTextField(
                     value = state,
                     onValueChange = {
@@ -135,21 +132,20 @@ fun BaseTextInput(
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(5.dp))
+        }
 
-            if (text != "") {
-                Icon(
-                    painter = painterResource(R.drawable.round_close_24),
-                    contentDescription = "search",
-                    tint = LocalTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .clickable(interactionSource = closeInteractionSource, indication = null) {
-                            state = state.copy(text = "")
-                            onTextChanged("")
-                        }
-                )
-            }
+        if (text != "") {
+            Icon(
+                painter = painterResource(R.drawable.round_close_24),
+                contentDescription = "search",
+                tint = LocalTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .size(iconSize)
+                    .clickable(interactionSource = closeInteractionSource, indication = null) {
+                        state = state.copy(text = "")
+                        onTextChanged("")
+                    }
+            )
         }
     }
 }

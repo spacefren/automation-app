@@ -19,8 +19,8 @@ import com.jxd20072.automationapp.core.data.model.VariableDefValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
-import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
+import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 fun getVariableValueName(value: VariableDefValue<*>): String {
@@ -80,7 +80,7 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Variable type",
                 description = "The type of data that the variable will hold.",
-                selectedOption = ConfigurationValue.CHOOSE(getVariableValueName(variableDef.value)),
+                item = ConfigurationValue.CHOOSE(getVariableValueName(variableDef.value)),
                 options = listOf(
                     ConfigurationValue.CHOOSE("text"),
                     ConfigurationValue.CHOOSE("boolean"),
