@@ -42,7 +42,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         displayName = "Log message",
         name = "log",
         category = "debug",
-        editorActionDescription = { input ->
+        editorActionDescription = { input, _ ->
             listOf(
                 "Log",
                 "*${input["text"]?.value}"

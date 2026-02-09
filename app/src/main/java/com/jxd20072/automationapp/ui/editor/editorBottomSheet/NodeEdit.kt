@@ -35,12 +35,13 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.editorBottomSheet.editorInputItems.EditorInputField
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
 import com.jxd20072.automationapp.ui.settings.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -126,8 +127,9 @@ fun NodeEditField(
 
         is ConfigurationValue.TEXT -> {
             if (currentValue != null && currentValue !is ConfigurationValue.TEXT) return
-            SettingsItem(
+            EditorInputField<ConfigurationValue.TEXT>(
                 item = currentValue ?: inputDefinition.defaultValue,
+                automationVariables = automationDraft.variables,
                 displayName = inputDefinition.displayName,
                 description = inputDefinition.description,
                 validate = inputDefinition.validate as (ConfigurationValue.TEXT) -> ValidationResult,

@@ -44,6 +44,7 @@ import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Composable
 fun EditorVariableEntry(
@@ -192,10 +193,10 @@ fun EditorVariablesScreen(
                     color = LocalTheme.colorScheme.surface,
                     iconColor = LocalTheme.colorScheme.onSurface,
                     drawableRes = R.drawable.round_add_24,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-                    size = 37.dp,
-                    padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-                    onClick = variablesViewModel::onCreateVariable
+                    nestedLevel = NestedLevel.ONE,
+                    onClick = variablesViewModel::onCreateVariable,
+                    modifier = Modifier
+                        .size(37.dp)
                 )
             }
             LazyColumn(

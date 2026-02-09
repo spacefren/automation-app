@@ -72,9 +72,10 @@ fun VariableEditScreen(
                 description = "A unique identifier for your variable. Great names are short and descriptive!",
                 item = ConfigurationValue.TEXT(variableDef.name),
                 validate = { variableEditViewModel.validateVariableName(it.value) },
-            ) { newVal ->
-                variableEditViewModel.changeName(newVal.value)
-            }
+                onValueChanged = { newVal ->
+                    variableEditViewModel.changeName(newVal.value)
+                }
+            )
 
             SettingsItem(
                 displayName = "Variable type",
@@ -102,9 +103,10 @@ fun VariableEditScreen(
                             description = "The starting value of your variable.",
                             item = ConfigurationValue.TEXT(value.value),
                             validate = { ValidationResult.Success },
-                        ) { newVal ->
-                            variableEditViewModel.changeValue(VariableDefValue.TEXT(newVal.value))
-                        }
+                            onValueChanged = { newVal ->
+                                variableEditViewModel.changeValue(VariableDefValue.TEXT(newVal.value))
+                            }
+                        )
                     }
 
                     is VariableDefValue.BOOL -> {

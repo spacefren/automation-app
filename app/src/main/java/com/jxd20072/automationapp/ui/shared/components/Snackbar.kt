@@ -46,7 +46,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Timer
@@ -207,22 +210,24 @@ fun Snackbar(
                 modifier = Modifier.weight(1f)
             )
             if (snackbarData.action != null) {
-                Button(
-                    color = when (snackbarData.type) {
-                        SnackbarType.INFO -> LocalTheme.colorScheme.tertiary
-                        SnackbarType.WARNING -> LocalTheme.colorScheme.warningSecondary
-                        SnackbarType.ERROR -> LocalTheme.colorScheme.errorSecondary
-                    },
-                    cornerRadius = 5.dp,
-                    onClick = {
-                        snackbarData.action.onClick()
-                        coroutineScope.launch {
-                            pressing = true
-                            delay(100)
-                            localSnackbarState.dismissSnackbar(snackbarData.id)
-                        }
-                    },
+                Box(
                     modifier = Modifier
+                        .background(
+                            when (snackbarData.type) {
+                                SnackbarType.INFO -> LocalTheme.colorScheme.tertiary
+                                SnackbarType.WARNING -> LocalTheme.colorScheme.warningSecondary
+                                SnackbarType.ERROR -> LocalTheme.colorScheme.errorSecondary
+                            }
+                        )
+                        .borderWithShadow(LocalTheme, NestedLevel.ONE)
+                        .clickableWithIndication {
+                            snackbarData.action.onClick()
+                            coroutineScope.launch {
+                                pressing = true
+                                delay(100)
+                                localSnackbarState.dismissSnackbar(snackbarData.id)
+                            }
+                        }
                 ) {
                     Text(
                         text = snackbarData.action.name,

@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable

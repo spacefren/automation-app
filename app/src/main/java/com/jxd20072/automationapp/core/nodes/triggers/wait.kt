@@ -31,7 +31,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         displayName = "Wait",
         name = "wait",
         category = "debug",
-        editorActionDescription = { input ->
+        editorActionDescription = { input, _ ->
             listOf(
                 "Wait",
                 "*${input["Duration"]?.value}ms"

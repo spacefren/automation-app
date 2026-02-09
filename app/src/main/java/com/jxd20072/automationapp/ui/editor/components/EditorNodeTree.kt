@@ -64,12 +64,14 @@ fun EditorNodeTree(
                 id = node.id,
                 displayName = when (node.nodeType) {
                     NodeType.TRIGGER -> triggerData!!.editorActionDescription(
-                        triggerData.inputDefinitions.mapValues { it.value.defaultValue } + node.input
+                        triggerData.inputDefinitions.mapValues { it.value.defaultValue } + node.input,
+                        automationDraft.variables
                     )
 
                     else -> listOf(node.name)
                 },
                 content = node.content,
+                automationVariables = automationDraft.variables,
                 onDragStart = onNodeDrag,
                 draggingData = draggingData,
                 onDropZoneEnter = onDropLineEnter,

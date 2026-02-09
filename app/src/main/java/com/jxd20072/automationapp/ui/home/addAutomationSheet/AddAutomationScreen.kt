@@ -22,8 +22,9 @@ import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.components.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.ValidationMessage
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Composable
 fun AddAutomationScreen(
@@ -38,8 +39,8 @@ fun AddAutomationScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
         modifier = Modifier
-			.imePadding()
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .imePadding()
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -57,12 +58,12 @@ fun AddAutomationScreen(
                 contentDescription = "confirm",
                 tint = LocalTheme.colorScheme.onBackground,
                 modifier = Modifier
-					.size(25.dp)
-					.clickableWithIndication {
-						if (validateAutomationName(name) is ValidationResult.Success) {
-							onCreateAutomation()
-						}
-					}
+                    .size(25.dp)
+                    .clickableWithIndication {
+                        if (validateAutomationName(name) is ValidationResult.Success) {
+                            onCreateAutomation()
+                        }
+                    }
             )
         }
         Column {
@@ -73,9 +74,9 @@ fun AddAutomationScreen(
                     color = LocalTheme.colorScheme.surface,
                     iconColor = LocalTheme.colorScheme.onSurface,
                     iconName = selectedIcon,
-                    cornerRadius = 8.dp,
-                    padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
-                    size = 36.dp
+                    nestedLevel = NestedLevel.ONE,
+                    modifier = Modifier
+                        .size(36.dp)
                 ) {
                     onIconChangeRequest()
                 }

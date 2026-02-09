@@ -34,7 +34,7 @@ import com.jxd20072.automationapp.ui.settings.SettingsViewModel
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.utils.getRelativeTime
 import java.time.Instant

@@ -25,7 +25,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.settings.categories.GeneralSettingsCategory
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable

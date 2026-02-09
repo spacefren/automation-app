@@ -35,9 +35,10 @@ import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.zIndex
-import com.jxd20072.automationapp.ui.shared.modifiers.NestedLevel
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Immutable
 data class DropdownOption(

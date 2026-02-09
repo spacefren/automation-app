@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -35,9 +36,9 @@ fun IconSelectScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(15.dp),
         modifier = Modifier
-			.fillMaxSize()
-			.padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
-			.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .fillMaxSize()
+            .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         Text(
             text = "Change icon",
@@ -68,12 +69,10 @@ fun IconSelectScreen(
                     color = LocalTheme.colorScheme.surface,
                     iconColor = LocalTheme.colorScheme.onSurface,
                     iconName = icon,
-                    cornerRadius = 8.dp,
-                    padding = 8.dp,
-                    size = 43.dp,
+                    nestedLevel = NestedLevel.TWO,
                     modifier = Modifier
-						.aspectRatio(1f)
-						.animateItem()
+                        .aspectRatio(1f)
+                        .animateItem()
                 ) { onIconSelected(icon) }
             }
         }

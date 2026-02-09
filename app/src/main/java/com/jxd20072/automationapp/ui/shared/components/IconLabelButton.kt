@@ -2,6 +2,7 @@ package com.jxd20072.automationapp.ui.shared.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.padding
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
+import com.jxd20072.automationapp.ui.theme.getPreviousNestedLevel
 
 @Composable
 fun IconLabelButton(
@@ -25,21 +31,19 @@ fun IconLabelButton(
     color: Color,
     iconColor: Color,
     iconSize: Dp,
-    cornerRadius: Dp,
-    padding: Dp = LocalTheme.layoutSystem.spacing.paddingLevel3,
+    nestedLevel: NestedLevel,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Button(
-        color = color,
-        cornerRadius = cornerRadius,
-        onClick = onClick,
+    Box(
         modifier = modifier
+            .borderWithShadow(LocalTheme, nestedLevel)
+            .background(color)
+            .padding(LocalTheme, getPreviousNestedLevel(nestedLevel))
+            .clickableWithIndication { onClick() }
     ) {
         Row(
             modifier = Modifier
-                .background(color)
-                .padding(padding)
                 .padding(end = 3.dp), // To account for the icon having some extra padding
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp)

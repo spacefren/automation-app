@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.nodes.actions.variables
 
-import android.util.Log
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
@@ -14,11 +13,11 @@ import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 class SetVariable(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext) {
-        val variableID = getInput<ConfigurationValue.VARIABLE>("variable").value
-        val variable = context.getVariable(variableID)
+        val variableId = getInput<ConfigurationValue.VARIABLE>("variable").value
+        val variable = context.getVariable(variableId)
 
         if (variable == null) {
-            context.log(LogLevel.ERROR, "Could not find variable: $variableID")
+            context.log(LogLevel.ERROR, "Could not find variable: $variableId")
             return
         }
 
@@ -28,8 +27,14 @@ class SetVariable(id: String) : ActionNode(id) {
                 context.setVariable(variable.copy(value = VariableDefValue.BOOL(newVal)))
             }
 
-            else -> {
+            is VariableDefValue.TEXT -> {
+                val newVal = getInput<ConfigurationValue.TEXT>("value_text").value
+                context.setVariable(variable.copy(value = VariableDefValue.TEXT(newVal)))
+            }
 
+            is VariableDefValue.NUMBER -> {
+                val newVal = getInput<ConfigurationValue.NUMBER>("value_number").value
+                context.setVariable(variable.copy(value = VariableDefValue.NUMBER(newVal)))
             }
         }
     }
@@ -41,10 +46,22 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
         displayName = "Set Variable",
         name = "setVariable",
         category = "variables",
-        editorActionDescription = { input ->
+        editorActionDescription = { input, variables ->
+            val variableId = (input["variable"] as? ConfigurationValue.VARIABLE)?.value ?: ""
+            val variable = variables.find { it.id == variableId }
+                ?: return@NodeData listOf("Set", "*Unknown Variable")
+
+            val valueType = when (variable.value) {
+                is VariableDefValue.BOOL -> "bool"
+                is VariableDefValue.TEXT -> "text"
+                is VariableDefValue.NUMBER -> "number"
+            }
+
             listOf(
-                "Wait",
-                "*${input["Duration"]?.value}ms"
+                "Set",
+                "*${variable.name}",
+                "to",
+                "*${input["value_$valueType"]?.value.toString()}"
             )
         },
         description = "Pause the execution for a specified duration",
@@ -65,7 +82,29 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.BOOL
                 },
                 defaultValue = ConfigurationValue.BOOL(true),
-            )
+            ),
+            "value_text" to NodeInputDefinition(
+                displayName = "Value",
+                description = "",
+                shouldShow = { input, automationDef ->
+                    val variable = input["variable"]
+                    if (variable !is ConfigurationValue.VARIABLE) return@NodeInputDefinition false
+
+                    automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.TEXT
+                },
+                defaultValue = ConfigurationValue.TEXT(""),
+            ),
+            "value_number" to NodeInputDefinition(
+                displayName = "Value",
+                description = "",
+                shouldShow = { input, automationDef ->
+                    val variable = input["variable"]
+                    if (variable !is ConfigurationValue.VARIABLE) return@NodeInputDefinition false
+
+                    automationDef.variables.find { it.id == variable.value }?.value is VariableDefValue.NUMBER
+                },
+                defaultValue = ConfigurationValue.NUMBER("0"),
+            ),
         ),
         outputDefinitions = emptyMap(),
         permissions = emptyList()

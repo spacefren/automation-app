@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,6 +37,7 @@ import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -130,13 +132,11 @@ fun EditorLogsScreen(
                     color = LocalTheme.colorScheme.surface,
                     iconColor = LocalTheme.colorScheme.onSurface,
                     drawableRes = R.drawable.round_filter_24,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-                    size = 37.dp,
-                    padding = LocalTheme.layoutSystem.spacing.paddingLevel2,
-                    onClick = {
+                    nestedLevel = NestedLevel.ONE,
+                    modifier = Modifier.size(37.dp),
+                ) {
 
-                    }
-                )
+                }
             }
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),

@@ -30,6 +30,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Composable
 fun getAutomationIconPainter(name: String): Painter {
@@ -117,20 +118,20 @@ fun AutomationCard(
                     color = LocalTheme.colorScheme.tertiary,
                     iconColor = LocalTheme.colorScheme.onTertiary,
                     drawableRes = R.drawable.round_edit_24,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
-                    padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+                    nestedLevel = NestedLevel.TWO,
                     onClick = editAutomation,
-                    size = 42.dp,
+                    modifier = Modifier
+                        .size(42.dp)
                 )
 
                 IconButton(
                     color = LocalTheme.colorScheme.secondary,
                     iconColor = LocalTheme.colorScheme.onSecondary,
                     drawableRes = R.drawable.round_play_arrow_24,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel2,
-                    padding = LocalTheme.layoutSystem.spacing.paddingLevel3,
+                    nestedLevel = NestedLevel.TWO,
                     onClick = runAutomation,
-                    size = 42.dp,
+                    modifier = Modifier
+                        .size(42.dp)
                 )
             }
         }

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
@@ -247,6 +248,8 @@ fun TopLevelNode(
     type: TopLevelNodeType,
     id: String,
     displayName: List<String>,
+    content: List<NodeDef>,
+    automationVariables: Set<VariableDef>,
     draggingData: EditorNodeDragState,
     onDragStart: (
         id: String,
@@ -257,7 +260,6 @@ fun TopLevelNode(
     onDropZoneExit: () -> Unit,
     editNode: (nodeId: String) -> Unit,
     modifier: Modifier = Modifier,
-    content: List<NodeDef>
 ) {
     val draggingNodeID =
         if (draggingData is EditorNodeDragState.Dragging) draggingData.draggingNode.id
@@ -302,6 +304,7 @@ fun TopLevelNode(
 
                 ActionNode(
                     actionNode = actionNode,
+                    automationVariables = automationVariables,
                     onDragStart = onDragStart,
                     disabledForDragging = actionNode.id == draggingNodeID,
                     modifier = Modifier,
@@ -325,6 +328,7 @@ fun ActionNode(
     modifier: Modifier = Modifier,
     disabledForDragging: Boolean,
     actionNode: NodeDef,
+    automationVariables: Set<VariableDef>,
     editNode: () -> Unit,
     onDragStart: ((
         id: String,
@@ -347,7 +351,8 @@ fun ActionNode(
         ) {
             NodeHeader(
                 displayName = actionData.editorActionDescription(
-                    actionData.inputDefinitions.mapValues { it.value.defaultValue } + actionNode.input
+                    actionData.inputDefinitions.mapValues { it.value.defaultValue } + actionNode.input,
+                    automationVariables
                 ),
                 level = 2,
                 nodeId = actionNode.id,

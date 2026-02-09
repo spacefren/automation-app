@@ -25,6 +25,7 @@ import com.jxd20072.automationapp.ui.home.components.getAutomationIconPainter
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.IconLabelButton
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 import com.jxd20072.automationapp.utils.getRelativeTime
 import java.time.Instant
 
@@ -51,10 +52,10 @@ fun EditorTopBar(
     Column(
         verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel2),
         modifier = modifier
-			.fillMaxWidth()
-			.background(LocalTheme.colorScheme.surface)
-			.windowInsetsPadding(WindowInsets.statusBars)
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .fillMaxWidth()
+            .background(LocalTheme.colorScheme.surface)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -74,10 +75,10 @@ fun EditorTopBar(
                         contentDescription = "return to home screen",
                         tint = LocalTheme.colorScheme.onBackground,
                         modifier = Modifier
-							.size(iconSize)
-							.clickable(interactionSource = null, indication = null) {
-								returnHome(true)
-							}
+                            .size(iconSize)
+                            .clickable(interactionSource = null, indication = null) {
+                                returnHome(true)
+                            }
                     )
                     Icon(
                         painter = getAutomationIconPainter(automationData.icon),
@@ -105,20 +106,20 @@ fun EditorTopBar(
                     drawableRes = R.drawable.round_save_24,
                     color = LocalTheme.colorScheme.tertiary,
                     iconColor = LocalTheme.colorScheme.onSurface,
-                    padding = 6.dp,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+                    nestedLevel = NestedLevel.ONE,
                     onClick = saveAutomation,
-                    size = 45.dp,
+                    modifier = Modifier
+                        .size(45.dp)
                 )
 
                 IconButton(
                     drawableRes = R.drawable.round_play_arrow_24,
                     color = LocalTheme.colorScheme.secondary,
                     iconColor = LocalTheme.colorScheme.onPrimary,
-                    padding = 6.dp,
-                    cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
+                    nestedLevel = NestedLevel.ONE,
                     onClick = runAutomation,
-                    size = 45.dp,
+                    modifier = Modifier
+                        .size(45.dp),
                 )
             }
         }
@@ -131,7 +132,7 @@ fun EditorTopBar(
                 drawableRes = R.drawable.round_data_object_24,
                 color = LocalTheme.colorScheme.tertiary,
                 iconColor = LocalTheme.colorScheme.onSecondary,
-                cornerRadius = 5.dp,
+                nestedLevel = NestedLevel.TWO,
                 iconSize = 20.dp,
                 onClick = openVariablesScreen
             )
@@ -142,7 +143,7 @@ fun EditorTopBar(
                 drawableRes = R.drawable.round_align_left_24,
                 color = LocalTheme.colorScheme.tertiary,
                 iconColor = LocalTheme.colorScheme.onSecondary,
-                cornerRadius = 5.dp,
+                nestedLevel = NestedLevel.TWO,
                 iconSize = 20.dp,
                 onClick = openLogsScreen
             )

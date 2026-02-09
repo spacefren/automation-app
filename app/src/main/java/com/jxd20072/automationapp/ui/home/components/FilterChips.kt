@@ -1,7 +1,9 @@
 package com.jxd20072.automationapp.ui.home.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jxd20072.automationapp.ui.shared.components.Button
+import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Composable
 private fun FilterChip(
@@ -29,13 +32,14 @@ private fun FilterChip(
     modifier: Modifier = Modifier,
     onActiveChanged: (active: Boolean) -> Unit
 ) {
-    Button(
-        color = if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.surface,
-        cornerRadius = LocalTheme.layoutSystem.shapes.cornerRadiusLevel1,
-        onClick = { onActiveChanged(!enabled) },
+    Box(
         modifier = modifier
-            .shadow(LocalTheme.layoutSystem.shadows.secondary)
+            .background(if (enabled) LocalTheme.colorScheme.secondary else LocalTheme.colorScheme.surface)
+            .borderWithShadow(LocalTheme, NestedLevel.TWO)
             .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel3)
+            .clickableWithIndication {
+                onActiveChanged(!enabled)
+            }
     ) {
         Text(
             text = name,

@@ -56,7 +56,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenT
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
-import com.jxd20072.automationapp.ui.shared.components.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)

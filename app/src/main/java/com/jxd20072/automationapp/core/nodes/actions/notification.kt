@@ -55,7 +55,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         name = "notification",
         description = "send a system notification",
         category = "system",
-        editorActionDescription = { input ->
+        editorActionDescription = { input, _ ->
             listOf(
                 "Send notification: ",
                 "*${input["title"]?.value}"

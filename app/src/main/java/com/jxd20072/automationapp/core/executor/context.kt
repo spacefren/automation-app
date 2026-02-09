@@ -6,53 +6,50 @@ import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 
 class ExecutionContext(
-	val appContext: Context,
-	val coroutineScope: CoroutineScope,
-	initialVariables: Set<VariableDef>,
+    val appContext: Context,
+    val coroutineScope: CoroutineScope,
+    initialVariables: Set<VariableDef>,
 ) {
-	var executionStart: Instant? = null
-	var executionStop: Instant? = null
+    var executionStart: Instant? = null
+    var executionStop: Instant? = null
 
-	fun onStartExecution() {
-		executionStart = Instant.now()
-	}
+    fun onStartExecution() {
+        executionStart = Instant.now()
+    }
 
-	fun onStopExecution() {
-		executionStop = Instant.now()
-	}
+    fun onStopExecution() {
+        executionStop = Instant.now()
+    }
 
-	private val variables = initialVariables.toMutableSet()
+    private val variables = initialVariables.toMutableSet()
 
-	fun setVariable(variable: VariableDef) {
-		variables.removeIf { it.id == variable.id }
-		variables.add(variable)
-	}
+    fun setVariable(variable: VariableDef) {
+        variables.removeIf { it.id == variable.id }
+        variables.add(variable)
+    }
 
-	fun getVariable(name: String): VariableDef? {
-		return variables.find { it.name == name }
-	}
+    fun getVariable(id: String): VariableDef? {
+        return variables.find { it.id == id }
+    }
 
-	val logs = MutableSharedFlow<AutomationLogEntry>()
+    val logs = MutableSharedFlow<AutomationLogEntry>()
 
-	fun log(level: LogLevel, message: String) {
-		coroutineScope.launch {
-			logs.emit(
-				AutomationLogEntry
-					.newBuilder()
-					.setId(UUID.randomUUID().toString())
-					.setTime(Instant.now().toString())
-					.setLevel(level)
-					.setMessage(message)
-					.build()
-			)
-		}
-	}
+    fun log(level: LogLevel, message: String) {
+        coroutineScope.launch {
+            logs.emit(
+                AutomationLogEntry
+                    .newBuilder()
+                    .setId(UUID.randomUUID().toString())
+                    .setTime(Instant.now().toString())
+                    .setLevel(level)
+                    .setMessage(message)
+                    .build()
+            )
+        }
+    }
 }
