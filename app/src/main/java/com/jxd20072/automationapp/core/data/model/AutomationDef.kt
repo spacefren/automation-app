@@ -15,26 +15,6 @@ data class VariableDef(
     val value: ConfigurationValue<*>
 )
 
-//@Serializable
-//sealed interface VariableDefValue<T> {
-//    val value: T
-//
-//    @Serializable
-//    data class TEXT(
-//        override val value: String = "",
-//    ) : VariableDefValue<String>
-//
-//    @Serializable
-//    data class BOOL(
-//        override val value: Boolean = true,
-//    ) : VariableDefValue<Boolean>
-//
-//    @Serializable
-//    data class NUMBER(
-//        override val value: String = "0",
-//    ) : VariableDefValue<String>
-//}
-
 @Serializable
 data class AutomationDef(
     val metadata: AutomationDefMetadata,

@@ -25,10 +25,9 @@ class EditorViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            async {
-                automationManager.observeFileChanges()
-            }
-            automationManager.observeDraftChanges()
+            async { automationManager.observeFileChanges() }
+            async { automationManager.observeDraftChanges() }
+            async { automationManager.observeProblems() }
         }
     }
 

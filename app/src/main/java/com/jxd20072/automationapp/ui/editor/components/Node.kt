@@ -41,10 +41,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.actionNodes
+import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorProblem
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
 import com.jxd20072.automationapp.ui.shared.components.DropdownOption
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
@@ -107,66 +111,79 @@ fun NodeHeaderIcons(
 @Composable
 fun NodeHeader(
     displayName: List<NodeDescriptionPiece>,
+    problems: Set<EditorProblem>,
     icon: Int,
     level: Int,
     onDragStart: ((startedPosition: Offset) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        NodeHeaderIcons(
-            onDragStart = onDragStart,
-            icon = icon
-        )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalArrangement = Arrangement.Top
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            displayName.forEach { piece ->
-                when {
-                    piece is NodeDescriptionPiece.Input || piece is NodeDescriptionPiece.VariableInput -> {
-                        val value = when (piece) {
-                            is NodeDescriptionPiece.Input -> piece.value
-                            is NodeDescriptionPiece.VariableInput -> piece.value
-                            else -> ""
-                        }
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
-                                .background(
-                                    when (level) {
-                                        1 -> LocalTheme.colorScheme.background
-                                        2 -> LocalTheme.colorScheme.surface
-                                        else -> LocalTheme.colorScheme.tertiary
-                                    }
+            NodeHeaderIcons(
+                onDragStart = onDragStart,
+                icon = icon
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
+                displayName.forEach { piece ->
+                    when {
+                        piece is NodeDescriptionPiece.Input || piece is NodeDescriptionPiece.VariableInput -> {
+                            val value = when (piece) {
+                                is NodeDescriptionPiece.Input -> piece.value
+                                is NodeDescriptionPiece.VariableInput -> piece.value
+                                else -> ""
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3))
+                                    .background(
+                                        when (level) {
+                                            1 -> LocalTheme.colorScheme.background
+                                            2 -> LocalTheme.colorScheme.surface
+                                            else -> LocalTheme.colorScheme.tertiary
+                                        }
+                                    )
+                                    .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                            ) {
+                                Text(
+                                    text = value,
+                                    color = LocalTheme.colorScheme.onBackground,
+                                    style = LocalTheme.typography.body.copy(
+                                        fontStyle = FontStyle.Italic
+                                    ),
                                 )
-                                .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-                        ) {
-                            Text(
-                                text = value,
-                                color = LocalTheme.colorScheme.onBackground,
-                                style = LocalTheme.typography.body.copy(
-                                    fontStyle = FontStyle.Italic
-                                ),
-                            )
+                            }
                         }
-                    }
 
-                    piece is NodeDescriptionPiece.Text -> {
-                        piece.value.split(" ").forEach { word ->
-                            Text(
-                                text = word,
-                                color = LocalTheme.colorScheme.onBackground,
-                                style = LocalTheme.typography.header,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                        piece is NodeDescriptionPiece.Text -> {
+                            piece.value.split(" ").forEach { word ->
+                                Text(
+                                    text = word,
+                                    color = LocalTheme.colorScheme.onBackground,
+                                    style = LocalTheme.typography.header,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
                         }
                     }
                 }
             }
+        }
+        if (problems.isNotEmpty()) {
+            Icon(
+                painter = painterResource(R.drawable.round_error_24),
+                tint = LocalTheme.colorScheme.error,
+                contentDescription = "problems"
+            )
         }
     }
 }
@@ -254,11 +271,9 @@ fun NodeContainer(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TopLevelNode(
-    type: TopLevelNodeType,
-    id: String,
-    displayName: List<NodeDescriptionPiece>,
-    content: List<NodeDef>,
+    nodeDef: NodeDef,
     automationVariables: Set<VariableDef>,
+    editorProblems: Set<EditorProblem>,
     draggingData: EditorNodeDragState,
     onDragStart: (
         id: String,
@@ -273,8 +288,19 @@ fun TopLevelNode(
     val draggingNodeID =
         if (draggingData is EditorNodeDragState.Dragging) draggingData.draggingNode.id
         else null
-    val isDragging = draggingNodeID == id
+    val isDragging = draggingNodeID == nodeDef.id
     var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
+
+    var triggerData: NodeData? = null
+    if (nodeDef.nodeType == NodeType.TRIGGER) {
+        triggerData = triggerNodes[nodeDef.name]?.data ?: return
+    }
+
+    val type = when (nodeDef.nodeType) {
+        NodeType.TRIGGER -> TopLevelNodeType.TRIGGER
+        NodeType.FUNCTION if nodeDef.id == "0" -> TopLevelNodeType.ENTRYPOINT
+        else -> TopLevelNodeType.FUNCTION
+    }
 
     NodeContainer(
         modifier = modifier,
@@ -284,34 +310,44 @@ fun TopLevelNode(
         },
         disabledForDragging = isDragging,
         ignoreBottomPadding = true,
-        editNode = { editNode(id) }
+        editNode = { editNode(nodeDef.id) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             NodeHeader(
-                displayName = displayName,
+                displayName = when (nodeDef.nodeType) {
+                    NodeType.TRIGGER -> triggerData!!.editorActionDescription(
+                        triggerData.inputDefinitions.mapValues { it.value.defaultValue }
+                                + nodeDef.input,
+                        automationVariables
+                    )
+
+                    else -> listOf(NodeDescriptionPiece.Text(nodeDef.name))
+                },
                 level = 1,
+                problems = editorProblems.filter { it.nodeId == nodeDef.id }.toSet(),
                 icon = when (type) {
                     TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
                     TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
                     TopLevelNodeType.FUNCTION -> R.drawable.round_functions_24
                 },
                 onDragStart = {
-                    onDragStart(id, rootPosition, it)
+                    onDragStart(nodeDef.id, rootPosition, it)
                 }
             )
-            content.forEachIndexed { index, actionNode ->
+            nodeDef.content.forEachIndexed { index, actionNode ->
                 EditorNodeDropTarget(
                     gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
                     draggingData = draggingData,
                     dropScope = NodeDropScope.CONTENT,
-                    onEnter = { onDropZoneEnter(index, id) },
+                    onEnter = { onDropZoneEnter(index, nodeDef.id) },
                     onExit = onDropZoneExit
                 )
 
                 ActionNode(
                     actionNode = actionNode,
+                    problems = editorProblems.filter { it.nodeId == actionNode.id }.toSet(),
                     automationVariables = automationVariables,
                     onDragStart = onDragStart,
                     disabledForDragging = actionNode.id == draggingNodeID,
@@ -323,7 +359,7 @@ fun TopLevelNode(
                 gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
                 draggingData = draggingData,
                 dropScope = NodeDropScope.CONTENT,
-                onEnter = { onDropZoneEnter(content.size, id) },
+                onEnter = { onDropZoneEnter(nodeDef.content.size, nodeDef.id) },
                 onExit = onDropZoneExit
             )
         }
@@ -334,6 +370,7 @@ fun TopLevelNode(
 @Composable
 fun ActionNode(
     modifier: Modifier = Modifier,
+    problems: Set<EditorProblem>,
     disabledForDragging: Boolean,
     actionNode: NodeDef,
     automationVariables: Set<VariableDef>,
@@ -359,10 +396,12 @@ fun ActionNode(
         ) {
             NodeHeader(
                 displayName = actionData.editorActionDescription(
-                    actionData.inputDefinitions.mapValues { it.value.defaultValue } + actionNode.input,
+                    actionData.inputDefinitions.mapValues { it.value.defaultValue }
+                            + actionNode.input,
                     automationVariables
                 ),
                 level = 2,
+                problems = problems,
                 icon = actionData.icon,
                 onDragStart = {
                     onDragStart?.invoke(actionNode.id, rootPosition, it)

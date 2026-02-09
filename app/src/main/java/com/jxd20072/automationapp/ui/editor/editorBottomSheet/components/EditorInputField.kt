@@ -11,6 +11,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorProblem
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -38,6 +39,7 @@ inline fun <T> EditorInputField(
     currentValue: ConfigurationValue<*>,
     variablesList: Set<VariableDef>,
     inputDefinition: NodeInputDefinition<T>,
+    problem: EditorProblem?,
     noinline promptVariableSelect: ((variableId: String) -> Unit) -> Unit,
     crossinline onValueChanged: (ConfigurationValue<*>) -> Unit,
 ) where T : ConfigurationValue<*> {
@@ -52,21 +54,7 @@ inline fun <T> EditorInputField(
                     variablesList = variablesList,
                     displayName = inputDefinition.displayName,
                     description = inputDefinition.description,
-                    validate = {
-                        if (inputDefinition.defaultValue !is ConfigurationValue.VARIABLE) {
-                            val variable = variablesList.find { it.id == targetState.value }
-                            if (variable == null) {
-                                return@SettingsItem ValidationResult.Error("Variable not found")
-                            } else if (variable.value::class != inputDefinition.defaultValue::class) {
-                                return@SettingsItem ValidationResult.Error(
-                                    "Variable type must be ${
-                                        inputDefinition.defaultValue::class.simpleName
-                                    }"
-                                )
-                            }
-                        }
-                        return@SettingsItem ValidationResult.Success
-                    },
+                    validate = { problem?.validationResult ?: ValidationResult.Success },
                     onValueChanged = { onValueChanged(it) },
                     promptVariableSelect = promptVariableSelect
                 ) {
@@ -86,7 +74,7 @@ inline fun <T> EditorInputField(
                                 ?: inputDefinition.defaultValue,
                             displayName = inputDefinition.displayName,
                             description = inputDefinition.description,
-                            validate = inputDefinition.validate as ((ConfigurationValue.TEXT) -> ValidationResult)?,
+                            validate = { problem?.validationResult ?: ValidationResult.Success },
                             onValueChanged = { onValueChanged(it) },
                         ) {
                             VariableSwitchButton(R.drawable.round_data_object_24) {
@@ -101,7 +89,7 @@ inline fun <T> EditorInputField(
                                 ?: inputDefinition.defaultValue,
                             displayName = inputDefinition.displayName,
                             description = inputDefinition.description,
-                            validate = inputDefinition.validate as ((ConfigurationValue.BOOL) -> ValidationResult)?,
+                            validate = { problem?.validationResult ?: ValidationResult.Success },
                             onValueChanged = { onValueChanged(it) },
                         ) {
                             VariableSwitchButton(R.drawable.round_data_object_24) {
@@ -116,7 +104,7 @@ inline fun <T> EditorInputField(
                                 ?: inputDefinition.defaultValue,
                             displayName = inputDefinition.displayName,
                             description = inputDefinition.description,
-                            validate = inputDefinition.validate as ((ConfigurationValue.NUMBER) -> ValidationResult)?,
+                            validate = { problem?.validationResult ?: ValidationResult.Success },
                             onValueChanged = { onValueChanged(it) },
                         ) {
                             VariableSwitchButton(R.drawable.round_data_object_24) {

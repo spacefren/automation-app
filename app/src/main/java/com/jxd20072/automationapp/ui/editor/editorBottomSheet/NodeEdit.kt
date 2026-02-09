@@ -32,7 +32,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.components.EditorInputField
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
@@ -50,14 +49,15 @@ fun EditorNodeEditScreen(
     ),
 ) {
     val nodeEditScreenState by nodeEditViewModel.nodeEditScreenState.collectAsState()
-    val automationDraft by nodeEditViewModel.editingAutomationDraft.collectAsState(null)
+    val automationUiState by nodeEditViewModel.automationUiState.collectAsState(null)
 
     if (nodeEditScreenState !is NodeEditState.Success) return
-    if (automationDraft == null) return
+    if (automationUiState == null) return
 
-    val automation = (automationDraft as AutomationDef)
+    val automation = (automationUiState!!.automationDraft)
     val nodeData = (nodeEditScreenState as NodeEditState.Success).nodeData
     val nodeDef = (nodeEditScreenState as NodeEditState.Success).nodeDef
+    val problems = (nodeEditScreenState as NodeEditState.Success).nodeProblems
 
     AppScreen {
         Column(
@@ -90,18 +90,14 @@ fun EditorNodeEditScreen(
 
             // Spacing already handled below
             nodeData.inputDefinitions.forEach { (name, inputDef) ->
-                val currentValue = nodeDef.input[name]
-
-                if (currentValue == null) {
-                    nodeEditViewModel.setNodeConfig(name, inputDef.defaultValue)
-                    return@forEach
-                }
+                val currentValue = nodeDef.input[name] ?: inputDef.defaultValue
 
                 Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel1))
 
                 EditorInputField(
                     inputDefinition = inputDef,
                     variablesList = automation.variables,
+                    problem = problems.firstOrNull { it.originatingInput == name },
                     currentValue = currentValue,
                     onValueChanged = { nodeEditViewModel.setNodeConfig(name, it) },
                     promptVariableSelect = nodeEditViewModel::promptSelectVariable

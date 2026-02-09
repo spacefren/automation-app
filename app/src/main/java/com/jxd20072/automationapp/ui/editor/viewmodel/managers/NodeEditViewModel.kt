@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +26,7 @@ sealed interface NodeEditState {
         val nodeId: String,
         val nodeDef: NodeDef,
         val nodeData: NodeData,
+        val nodeProblems: Set<EditorProblem>,
     ) : NodeEditState
 }
 
@@ -45,18 +45,18 @@ class NodeEditViewModel @AssistedInject constructor(
     private val _nodeEditScreenState = MutableStateFlow<NodeEditState>(NodeEditState.Loading)
     val nodeEditScreenState = _nodeEditScreenState.asStateFlow()
 
-    val editingAutomationDraft = automationManager.automationUiState.map { automationUiState ->
-        if (automationUiState is AutomationUiState.Success) automationUiState.automationDraft
-        else null
+
+    val automationUiState = automationManager.automationUiState.map { automationUiState ->
+        automationUiState as? AutomationUiState.Success
     }
 
     init {
-        Log.d("APP_A", "CREATED")
         viewModelScope.launch {
-            editingAutomationDraft.collect { automationDraft ->
-                if (automationDraft == null) return@collect
+            automationUiState.collect { automationUiState ->
+                if (automationUiState !is AutomationUiState.Success) return@collect
 
-                val automationDraft = automationDraft
+                val automationDraft = automationUiState.automationDraft
+
                 val allNodes = automationDraft.topLevel +
                         automationDraft.topLevel.map { it.content }.flatten()
                 val nodeDef = allNodes.find { it.id == editingNodeId }
@@ -75,7 +75,10 @@ class NodeEditViewModel @AssistedInject constructor(
                             inputDefinitions = nodeData.inputDefinitions.filter { (name, inputDef) ->
                                 inputDef.shouldShow(nodeDef.input, automationDraft)
                             }
-                        )
+                        ),
+                        nodeProblems = automationUiState.problems
+                            .filter { it.nodeId == editingNodeId }
+                            .toSet()
                     )
                 }
             }

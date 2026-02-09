@@ -12,17 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
-import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorProblem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeTree(
     automationDraft: AutomationDef,
+    editorProblems: Set<EditorProblem>,
     draggingData: EditorNodeDragState,
     onNodeDrag: (
         id: String,
@@ -43,10 +41,7 @@ fun EditorNodeTree(
             automationDraft.topLevel,
             key = { _, item -> item.id }
         ) { index, node ->
-            var triggerData: NodeData? = null
-            if (node.nodeType == NodeType.TRIGGER) {
-                triggerData = triggerNodes[node.name]?.data ?: return@itemsIndexed
-            }
+
 
             EditorNodeDropTarget(
                 gap = 20.dp,
@@ -57,21 +52,8 @@ fun EditorNodeTree(
             )
 
             TopLevelNode(
-                type = when {
-                    node.nodeType == NodeType.TRIGGER -> TopLevelNodeType.TRIGGER
-                    node.nodeType == NodeType.FUNCTION && node.id == "0" -> TopLevelNodeType.ENTRYPOINT
-                    else -> TopLevelNodeType.FUNCTION
-                },
-                id = node.id,
-                displayName = when (node.nodeType) {
-                    NodeType.TRIGGER -> triggerData!!.editorActionDescription(
-                        node.input,
-                        automationDraft.variables
-                    )
-
-                    else -> listOf(NodeDescriptionPiece.Text(node.name))
-                },
-                content = node.content,
+                editorProblems = editorProblems,
+                nodeDef = node,
                 automationVariables = automationDraft.variables,
                 onDragStart = onNodeDrag,
                 draggingData = draggingData,

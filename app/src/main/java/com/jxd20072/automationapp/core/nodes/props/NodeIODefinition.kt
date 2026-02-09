@@ -3,11 +3,6 @@ package com.jxd20072.automationapp.core.nodes.props
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 
-sealed class ValidationResult {
-    data object Success : ValidationResult()
-    data class Error(val message: String) : ValidationResult()
-}
-
 data class NodeInputDefinition<T>(
     val displayName: String,
     val description: String,
@@ -27,3 +22,8 @@ data class NodeOutputDefinition(
     val description: String,
     val outputType: NodeOutputType
 )
+
+sealed class ValidationResult {
+    data object Success : ValidationResult()
+    data class Error(val message: String) : ValidationResult()
+}
