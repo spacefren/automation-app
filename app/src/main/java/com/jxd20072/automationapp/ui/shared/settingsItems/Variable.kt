@@ -33,7 +33,9 @@ fun SettingsItem(
     modifier: Modifier = Modifier,
     validate: ((ConfigurationValue.VARIABLE) -> ValidationResult)? = null,
     onValueChanged: (ConfigurationValue.VARIABLE) -> Unit,
-    promptVariableSelect: ((variableId: String) -> Unit) -> Unit,
+    promptVariableSelect: (
+            (variableId: String) -> Unit
+    ) -> Unit,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val selectedVariable = variablesList.find { it.id == item.value }

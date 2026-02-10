@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 @Immutable
 sealed interface NodeEditState {
@@ -106,8 +107,14 @@ class NodeEditViewModel @AssistedInject constructor(
         )
     }
 
-    fun promptSelectVariable(onSelect: (String) -> Unit) {
-        bottomSheetManager.navigateVariables {
+    fun promptSelectVariable(
+        variableType: KClass<ConfigurationValue<*>>?,
+        onSelect: (String) -> Unit,
+    ) {
+        bottomSheetManager.navigateVariables(
+            if (variableType != null) setOf(variableType)
+            else emptySet()
+        ) {
             onSelect(it)
             bottomSheetManager.navigateBack()
         }

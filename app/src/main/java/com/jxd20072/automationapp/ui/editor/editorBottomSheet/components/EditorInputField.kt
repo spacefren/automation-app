@@ -16,6 +16,7 @@ import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
+import kotlin.reflect.KClass
 
 @Composable
 fun VariableSwitchButton(
@@ -40,7 +41,10 @@ inline fun <T> EditorInputField(
     variablesList: Set<VariableDef>,
     inputDefinition: NodeInputDefinition<T>,
     problem: EditorProblem?,
-    noinline promptVariableSelect: ((variableId: String) -> Unit) -> Unit,
+    noinline promptVariableSelect: (
+        variableType: KClass<ConfigurationValue<*>>?,
+        (variableId: String) -> Unit
+    ) -> Unit,
     crossinline onValueChanged: (ConfigurationValue<*>) -> Unit,
 ) where T : ConfigurationValue<*> {
     AnimatedContent(
@@ -56,7 +60,13 @@ inline fun <T> EditorInputField(
                     description = inputDefinition.description,
                     validate = { problem?.validationResult ?: ValidationResult.Success },
                     onValueChanged = { onValueChanged(it) },
-                    promptVariableSelect = promptVariableSelect
+                    promptVariableSelect = {
+                        promptVariableSelect(
+                            (if (inputDefinition.defaultValue is ConfigurationValue.VARIABLE) null
+                            else inputDefinition.defaultValue::class) as KClass<ConfigurationValue<*>>?,
+                            it
+                        )
+                    }
                 ) {
                     if (inputDefinition.defaultValue !is ConfigurationValue.VARIABLE) {
                         VariableSwitchButton(R.drawable.round_text_24) {

@@ -83,6 +83,7 @@ fun EditorBottomSheet(
                 }
                 entry<EditorBottomSheetScreen.Variables> {
                     EditorVariablesScreen(
+                        initialTypeFilters = it.initialTypeFilters,
                         onVariableSelect = it.onVariableSelect
                     )
                 }

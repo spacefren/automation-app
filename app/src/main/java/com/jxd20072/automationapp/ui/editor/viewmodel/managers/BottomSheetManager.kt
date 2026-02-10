@@ -2,11 +2,13 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
+import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.reflect.KClass
 
 sealed class EditorBottomSheetScreen {
     data object Closed : NavKey
@@ -20,6 +22,7 @@ sealed class EditorBottomSheetScreen {
     ) : NavKey
 
     data class Variables(
+        val initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
         val onVariableSelect: ((variableId: String) -> Unit)? = null
     ) : NavKey
 
@@ -86,8 +89,16 @@ class BottomSheetManager @Inject constructor() {
         navigateTo(EditorBottomSheetScreen.NodeEdit(nodeID))
     }
 
-    fun navigateVariables(onSelectVariable: ((variableId: String) -> Unit)? = null) {
-        navigateTo(EditorBottomSheetScreen.Variables(onSelectVariable))
+    fun navigateVariables(
+        initialFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+        onSelectVariable: ((variableId: String) -> Unit)? = null
+    ) {
+        navigateTo(
+            EditorBottomSheetScreen.Variables(
+                initialTypeFilters = initialFilters,
+                onVariableSelect = onSelectVariable
+            )
+        )
     }
 
     fun openLogs() {

@@ -316,11 +316,15 @@ class AutomationManager @Inject constructor(
         }
     }
 
-    fun findVariable(id: String): VariableDef? {
+    fun getVariables(): Set<VariableDef>? {
         val state = automationUiState.value
         if (state !is AutomationUiState.Success) return null
 
-        return state.automationDraft.variables.find { it.id == id }
+        return state.automationDraft.variables
+    }
+
+    fun findVariable(id: String): VariableDef? {
+        return getVariables()?.find { it.id == id }
     }
 
     fun addVariable(variable: VariableDef) {

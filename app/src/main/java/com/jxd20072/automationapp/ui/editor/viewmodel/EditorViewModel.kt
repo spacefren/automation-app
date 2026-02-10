@@ -64,8 +64,4 @@ class EditorViewModel @Inject constructor(
     fun startEditNode(nodeId: String) {
         bottomSheetManager.navigateNodeEdit(nodeId)
     }
-
-    fun promptSelectVariable(onSelect: (selected: String) -> Unit) {
-        bottomSheetManager.navigateVariables(onSelect)
-    }
 }

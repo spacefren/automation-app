@@ -32,7 +32,6 @@ data class CategoryListEntry(
 
 @Immutable
 data class NodeSelectState(
-    val isCollapsed: Boolean = false,
     val nodeSearchQuery: String = "",
     val nodes: List<CategoryListEntry> = emptyList(),
 )
@@ -142,14 +141,6 @@ class NodeSelectViewModel @AssistedInject constructor(
             state.copy(
                 nodeSearchQuery = query,
                 nodes = getFilteredNodes(query)
-            )
-        }
-    }
-
-    fun setPageCollapsed(collapsed: Boolean) {
-        _nodeSelectStateState.update { state ->
-            state.copy(
-                isCollapsed = collapsed
             )
         }
     }

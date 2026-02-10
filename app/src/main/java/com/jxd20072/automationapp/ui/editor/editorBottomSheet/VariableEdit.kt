@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -49,7 +48,6 @@ fun VariableEditScreen(
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
             modifier = Modifier
-                .imePadding()
                 .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
                 .windowInsetsPadding(WindowInsets.navigationBars)
         ) {

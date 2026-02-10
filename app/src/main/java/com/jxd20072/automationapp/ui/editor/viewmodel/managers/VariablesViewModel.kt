@@ -1,5 +1,6 @@
 package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
+import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,16 +17,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.xdrop.fuzzywuzzy.FuzzySearch
+import kotlin.reflect.KClass
 
 @Immutable
 data class VariablesScreenState(
     val searchQuery: String = "",
     val isSelecting: Boolean = false,
+    val variableTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
     val filteredVariables: Set<VariableDef> = emptySet()
 )
 
 @HiltViewModel(assistedFactory = VariablesViewModel.Factory::class)
 class VariablesViewModel @AssistedInject constructor(
+    @Assisted private val initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
     @Assisted private val onVariableSelected: ((variableId: String) -> Unit)? = null,
     private val automationManager: AutomationManager,
     private val bottomSheetManager: BottomSheetManager
@@ -33,11 +37,16 @@ class VariablesViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(onVariableSelected: ((variableId: String) -> Unit)? = null): VariablesViewModel
+        fun create(
+            initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+            onVariableSelected: ((variableId: String) -> Unit)? = null
+        ): VariablesViewModel
     }
 
     private val _variablesUiState = MutableStateFlow(
-        VariablesScreenState()
+        VariablesScreenState(
+            variableTypeFilters = initialTypeFilters
+        )
     )
     val variablesUiState = _variablesUiState.asStateFlow()
 
@@ -54,7 +63,8 @@ class VariablesViewModel @AssistedInject constructor(
                         uiState.copy(
                             filteredVariables = getFilteredVariables(
                                 variables,
-                                uiState.searchQuery
+                                uiState.searchQuery,
+                                uiState.variableTypeFilters
                             ),
                             isSelecting = onVariableSelected != null
                         )
@@ -65,25 +75,80 @@ class VariablesViewModel @AssistedInject constructor(
 
     fun getFilteredVariables(
         allVariables: Set<VariableDef>,
-        searchQuery: String
+        searchQuery: String,
+        typeFilters: Set<KClass<ConfigurationValue<*>>>,
     ): Set<VariableDef> {
-        return if (searchQuery.isBlank()) {
-            allVariables
-        } else {
-            allVariables
-                .filter { FuzzySearch.partialRatio(searchQuery, it.name.lowercase()) > 50 }
-                .toSet()
-        } ?: emptySet()
+        return allVariables
+            .filter { variable ->
+                if (searchQuery.isBlank()) true
+                else FuzzySearch.partialRatio(searchQuery, variable.name.lowercase()) > 50
+            }
+            .filter { variable ->
+                if (typeFilters.isEmpty()) return@filter true
+                else return@filter typeFilters.any {
+                    Log.d("APP_A", "getFilteredVariables: ${it}, ${variable.value::class}")
+                    it == variable.value::class
+                }
+            }
+            .toSet()
     }
 
     fun changeSearchQuery(query: String) {
-        val allVariables = (automationManager.automationUiState.value as? AutomationUiState.Success)
-            ?.automationDraft?.variables ?: return
+        val allVariables = automationManager.getVariables() ?: return
 
         _variablesUiState.update { state ->
             state.copy(
                 searchQuery = query,
-                filteredVariables = getFilteredVariables(allVariables, query)
+                filteredVariables = getFilteredVariables(
+                    allVariables,
+                    query,
+                    state.variableTypeFilters
+                )
+            )
+        }
+    }
+
+    fun addVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
+        val allVariables = automationManager.getVariables() ?: return
+
+        _variablesUiState.update { state ->
+            val newFilters = state.variableTypeFilters + configType
+
+            state.copy(
+                variableTypeFilters = newFilters,
+                filteredVariables = getFilteredVariables(
+                    allVariables,
+                    state.searchQuery,
+                    newFilters
+                )
+            )
+        }
+    }
+
+    fun removeVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
+        val allVariables = automationManager.getVariables() ?: return
+
+        _variablesUiState.update { state ->
+            val newFilters = state.variableTypeFilters.filter { it != configType }.toSet()
+
+            state.copy(
+                variableTypeFilters = newFilters,
+                filteredVariables = getFilteredVariables(
+                    allVariables,
+                    state.searchQuery,
+                    newFilters
+                )
+            )
+        }
+    }
+
+    fun setVariableTypeFilters(filters: Set<KClass<ConfigurationValue<*>>>) {
+        val allVariables = automationManager.getVariables() ?: return
+
+        _variablesUiState.update { state ->
+            state.copy(
+                variableTypeFilters = filters,
+                filteredVariables = getFilteredVariables(allVariables, state.searchQuery, filters)
             )
         }
     }

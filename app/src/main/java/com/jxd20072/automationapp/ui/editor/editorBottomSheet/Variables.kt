@@ -44,6 +44,7 @@ import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
+import kotlin.reflect.KClass
 
 @Composable
 fun EditorVariableEntry(
@@ -142,9 +143,10 @@ fun EditorVariableEntry(
 
 @Composable
 fun EditorVariablesScreen(
+    initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
     onVariableSelect: ((variableId: String) -> Unit)? = null,
     variablesViewModel: VariablesViewModel = hiltViewModel<VariablesViewModel, VariablesViewModel.Factory>(
-        creationCallback = { factory -> factory.create(onVariableSelect) },
+        creationCallback = { factory -> factory.create(initialTypeFilters, onVariableSelect) },
     ),
 ) {
     val variablesScreenState by variablesViewModel.variablesUiState.collectAsState()
