@@ -16,6 +16,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.nodes.actions.variables.getConfigValueName
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
@@ -33,10 +34,17 @@ fun getVariableDefaultValue(name: String): ConfigurationValue<*>? {
 
 @Composable
 fun VariableEditScreen(
+    editorSession: EditorSession,
     variableId: String,
     isCreating: Boolean,
     variableEditViewModel: VariableEditViewModel = hiltViewModel<VariableEditViewModel, VariableEditViewModel.Factory>(
-        creationCallback = { factory -> factory.create(variableId, isCreating) }
+        creationCallback = { factory ->
+            factory.create(
+                editorSession = editorSession,
+                variableId = variableId,
+                isCreating = isCreating
+            )
+        }
     )
 ) {
     val variableEditUiState by variableEditViewModel.variableUiState.collectAsState()

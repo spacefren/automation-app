@@ -28,12 +28,16 @@ sealed interface VariableEditUiState {
 class VariableEditViewModel @AssistedInject constructor(
     @Assisted private val variableId: String,
     @Assisted private val isCreating: Boolean,
-    private val automationManager: AutomationManager
+    @Assisted private val editorSession: EditorSession
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(variableId: String, isCreating: Boolean): VariableEditViewModel
+        fun create(
+            editorSession: EditorSession,
+            variableId: String,
+            isCreating: Boolean
+        ): VariableEditViewModel
     }
 
     private val _variableEditUiState =
@@ -42,7 +46,7 @@ class VariableEditViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            automationManager.automationUiState
+            editorSession.automationUiState
                 .map { it as? AutomationUiState.Success }
                 .map { it?.automationDraft?.variables }
                 .distinctUntilChanged()
@@ -66,10 +70,10 @@ class VariableEditViewModel @AssistedInject constructor(
     }
 
     fun changeName(newName: String) {
-        automationManager.renameVariable(variableId, newName)
+        editorSession.renameVariable(variableId, newName)
     }
 
     fun changeValue(newValue: ConfigurationValue<*>) {
-        automationManager.changeVariableValue(variableId, newValue)
+        editorSession.changeVariableValue(variableId, newValue)
     }
 }

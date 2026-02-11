@@ -7,8 +7,6 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Immutable
 sealed interface EditorNodeDragState {
@@ -34,9 +32,8 @@ sealed interface EditorNodeDropData {
     data object Cancelling : EditorNodeDropData
 }
 
-@Singleton
-class DragManager @Inject constructor(
-    private val automationManager: AutomationManager,
+class DragManager(
+    private val editorSession: EditorSession,
 ) {
     private val _editorNodeDragState =
         MutableStateFlow<EditorNodeDragState>(EditorNodeDragState.NotDragging)
@@ -48,14 +45,14 @@ class DragManager @Inject constructor(
                 nodePosition = nodePosition,
                 inputOffset = pressedPosition - nodePosition,
                 isCreatingNode = true,
-                draggingNode = automationManager.createNodeDef(nodeData),
+                draggingNode = editorSession.createNodeDef(nodeData),
                 dropData = EditorNodeDropData.NotDropping
             )
         }
     }
 
     fun dragNode(id: String, nodePosition: Offset, pressedPosition: Offset) {
-        val nodeDef = automationManager.findNode(id) ?: return
+        val nodeDef = editorSession.findNode(id) ?: return
 
         _editorNodeDragState.update {
             EditorNodeDragState.Dragging(
@@ -75,7 +72,7 @@ class DragManager @Inject constructor(
                 || state.dropData !is EditorNodeDropData.Moving
             ) return@update EditorNodeDragState.NotDragging
 
-            automationManager.addNode(
+            editorSession.addNode(
                 state.draggingNode,
                 state.dropData.parentId,
                 state.dropData.targetIndex
@@ -94,7 +91,7 @@ class DragManager @Inject constructor(
 
         when {
             state.dropData is EditorNodeDropData.Moving -> {
-                automationManager.moveNode(
+                editorSession.moveNode(
                     state.draggingNode.id,
                     state.dropData.parentId,
                     state.dropData.targetIndex
@@ -102,7 +99,7 @@ class DragManager @Inject constructor(
             }
 
             state.dropData is EditorNodeDropData.Deleting -> {
-                automationManager.deleteNode(state.draggingNode.id)
+                editorSession.deleteNode(state.draggingNode.id)
             }
         }
         _editorNodeDragState.update {

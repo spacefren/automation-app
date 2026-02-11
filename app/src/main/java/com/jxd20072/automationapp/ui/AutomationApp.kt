@@ -10,7 +10,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.jxd20072.automationapp.ui.editor.AutomationEditor
-import com.jxd20072.automationapp.ui.editor.viewmodel.EditorViewModel
 import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
 import com.jxd20072.automationapp.ui.settings.SettingsScreen
@@ -28,13 +27,14 @@ data object Home : NavKey
 data object Settings : NavKey
 
 @Serializable
-data object Editor : NavKey
+data class Editor(
+    val automationId: String,
+) : NavKey
 
 @Composable
 fun AutomationApp() {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
-    val editorViewModel: EditorViewModel = hiltViewModel()
 
     val backStack = rememberNavBackStack(Home)
 
@@ -52,8 +52,7 @@ fun AutomationApp() {
                     openSettings = { backStack.add(Settings) },
                     runAutomation = {},
                     editAutomation = { id ->
-                        editorViewModel.automationManager.loadAutomation(id)
-                        backStack.add(Editor)
+                        backStack.add(Editor(id))
                     },
                 )
             }
@@ -65,8 +64,8 @@ fun AutomationApp() {
             }
             entry<Editor> {
                 AutomationEditor(
-                    editorViewModel = editorViewModel,
                     settingsViewModel = settingsViewModel,
+                    automationId = it.automationId,
                     returnHome = { if (backStack.size > 1) backStack.removeLastOrNull() }
                 )
             }

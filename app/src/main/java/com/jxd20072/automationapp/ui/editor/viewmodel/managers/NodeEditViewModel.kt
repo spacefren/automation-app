@@ -35,21 +35,20 @@ sealed interface NodeEditState {
 
 @HiltViewModel(assistedFactory = NodeEditViewModel.Factory::class)
 class NodeEditViewModel @AssistedInject constructor(
+    @Assisted val editorSession: EditorSession,
     @Assisted val editingNodeId: String,
     private val permissionsRepository: PermissionsRepository,
-    private val automationManager: AutomationManager,
-    private val bottomSheetManager: BottomSheetManager,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
-        fun create(editingNodeId: String): NodeEditViewModel
+        fun create(editingNodeId: String, editorSession: EditorSession): NodeEditViewModel
     }
 
     private val _nodeEditScreenState = MutableStateFlow<NodeEditState>(NodeEditState.Loading)
     val nodeEditScreenState = _nodeEditScreenState.asStateFlow()
 
-    val automationUiState = automationManager.automationUiState.map { automationUiState ->
+    val automationUiState = editorSession.automationUiState.map { automationUiState ->
         automationUiState as? AutomationUiState.Success
     }
 
@@ -94,9 +93,9 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun resetDefaultConfig() {
-        val nodeDef = automationManager.findNode(editingNodeId) ?: return
+        val nodeDef = editorSession.findNode(editingNodeId) ?: return
 
-        automationManager.editNode(
+        editorSession.editNode(
             nodeDef.id, nodeDef.copy(
                 input = emptyMap(),
                 output = emptyMap()
@@ -105,9 +104,9 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun setNodeConfig(name: String, config: ConfigurationValue<*>) {
-        val nodeDef = automationManager.findNode(editingNodeId) ?: return
+        val nodeDef = editorSession.findNode(editingNodeId) ?: return
 
-        automationManager.editNode(
+        editorSession.editNode(
             nodeDef.id, nodeDef.copy(
                 input = nodeDef.input + mapOf(name to config)
             )
@@ -118,16 +117,16 @@ class NodeEditViewModel @AssistedInject constructor(
         variableType: KClass<ConfigurationValue<*>>?,
         onSelect: (String) -> Unit,
     ) {
-        bottomSheetManager.navigateVariables(
+        editorSession.bottomSheetManager.navigateVariables(
             if (variableType != null) setOf(variableType)
             else emptySet()
         ) {
             onSelect(it)
-            bottomSheetManager.navigateBack()
+            editorSession.bottomSheetManager.navigateBack()
         }
     }
 
     fun onPermissionGranted() {
-        automationManager.onPermissionUpdate()
+        editorSession.onPermissionUpdate()
     }
 }

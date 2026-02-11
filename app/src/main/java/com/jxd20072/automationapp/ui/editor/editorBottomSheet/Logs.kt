@@ -31,6 +31,7 @@ import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.LogLevel
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.LogsViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.IconButton
@@ -100,7 +101,10 @@ fun LogEntry(
 
 @Composable
 fun EditorLogsScreen(
-    logsViewModel: LogsViewModel = hiltViewModel()
+    editorSession: EditorSession,
+    logsViewModel: LogsViewModel = hiltViewModel<LogsViewModel, LogsViewModel.Factory>(
+        creationCallback = { factory -> factory.create(editorSession) }
+    )
 ) {
     val logsScreenState by logsViewModel.logsScreenState.collectAsState()
     val filteredLogs by logsViewModel.filteredLogs.collectAsState(emptyList())

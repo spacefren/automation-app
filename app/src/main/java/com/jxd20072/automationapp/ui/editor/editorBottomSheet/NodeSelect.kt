@@ -51,6 +51,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcons
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.CategoryListEntry
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
@@ -216,9 +217,10 @@ fun NodeCategoryContainer(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorNodeSelectScreen(
+    editorSession: EditorSession,
     screenType: NodeSelectScreenType,
     nodeSelectViewmodel: NodeSelectViewModel = hiltViewModel<NodeSelectViewModel, NodeSelectViewModel.Factory>(
-        creationCallback = { factory -> factory.create(screenType) }
+        creationCallback = { factory -> factory.create(screenType, editorSession) }
     ),
     autoOpenKeyboard: Boolean,
 ) {

@@ -16,9 +16,13 @@ import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.getProblems
+import com.jxd20072.automationapp.utils.TimeManager
 import com.jxd20072.automationapp.utils.findAndReplace
 import com.jxd20072.automationapp.utils.findAndTransform
 import com.jxd20072.automationapp.utils.insertAt
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -29,8 +33,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Immutable
 sealed interface AutomationUiState {
@@ -43,15 +45,51 @@ sealed interface AutomationUiState {
     ) : AutomationUiState
 }
 
-@Singleton
-class AutomationManager @Inject constructor(
+class EditorSession @AssistedInject constructor(
+    @Assisted private val automationId: String,
+    @Assisted private val sessionScope: CoroutineScope,
     private val automationsRepository: AutomationsRepository,
     private val settingsRepository: AppSettingsRepository,
     private val permissionsRepository: PermissionsRepository,
     private val automationEngine: AutomationEngine,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(automationId: String, sessionScope: CoroutineScope): EditorSession
+    }
+
+    val dragManager = DragManager(this)
+    val bottomSheetManager = BottomSheetManager()
+    private val timeManager = TimeManager(sessionScope, 10000L)
+
+    val currentTime = timeManager.currentTime
+
     private val _automationUiState = MutableStateFlow<AutomationUiState>(AutomationUiState.Loading)
     val automationUiState = _automationUiState.asStateFlow()
+
+    init {
+        loadAutomation(automationId)
+    }
+
+    fun loadAutomation(id: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val automation = automationsRepository.getAutomationDef(id)
+            val automationData = automationsRepository.getAutomationMapEntry(id)
+            if (automation != null && automationData != null) {
+                _automationUiState.update {
+                    AutomationUiState.Success(
+                        automationId = id,
+                        automationData = automationData,
+                        automationDraft = automation.copy(),
+                        problems = getProblems(
+                            automation,
+                            permissionsRepository.getAllPermissions()
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     suspend fun observeFileChanges() {
         automationsRepository.automationsDataFlow.collect { automationData ->
@@ -106,26 +144,6 @@ class AutomationManager @Inject constructor(
         return if (uiState is AutomationUiState.Success) {
             automationEngine.executeAutomation(uiState.automationId)
         } else null
-    }
-
-    fun loadAutomation(id: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            val automation = automationsRepository.getAutomationDef(id)
-            val automationData = automationsRepository.getAutomationMapEntry(id)
-            if (automation != null && automationData != null) {
-                _automationUiState.update {
-                    AutomationUiState.Success(
-                        automationId = id,
-                        automationData = automationData,
-                        automationDraft = automation.copy(),
-                        problems = getProblems(
-                            automation,
-                            permissionsRepository.getAllPermissions()
-                        )
-                    )
-                }
-            }
-        }
     }
 
     fun trySaveAutomation(force: Boolean = false) {

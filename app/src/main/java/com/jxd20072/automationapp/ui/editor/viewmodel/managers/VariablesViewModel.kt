@@ -31,13 +31,13 @@ data class VariablesScreenState(
 class VariablesViewModel @AssistedInject constructor(
     @Assisted private val initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
     @Assisted private val onVariableSelected: ((variableId: String) -> Unit)? = null,
-    private val automationManager: AutomationManager,
-    private val bottomSheetManager: BottomSheetManager
+    @Assisted private val editorSession: EditorSession,
 ) : ViewModel() {
 
     @AssistedFactory
     interface Factory {
         fun create(
+            editorSession: EditorSession,
             initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
             onVariableSelected: ((variableId: String) -> Unit)? = null
         ): VariablesViewModel
@@ -52,7 +52,7 @@ class VariablesViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            automationManager.automationUiState
+            editorSession.automationUiState
                 .map { it as? AutomationUiState.Success }
                 .map { it?.automationDraft?.variables }
                 .distinctUntilChanged()
@@ -94,7 +94,7 @@ class VariablesViewModel @AssistedInject constructor(
     }
 
     fun changeSearchQuery(query: String) {
-        val allVariables = automationManager.getVariables() ?: return
+        val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
             state.copy(
@@ -109,7 +109,7 @@ class VariablesViewModel @AssistedInject constructor(
     }
 
     fun addVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
-        val allVariables = automationManager.getVariables() ?: return
+        val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
             val newFilters = state.variableTypeFilters + configType
@@ -126,7 +126,7 @@ class VariablesViewModel @AssistedInject constructor(
     }
 
     fun removeVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
-        val allVariables = automationManager.getVariables() ?: return
+        val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
             val newFilters = state.variableTypeFilters.filter { it != configType }.toSet()
@@ -143,7 +143,7 @@ class VariablesViewModel @AssistedInject constructor(
     }
 
     fun setVariableTypeFilters(filters: Set<KClass<ConfigurationValue<*>>>) {
-        val allVariables = automationManager.getVariables() ?: return
+        val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
             state.copy(
@@ -158,8 +158,8 @@ class VariablesViewModel @AssistedInject constructor(
             name = "Unnamed variable",
             value = ConfigurationValue.NUMBER("0"),
         )
-        automationManager.addVariable(newVariable)
-        bottomSheetManager.navigateTo(
+        editorSession.addVariable(newVariable)
+        editorSession.bottomSheetManager.navigateTo(
             EditorBottomSheetScreen.VariableEdit(newVariable.id, true)
         )
     }
@@ -169,12 +169,12 @@ class VariablesViewModel @AssistedInject constructor(
             onVariableSelected(variableId)
             return
         }
-        bottomSheetManager.navigateTo(
+        editorSession.bottomSheetManager.navigateTo(
             EditorBottomSheetScreen.VariableEdit(variableId, false)
         )
     }
 
     fun deleteVariable(variableId: String) {
-        automationManager.deleteVariable(variableId)
+        editorSession.deleteVariable(variableId)
     }
 }

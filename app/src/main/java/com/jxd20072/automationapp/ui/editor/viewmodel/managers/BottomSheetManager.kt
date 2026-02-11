@@ -6,8 +6,6 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 sealed class EditorBottomSheetScreen {
@@ -40,8 +38,7 @@ data class EditorBottomSheetState(
     val backStack: List<NavKey> = listOf(EditorBottomSheetScreen.Closed)
 )
 
-@Singleton
-class BottomSheetManager @Inject constructor() {
+class BottomSheetManager {
     private val _bottomSheetState = MutableStateFlow(
         EditorBottomSheetState()
     )

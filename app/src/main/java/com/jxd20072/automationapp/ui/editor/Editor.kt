@@ -27,16 +27,21 @@ import com.jxd20072.automationapp.ui.shared.components.AppScreen
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AutomationEditor(
-    editorViewModel: EditorViewModel = hiltViewModel(),
+    automationId: String,
+    editorViewModel: EditorViewModel = hiltViewModel<EditorViewModel, EditorViewModel.Factory>(
+        creationCallback = { factory -> factory.create(automationId) }
+    ),
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     returnHome: (saveChanges: Boolean) -> Unit
 ) {
-    val currentTime by editorViewModel.currentTime.collectAsState()
+    val editorSession = editorViewModel.editorSession
+
+    val currentTime by editorSession.currentTime.collectAsState()
     val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
 
-    val automationManager = editorViewModel.automationManager
-    val bottomSheetManager = editorViewModel.bottomSheetManager
-    val dragManager = editorViewModel.dragManager
+    val automationManager = editorViewModel.editorSession
+    val bottomSheetManager = editorSession.bottomSheetManager
+    val dragManager = editorSession.dragManager
 
     val automationState by automationManager.automationUiState.collectAsState(AutomationUiState.Loading)
     val draggingData by dragManager.editorNodeDragState.collectAsState()
@@ -103,6 +108,7 @@ fun AutomationEditor(
                     }
                 )
                 EditorBottomSheet(
+                    editorSession = editorSession,
                     onDismiss = bottomSheetManager::closeBottomSheet,
                     navigateBack = bottomSheetManager::navigateBack,
                     bottomSheetState = bottomSheetState,

@@ -3,65 +3,66 @@ package com.jxd20072.automationapp.ui.editor.viewmodel
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.AutomationManager
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.BottomSheetManager
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.DragManager
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
-import com.jxd20072.automationapp.utils.TimeManager
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EditorViewModel @Inject constructor(
-    val automationManager: AutomationManager,
-    val bottomSheetManager: BottomSheetManager,
-    val dragManager: DragManager,
+@HiltViewModel(assistedFactory = EditorViewModel.Factory::class)
+class EditorViewModel @AssistedInject constructor(
+    @Assisted val automationId: String,
+    private val sessionFactory: EditorSession.Factory
 ) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(automationId: String): EditorViewModel
+    }
 
-    private val timeManager = TimeManager(viewModelScope, 10000L)
-    val currentTime = timeManager.currentTime
+    val editorSession = sessionFactory.create(automationId, viewModelScope)
 
     init {
         viewModelScope.launch {
-            async { automationManager.observeFileChanges() }
-            async { automationManager.observeDraftChanges() }
-            async { automationManager.observeProblems() }
+            async { editorSession.observeFileChanges() }
+            async { editorSession.observeDraftChanges() }
+            async { editorSession.observeProblems() }
         }
     }
 
     fun runAutomation() {
         viewModelScope.launch {
-            automationManager.executeAutomation()
+            editorSession.executeAutomation()
         }
     }
 
     fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
-        dragManager.dragNode(id, nodePosition, pressedPosition)
-        bottomSheetManager.navigateNodeDrop()
+        editorSession.dragManager.dragNode(id, nodePosition, pressedPosition)
+        editorSession.bottomSheetManager.navigateNodeDrop()
     }
 
     fun onNodeDrop() {
-        bottomSheetManager.closeBottomSheet()
-        val dragData = dragManager.editorNodeDragState.value
+        editorSession.bottomSheetManager.closeBottomSheet()
+        val dragData = editorSession.dragManager.editorNodeDragState.value
 
         if (dragData !is EditorNodeDragState.Dragging) return
 
         if (dragData.isCreatingNode) {
-            val nodeID = dragManager.dropCreateNode()
+            val nodeID = editorSession.dragManager.dropCreateNode()
             if (nodeID != null) {
-                bottomSheetManager.navigateNodeEdit(nodeID)
+                editorSession.bottomSheetManager.navigateNodeEdit(nodeID)
             } else {
-                bottomSheetManager.closeBottomSheet()
+                editorSession.bottomSheetManager.closeBottomSheet()
             }
         } else {
-            dragManager.dropNode()
-            bottomSheetManager.closeBottomSheet()
+            editorSession.dragManager.dropNode()
+            editorSession.bottomSheetManager.closeBottomSheet()
         }
     }
 
     fun startEditNode(nodeId: String) {
-        bottomSheetManager.navigateNodeEdit(nodeId)
+        editorSession.bottomSheetManager.navigateNodeEdit(nodeId)
     }
 }

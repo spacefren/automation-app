@@ -33,6 +33,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.components.EditorInputField
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
@@ -43,9 +44,10 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun EditorNodeEditScreen(
+    editorSession: EditorSession,
     nodeId: String,
     nodeEditViewModel: NodeEditViewModel = hiltViewModel<NodeEditViewModel, NodeEditViewModel.Factory>(
-        creationCallback = { factory -> factory.create(nodeId) },
+        creationCallback = { factory -> factory.create(nodeId, editorSession) },
     ),
 ) {
     val nodeEditScreenState by nodeEditViewModel.nodeEditScreenState.collectAsState()

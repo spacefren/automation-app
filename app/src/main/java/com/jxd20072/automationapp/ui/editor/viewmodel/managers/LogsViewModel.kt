@@ -3,6 +3,9 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.jxd20072.automationapp.core.data.LogLevel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +14,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import me.xdrop.fuzzywuzzy.FuzzySearch
-import javax.inject.Inject
 
 @Immutable
 data class LogsScreenState(
@@ -19,15 +21,20 @@ data class LogsScreenState(
     val filterLevel: LogLevel? = null,
 )
 
-@HiltViewModel
-class LogsViewModel @Inject constructor(
-    private val automationManager: AutomationManager,
+@HiltViewModel(assistedFactory = LogsViewModel.Factory::class)
+class LogsViewModel @AssistedInject constructor(
+    @Assisted private val editorSession: EditorSession,
 ) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(editorSession: EditorSession): LogsViewModel
+    }
+
     private val _logsScreenState = MutableStateFlow(LogsScreenState())
     val logsScreenState = _logsScreenState.asStateFlow()
 
     val filteredLogs = combine(
-        automationManager.automationUiState
+        editorSession.automationUiState
             .map { if (it is AutomationUiState.Success) it.automationData.logsList else null }
             .distinctUntilChanged(),
         logsScreenState) { logs, state ->
@@ -55,6 +62,6 @@ class LogsViewModel @Inject constructor(
     }
 
     fun deleteLog(id: String) {
-        automationManager.deleteLog(id)
+        editorSession.deleteLog(id)
     }
 }

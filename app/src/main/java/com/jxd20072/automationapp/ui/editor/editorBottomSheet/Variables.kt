@@ -36,6 +36,7 @@ import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.VariableDef
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
@@ -143,10 +144,17 @@ fun EditorVariableEntry(
 
 @Composable
 fun EditorVariablesScreen(
+    editorSession: EditorSession,
     initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
     onVariableSelect: ((variableId: String) -> Unit)? = null,
     variablesViewModel: VariablesViewModel = hiltViewModel<VariablesViewModel, VariablesViewModel.Factory>(
-        creationCallback = { factory -> factory.create(initialTypeFilters, onVariableSelect) },
+        creationCallback = { factory ->
+            factory.create(
+                editorSession = editorSession,
+                initialTypeFilters = initialTypeFilters,
+                onVariableSelected = onVariableSelect,
+            )
+        },
     ),
 ) {
     val variablesScreenState by variablesViewModel.variablesUiState.collectAsState()

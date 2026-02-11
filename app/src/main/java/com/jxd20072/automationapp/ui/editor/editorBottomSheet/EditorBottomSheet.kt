@@ -15,6 +15,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheet
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorBottomSheetState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 import com.jxd20072.automationapp.ui.shared.navSheetPopPredictiveTransitionSpec
@@ -25,6 +26,7 @@ import com.jxd20072.automationapp.ui.shared.sizeAnimSpec
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditorBottomSheet(
+    editorSession: EditorSession,
     onDismiss: () -> Unit,
     navigateBack: () -> Unit,
     bottomSheetState: EditorBottomSheetState,
@@ -72,29 +74,35 @@ fun EditorBottomSheet(
                 }
                 entry<EditorBottomSheetScreen.NodeSelect> {
                     EditorNodeSelectScreen(
+                        editorSession = editorSession,
                         screenType = it.screenType,
                         autoOpenKeyboard = autoOpenKeyboard,
                     )
                 }
                 entry<EditorBottomSheetScreen.NodeEdit> {
                     EditorNodeEditScreen(
+                        editorSession = editorSession,
                         nodeId = it.nodeID
                     )
                 }
                 entry<EditorBottomSheetScreen.Variables> {
                     EditorVariablesScreen(
+                        editorSession = editorSession,
                         initialTypeFilters = it.initialTypeFilters,
                         onVariableSelect = it.onVariableSelect
                     )
                 }
                 entry<EditorBottomSheetScreen.VariableEdit> {
                     VariableEditScreen(
+                        editorSession = editorSession,
                         variableId = it.variableId,
                         isCreating = it.isCreating
                     )
                 }
                 entry<EditorBottomSheetScreen.Logs> {
-                    EditorLogsScreen()
+                    EditorLogsScreen(
+                        editorSession = editorSession
+                    )
                 }
             }
         )

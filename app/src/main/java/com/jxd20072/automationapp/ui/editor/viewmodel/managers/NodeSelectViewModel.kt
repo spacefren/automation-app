@@ -38,14 +38,15 @@ data class NodeSelectState(
 
 @HiltViewModel(assistedFactory = NodeSelectViewModel.Factory::class)
 class NodeSelectViewModel @AssistedInject constructor(
+    @Assisted val editorSession: EditorSession,
     @Assisted val screenType: NodeSelectScreenType,
-    val bottomSheetManager: BottomSheetManager,
-    val dragManager: DragManager,
-    val automationManager: AutomationManager
 ) : ViewModel() {
     @AssistedFactory
     interface Factory {
-        fun create(screenType: NodeSelectScreenType): NodeSelectViewModel
+        fun create(
+            screenType: NodeSelectScreenType,
+            editorSession: EditorSession
+        ): NodeSelectViewModel
     }
 
     private val allNodes = getAllNodes()
@@ -124,14 +125,14 @@ class NodeSelectViewModel @AssistedInject constructor(
     }
 
     fun onNodeCreateDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
-        bottomSheetManager.navigateNodeDrop()
-        dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
+        editorSession.bottomSheetManager.navigateNodeDrop()
+        editorSession.dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
     }
 
     fun onCreateNodeClick(nodeData: NodeData) {
-        val nodeDef = automationManager.createNodeDef(nodeData)
-        automationManager.addNode(nodeDef)
-        bottomSheetManager.navigateAndClearStack(
+        val nodeDef = editorSession.createNodeDef(nodeData)
+        editorSession.addNode(nodeDef)
+        editorSession.bottomSheetManager.navigateAndClearStack(
             EditorBottomSheetScreen.NodeEdit(nodeDef.id)
         )
     }
