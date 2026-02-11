@@ -8,6 +8,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.shared.components.BaseTextInput
 
 @Composable
@@ -23,7 +24,10 @@ fun SettingsItem(
     fun validationFunction(text: String): ValidationResult {
         val number = text.toFloatOrNull()
         return if (number == null) {
-            ValidationResult.Error("Only numbers allowed")
+            ValidationResult.Error(
+                severity = ProblemSeverity.ERROR,
+                message = "Only numbers allowed"
+            )
         } else {
             validate?.invoke(ConfigurationValue.NUMBER(text)) ?: ValidationResult.Success
         }

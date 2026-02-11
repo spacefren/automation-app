@@ -9,6 +9,7 @@ import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
@@ -41,7 +42,12 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
                 displayName = "Duration",
                 description = "The duration of the pause, in milliseconds",
                 defaultValue = ConfigurationValue.NUMBER("10000"),
-                validate = { ValidationResult.Success }
+                validate = {
+                    if (it.value.toInt() < 0) return@NodeInputDefinition ValidationResult.Error(
+                        severity = ProblemSeverity.ERROR,
+                        message = "Duration can't be negative"
+                    ) else return@NodeInputDefinition ValidationResult.Success
+                }
             )
         ),
         outputDefinitions = emptyMap(),

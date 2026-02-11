@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
@@ -27,7 +28,15 @@ fun ValidationMessage(
                     is ValidationResult.Success -> ""
                     is ValidationResult.Error -> status.message
                 },
-                color = LocalTheme.colorScheme.error,
+                color = when (status) {
+                    is ValidationResult.Error if status.severity == ProblemSeverity.ERROR
+                        -> LocalTheme.colorScheme.error
+
+                    is ValidationResult.Error if status.severity == ProblemSeverity.WARNING
+                        -> LocalTheme.colorScheme.warning
+
+                    else -> LocalTheme.colorScheme.onBackground
+                },
                 fontSize = 14.sp
             )
         }

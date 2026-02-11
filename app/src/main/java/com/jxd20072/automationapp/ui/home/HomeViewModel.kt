@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.home.addAutomationSheet.automationIcons
 import com.jxd20072.automationapp.utils.TimeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -184,10 +185,21 @@ class HomeViewModel @Inject constructor(
 
     fun validateAddAutomationDrawerName(text: String): ValidationResult {
         return when {
-            text.isBlank() -> ValidationResult.Error("Name cannot be empty.")
-            text.length > 20 -> ValidationResult.Error("Name is too long.")
+            text.isBlank() -> ValidationResult.Error(
+                severity = ProblemSeverity.ERROR,
+                message = "Name cannot be empty."
+            )
+
+            text.length > 20 -> ValidationResult.Error(
+                severity = ProblemSeverity.ERROR,
+                message = "Name is too long."
+            )
+
             homeUiState.value.automations.any { it.name.trim() == text.trim() } ->
-                ValidationResult.Error("Name is already taken by an automation.")
+                ValidationResult.Error(
+                    severity = ProblemSeverity.ERROR,
+                    message = "Name is already taken by an automation."
+                )
 
             else -> ValidationResult.Success
         }

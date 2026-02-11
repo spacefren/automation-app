@@ -10,12 +10,12 @@ import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
+import com.jxd20072.automationapp.core.data.repository.PermissionsRepository
+import com.jxd20072.automationapp.core.executor.AutomationEngine
 import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
-import com.jxd20072.automationapp.core.nodes.triggerNodes
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.getProblems
 import com.jxd20072.automationapp.utils.findAndReplace
 import com.jxd20072.automationapp.utils.findAndTransform
 import com.jxd20072.automationapp.utils.insertAt
@@ -33,13 +33,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Immutable
-data class EditorProblem(
-    val nodeId: String,
-    val originatingInput: String? = null,
-    val validationResult: ValidationResult
-)
-
-@Immutable
 sealed interface AutomationUiState {
     data object Loading : AutomationUiState
     data class Success(
@@ -54,6 +47,8 @@ sealed interface AutomationUiState {
 class AutomationManager @Inject constructor(
     private val automationsRepository: AutomationsRepository,
     private val settingsRepository: AppSettingsRepository,
+    private val permissionsRepository: PermissionsRepository,
+    private val automationEngine: AutomationEngine,
 ) {
     private val _automationUiState = MutableStateFlow<AutomationUiState>(AutomationUiState.Loading)
     val automationUiState = _automationUiState.asStateFlow()
@@ -88,16 +83,28 @@ class AutomationManager @Inject constructor(
                 if (draft == null) return@collect
                 _automationUiState.update { previousState ->
                     (previousState as AutomationUiState.Success).copy(
-                        problems = getProblems(draft)
+                        problems = getProblems(draft, permissionsRepository.getAllPermissions())
                     )
                 }
             }
     }
 
+    fun onPermissionUpdate() {
+        _automationUiState.update { state ->
+            if (state !is AutomationUiState.Success) return@update state
+            state.copy(
+                problems = getProblems(
+                    state.automationDraft,
+                    permissionsRepository.getAllPermissions()
+                )
+            )
+        }
+    }
+
     suspend fun executeAutomation(): AutomationExecutor? {
         val uiState = automationUiState.value
         return if (uiState is AutomationUiState.Success) {
-            automationsRepository.executeAutomation(uiState.automationId)
+            automationEngine.executeAutomation(uiState.automationId)
         } else null
     }
 
@@ -111,7 +118,10 @@ class AutomationManager @Inject constructor(
                         automationId = id,
                         automationData = automationData,
                         automationDraft = automation.copy(),
-                        problems = getProblems(automation)
+                        problems = getProblems(
+                            automation,
+                            permissionsRepository.getAllPermissions()
+                        )
                     )
                 }
             }
@@ -130,90 +140,6 @@ class AutomationManager @Inject constructor(
                 }
             }
         }
-    }
-
-    fun getResultFromInputDef(
-        inputEntry: ConfigurationValue<*>,
-        inputDef: NodeInputDefinition<*>,
-        automationVariables: Set<VariableDef>
-    ): ValidationResult {
-        val isSameClass = inputEntry::class == inputDef.defaultValue::class
-
-        if (!isSameClass) {
-            if (inputEntry is ConfigurationValue.VARIABLE) {
-                val variable = automationVariables.find { it.id == inputEntry.value }
-                    ?: return ValidationResult.Error("Variable ${inputEntry.value} not found")
-
-                if (variable.value::class != inputDef.defaultValue::class) {
-                    return ValidationResult.Error(
-                        "Variable used as input should be of type ${
-                            inputDef.defaultValue::class.simpleName
-                        }"
-                    )
-                }
-
-                return ValidationResult.Success
-            } else {
-                return ValidationResult.Error(
-                    "Input should be of type ${
-                        inputDef.defaultValue::class.simpleName
-                    }"
-                )
-            }
-        } else {
-            return ((inputDef as NodeInputDefinition<Any?>).validate(inputEntry))
-        }
-    }
-
-    fun getProblemsFromNode(
-        nodeDef: NodeDef,
-        automationVariables: Set<VariableDef>
-    ): Set<EditorProblem> {
-        val problems = mutableSetOf<EditorProblem>()
-        if (nodeDef.nodeType != NodeType.FUNCTION) {
-            val nodeData =
-                (if (nodeDef.nodeType == NodeType.TRIGGER) triggerNodes else actionNodes)[nodeDef.name]?.data
-
-            if (nodeData == null) {
-                problems += EditorProblem(
-                    nodeId = nodeDef.id,
-                    validationResult = ValidationResult.Error("Could not find node data"),
-                )
-            } else {
-                problems += nodeData.inputDefinitions.map { inputDef ->
-                    val inputEntry = nodeDef.input[inputDef.key] ?: return@map null
-                    val result = getResultFromInputDef(
-                        inputEntry,
-                        inputDef.value,
-                        automationVariables
-                    )
-
-                    if (result !is ValidationResult.Success) {
-                        return@map EditorProblem(
-                            nodeId = nodeDef.id,
-                            originatingInput = inputDef.key,
-                            validationResult = result
-                        )
-                    } else return@map null
-                }.filterNotNull().toSet()
-            }
-        }
-
-        nodeDef.content.forEach {
-            problems += getProblemsFromNode(it, automationVariables)
-        }
-
-        return problems
-    }
-
-    fun getProblems(automationDraft: AutomationDef): Set<EditorProblem> {
-        val problems = mutableSetOf<EditorProblem>()
-
-        automationDraft.topLevel.forEach { topLevelNode ->
-            problems += getProblemsFromNode(topLevelNode, automationDraft.variables)
-        }
-
-        return problems
     }
 
     fun findNode(id: String): NodeDef? {

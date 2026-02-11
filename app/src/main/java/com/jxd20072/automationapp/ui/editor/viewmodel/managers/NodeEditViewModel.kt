@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.repository.PermissionsRepository
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.triggerNodes
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -34,8 +36,9 @@ sealed interface NodeEditState {
 @HiltViewModel(assistedFactory = NodeEditViewModel.Factory::class)
 class NodeEditViewModel @AssistedInject constructor(
     @Assisted val editingNodeId: String,
+    private val permissionsRepository: PermissionsRepository,
     private val automationManager: AutomationManager,
-    private val bottomSheetManager: BottomSheetManager
+    private val bottomSheetManager: BottomSheetManager,
 ) : ViewModel() {
 
     @AssistedFactory
@@ -45,7 +48,6 @@ class NodeEditViewModel @AssistedInject constructor(
 
     private val _nodeEditScreenState = MutableStateFlow<NodeEditState>(NodeEditState.Loading)
     val nodeEditScreenState = _nodeEditScreenState.asStateFlow()
-
 
     val automationUiState = automationManager.automationUiState.map { automationUiState ->
         automationUiState as? AutomationUiState.Success
@@ -78,7 +80,12 @@ class NodeEditViewModel @AssistedInject constructor(
                             }
                         ),
                         nodeProblems = automationUiState.problems
-                            .filter { it.nodeId == editingNodeId }
+                            .filter {
+                                if (it is EditorProblem.NodeProblem) return@filter it.nodeId == nodeDef.id
+                                if (it is EditorProblem.NodeInputProblem) return@filter it.nodeId == nodeDef.id
+                                if (it is EditorProblem.MissingPermission) return@filter it.nodeId == nodeDef.id
+                                false
+                            }
                             .toSet()
                     )
                 }
@@ -118,5 +125,9 @@ class NodeEditViewModel @AssistedInject constructor(
             onSelect(it)
             bottomSheetManager.navigateBack()
         }
+    }
+
+    fun onPermissionGranted() {
+        automationManager.onPermissionUpdate()
     }
 }

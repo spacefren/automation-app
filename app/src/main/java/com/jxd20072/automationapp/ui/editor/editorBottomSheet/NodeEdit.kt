@@ -1,6 +1,8 @@
 package com.jxd20072.automationapp.ui.editor.editorBottomSheet
 
 import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,13 +30,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.ui.editor.editorBottomSheet.components.EditorInputField
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeEditViewModel
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.SettingsResetButton
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
@@ -83,7 +84,9 @@ fun EditorNodeEditScreen(
             }
 
             RequiredPermissionsCard(
-                permissions = nodeData.permissions
+                problems = problems.filter { it is EditorProblem.MissingPermission }.toSet()
+                        as Set<EditorProblem.MissingPermission>,
+                onPermissionGranted = nodeEditViewModel::onPermissionGranted
             )
 
             // Spacing already handled below
@@ -95,7 +98,11 @@ fun EditorNodeEditScreen(
                 EditorInputField(
                     inputDefinition = inputDef,
                     variablesList = automation.variables,
-                    problem = problems.firstOrNull { it.originatingInput == name },
+                    problem = problems.firstOrNull {
+                        if (it !is EditorProblem.NodeInputProblem) return@firstOrNull false
+
+                        it.originatingInput == name
+                    } as EditorProblem.NodeInputProblem?,
                     currentValue = currentValue,
                     onValueChanged = { nodeEditViewModel.setNodeConfig(name, it) },
                     promptVariableSelect = nodeEditViewModel::promptSelectVariable
@@ -108,12 +115,20 @@ fun EditorNodeEditScreen(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequiredPermissionsCard(
-    permissions: List<String>
+    problems: Set<EditorProblem.MissingPermission>,
+    onPermissionGranted: () -> Unit,
 ) {
-    val permissionState = permissions.map { it to rememberPermissionState(it) }
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            onPermissionGranted()
+        }
+    }
+
 
     AnimatedVisibility(
-        permissionState.any { !it.second.status.isGranted },
+        problems.isNotEmpty(),
         modifier = Modifier
             .padding(top = LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
@@ -149,12 +164,11 @@ fun RequiredPermissionsCard(
                     color = LocalTheme.colorScheme.onBackground
                 )
             }
-            permissionState
-                .filter { (_, state) -> !state.status.isGranted }
-                .map { (permission, state) ->
-                    val displayName = when (permission) {
+            problems
+                .map { problem ->
+                    val displayName = when (problem.permission) {
                         Manifest.permission.POST_NOTIFICATIONS -> "Notifications"
-                        else -> permission.substringAfterLast('.')
+                        else -> problem.permission.substringAfterLast('.')
                     }
 
                     Row(
@@ -162,7 +176,7 @@ fun RequiredPermissionsCard(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickableWithIndication {
-                                state.launchPermissionRequest()
+                                launcher.launch(problem.permission)
                             }
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel2))

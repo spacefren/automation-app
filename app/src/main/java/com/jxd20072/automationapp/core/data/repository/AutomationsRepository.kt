@@ -1,6 +1,5 @@
 package com.jxd20072.automationapp.core.data.repository
 
-import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
@@ -14,19 +13,15 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.executor.AutomationExecutor
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
 class AutomationsRepository @Inject constructor(
     private val automationsStore: AutomationStore,
-    private val context: Context,
     private val automationsDataStore: DataStore<AutomationsDataMap>
 ) {
-
     private val testingAutomationDef = AutomationDef(
         metadata = AutomationDefMetadata(
             version = 0
@@ -81,8 +76,6 @@ class AutomationsRepository @Inject constructor(
     )
 
     val automationsDataFlow = automationsDataStore.data
-
-    private val ongoingAutomations = mutableSetOf<AutomationExecutor>()
 
     suspend fun createAutomation(
         name: String,
@@ -156,35 +149,6 @@ class AutomationsRepository @Inject constructor(
                 automations[id] = automationData.copy { lastSaved = Instant.now().toString() }
             }
         }
-    }
-
-    suspend fun executeAutomation(automationID: String): AutomationExecutor? {
-        val automation = getAutomationDef(automationID) ?: return null
-
-        val executor = AutomationExecutor(automation, context)
-        ongoingAutomations.add(executor)
-
-        val logCollectorJob = executor.executorScope.launch {
-            executor.logs.collect { log ->
-                Log.d(
-                    "APP_AutomationLogs",
-                    "[${log.level}] [${log.time}] ${log.message}"
-                )
-
-                addLog(automationID, log)
-            }
-        }
-
-        executor.start {
-            ongoingAutomations.removeIf { it.id == executor.id }
-            logCollectorJob.cancel()
-        }
-
-        return executor
-    }
-
-    fun getAutomationExecutor(id: String): AutomationExecutor? {
-        return ongoingAutomations.find { it.id == id }
     }
 
     suspend fun addLog(automationID: String, log: AutomationLogEntry) {

@@ -2,6 +2,7 @@ package com.jxd20072.automationapp.core.nodes.props
 
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 
 data class NodeInputDefinition<T>(
     val displayName: String,
@@ -25,5 +26,8 @@ data class NodeOutputDefinition(
 
 sealed class ValidationResult {
     data object Success : ValidationResult()
-    data class Error(val message: String) : ValidationResult()
+    data class Error(
+        val severity: ProblemSeverity,
+        val message: String
+    ) : ValidationResult()
 }

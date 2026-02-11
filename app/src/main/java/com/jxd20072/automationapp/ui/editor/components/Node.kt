@@ -1,5 +1,8 @@
 package com.jxd20072.automationapp.ui.editor.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.draggable2D
@@ -48,7 +51,8 @@ import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorProblem
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
 import com.jxd20072.automationapp.ui.shared.components.DropdownOption
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
@@ -117,6 +121,8 @@ fun NodeHeader(
     onDragStart: ((startedPosition: Offset) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
+    var lastProblem by remember { mutableStateOf<EditorProblem?>(null) }
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -178,10 +184,28 @@ fun NodeHeader(
                 }
             }
         }
-        if (problems.isNotEmpty()) {
+        AnimatedVisibility(
+            problems.isNotEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            if (problems.isNotEmpty()) {
+                val maxSeverityProblem = problems.maxBy { it.severity.ordinal }
+                lastProblem = maxSeverityProblem
+            }
+            if (lastProblem == null) return@AnimatedVisibility
+
             Icon(
-                painter = painterResource(R.drawable.round_error_24),
-                tint = LocalTheme.colorScheme.error,
+                painter = painterResource(
+                    when (lastProblem!!.severity) {
+                        ProblemSeverity.ERROR -> R.drawable.round_error_24
+                        ProblemSeverity.WARNING -> R.drawable.round_warning_24
+                    }
+                ),
+                tint = when (lastProblem!!.severity) {
+                    ProblemSeverity.ERROR -> LocalTheme.colorScheme.error
+                    ProblemSeverity.WARNING -> LocalTheme.colorScheme.warning
+                },
                 contentDescription = "problems"
             )
         }
@@ -326,7 +350,10 @@ fun TopLevelNode(
                     else -> listOf(NodeDescriptionPiece.Text(nodeDef.name))
                 },
                 level = 1,
-                problems = editorProblems.filter { it.nodeId == nodeDef.id }.toSet(),
+                problems = editorProblems.filter {
+                    if (it !is EditorProblem.WithNode) return@filter false
+                    it.nodeId == nodeDef.id
+                }.toSet(),
                 icon = when (type) {
                     TopLevelNodeType.TRIGGER -> R.drawable.round_electric_bolt_24
                     TopLevelNodeType.ENTRYPOINT -> R.drawable.round_play_arrow_24
@@ -347,7 +374,10 @@ fun TopLevelNode(
 
                 ActionNode(
                     actionNode = actionNode,
-                    problems = editorProblems.filter { it.nodeId == actionNode.id }.toSet(),
+                    problems = editorProblems.filter {
+                        if (it !is EditorProblem.WithNode) return@filter false
+                        it.nodeId == actionNode.id
+                    }.toSet(),
                     automationVariables = automationVariables,
                     onDragStart = onDragStart,
                     disabledForDragging = actionNode.id == draggingNodeID,

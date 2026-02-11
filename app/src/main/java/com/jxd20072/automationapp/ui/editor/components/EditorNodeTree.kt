@@ -13,7 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.core.data.model.AutomationDef
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
-import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorProblem
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @OptIn(ExperimentalFoundationApi::class)

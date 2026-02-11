@@ -11,6 +11,7 @@ import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.shared.components.LocalSnackbarState
 import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
@@ -72,8 +73,16 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
                 defaultValue = ConfigurationValue.TEXT("default value 2"),
                 validate = { textConfig ->
                     when {
-                        textConfig.value.isBlank() -> ValidationResult.Error("Text can't be blank")
-                        textConfig.value == "hi" -> ValidationResult.Error("I don't like that one")
+                        textConfig.value.isBlank() -> ValidationResult.Error(
+                            severity = ProblemSeverity.WARNING,
+                            "Text can't be blank :("
+                        )
+
+                        textConfig.value == "hi" -> ValidationResult.Error(
+                            severity = ProblemSeverity.ERROR,
+                            "I DON'T like that one. NEVER AGAIN."
+                        )
+
                         else -> ValidationResult.Success
                     }
                 },

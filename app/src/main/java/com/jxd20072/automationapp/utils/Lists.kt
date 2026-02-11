@@ -27,3 +27,11 @@ fun <T> List<T>.findAndReplace(search: (T) -> Boolean, replacement: T): List<T> 
 fun <T> List<T>.findAndTransform(search: (T) -> Boolean, transform: (T) -> T): List<T> {
     return this.map { if (search(it)) transform(it) else it }
 }
+
+fun <T, V> List<T>.associateWithIndexed(valueSelector: (element: T, index: Int) -> V): Map<T, V> {
+    val map = mutableMapOf<T, V>()
+    this.forEachIndexed { index, element ->
+        map[element] = valueSelector(element, index)
+    }
+    return map
+}
