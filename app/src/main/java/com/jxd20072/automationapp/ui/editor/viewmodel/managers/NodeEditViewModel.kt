@@ -57,9 +57,7 @@ class NodeEditViewModel @AssistedInject constructor(
 
                 val automationDraft = automationUiState.automationDraft
 
-                val allNodes = automationDraft.topLevel +
-                        automationDraft.topLevel.map { it.content }.flatten()
-                val nodeDef = allNodes.find { it.id == editingNodeId }
+                val nodeDef = editorSession.findNode(editingNodeId)
                 val nodeData = if (nodeDef != null) getNodeData(nodeDef) else null
                 if (nodeDef == null || nodeData == null) return@collect
 

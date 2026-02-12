@@ -45,6 +45,8 @@ fun EditorNodeTree(
 
             EditorNodeDropTarget(
                 gap = 20.dp,
+                index = index,
+                parentId = null,
                 draggingData = dragState,
                 dropScope = NodeDropScope.ENTRY,
                 onEnter = { onDropLineEnter(index, null) },
@@ -69,6 +71,8 @@ fun EditorNodeTree(
             EditorNodeDropTarget(
                 gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
                 draggingData = dragState,
+                index = automationDraft.topLevel.size,
+                parentId = null,
                 dropScope = NodeDropScope.ENTRY,
                 onEnter = { onDropLineEnter(automationDraft.topLevel.size, null) },
                 onExit = onDropLineExit

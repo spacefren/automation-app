@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.executor.ExecutionFlow
 import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
@@ -23,7 +24,7 @@ fun getConfigValueName(value: ConfigurationValue<*>): String {
 }
 
 class SetVariable(id: String) : ActionNode(id) {
-    override fun execute(context: ExecutionContext) {
+    override fun execute(context: ExecutionContext, flow: ExecutionFlow) {
         val variableId = getInput<ConfigurationValue.VARIABLE>("variable", context).value
         val variable = context.getVariable(variableId)
 

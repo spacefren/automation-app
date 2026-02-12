@@ -58,7 +58,7 @@ class DragManager(
     }
 
     fun dragNode(id: String, nodePosition: Offset, offset: Offset) {
-        val (node, depth) = editorSession.findNode(id) ?: return
+        val (node, depth) = editorSession.findNodeWithDepth(id) ?: return
 
         _editorNodeDragState.update {
             EditorNodeDragState.Dragging(

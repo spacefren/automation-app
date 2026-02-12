@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropData
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.getPaddingForNestedLevel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -68,6 +69,8 @@ fun DraggingNode(
 @Composable
 fun EditorNodeDropTarget(
     gap: Dp,
+    index: Int,
+    parentId: String?,
     dropScope: NodeDropScope,
     draggingData: EditorNodeDragState,
     onEnter: () -> Unit,
@@ -94,10 +97,14 @@ fun EditorNodeDropTarget(
 
         if (shouldShow != previouslyShown) {
             if (shouldShow) onEnter() else onExit()
+            previouslyShown = shouldShow
         }
-        previouslyShown = shouldShow
 
-        val height by animateDpAsState(if (shouldShow) 4.dp else 0.dp)
+        val shouldShowFr = draggingData.dropData is EditorNodeDropData.Moving
+                && draggingData.dropData.targetIndex == index
+                && draggingData.dropData.parentId == parentId
+
+        val height by animateDpAsState(if (shouldShowFr) 4.dp else 0.dp)
         Box(
             modifier = Modifier
                 .height(height)

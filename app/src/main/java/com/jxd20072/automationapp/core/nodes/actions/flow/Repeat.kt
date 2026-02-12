@@ -1,48 +1,50 @@
-package com.jxd20072.automationapp.core.nodes.actions
+package com.jxd20072.automationapp.core.nodes.actions.flow
 
 import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.executor.ExecutionFlow
 import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
+import com.jxd20072.automationapp.core.nodes.actions.ActionNode
+import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
-class WaitAction(id: String) : ActionNode(id) {
-    override fun execute(context: ExecutionContext) {
-        val duration = getInput<ConfigurationValue.NUMBER>("duration", context).value
+class RepeatAction(id: String) : ActionNode(id) {
+    override fun execute(context: ExecutionContext, flow: ExecutionFlow) {
+        val times = getInput<ConfigurationValue.NUMBER>("times", context).value.toInt()
 
-        runBlocking {
-            delay(duration.toLong())
+        for (i in 1..times) {
+            flow.executeActionPath(this@RepeatAction.content, context)
         }
     }
 }
 
-val WaitActionNode = NodeRegistryEntry<ActionNode>(
+val RepeatActionNode = NodeRegistryEntry<ActionNode>(
     data = NodeData(
         nodeType = NodeType.ACTION,
-        displayName = "Wait",
-        name = "wait",
+        displayName = "Repeat",
+        name = "repeat",
         category = NodeCategory.FLOW,
         editorActionDescription = { input, variables ->
             listOf(
-                NodeDescriptionPiece.Text("Wait"),
-                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["duration"])
+                NodeDescriptionPiece.Text("Repeat"),
+                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["times"]),
+                NodeDescriptionPiece.Text("times")
             )
         },
-        description = "Pause the execution for a specified duration",
+        description = "Execute the node's contents the specified amount of times",
         icon = R.drawable.round_play_arrow_24,
         inputDefinitions = mapOf(
-            "duration" to NodeInputDefinition(
-                displayName = "Duration",
-                description = "The duration of the pause, in milliseconds",
-                defaultValue = ConfigurationValue.NUMBER("10000"),
+            "times" to NodeInputDefinition(
+                displayName = "Times",
+                description = "How many times to repeat",
+                defaultValue = ConfigurationValue.NUMBER("5"),
                 validate = {
                     if (it.value.toInt() < 0) return@NodeInputDefinition ValidationResult.Error(
                         severity = ProblemSeverity.ERROR,
@@ -53,7 +55,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         ),
         outputDefinitions = emptyMap(),
         permissions = emptyList(),
-        canHaveContent = false
+        canHaveContent = true
     ),
-    factory = { WaitAction(it) }
+    factory = { RepeatAction(it) }
 )

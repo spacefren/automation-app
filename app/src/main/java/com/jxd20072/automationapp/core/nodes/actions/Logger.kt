@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.executor.ExecutionFlow
 import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
@@ -18,7 +19,7 @@ import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
 
 class LoggerAction(id: String) : ActionNode(id) {
-    override fun execute(context: ExecutionContext) {
+    override fun execute(context: ExecutionContext, flow: ExecutionFlow) {
         val text = getInput<ConfigurationValue.TEXT>("text", context).value
 
         context.log(LogLevel.INFO, text)

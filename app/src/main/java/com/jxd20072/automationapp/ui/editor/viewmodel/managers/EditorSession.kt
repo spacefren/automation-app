@@ -17,8 +17,8 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.getProblems
 import com.jxd20072.automationapp.utils.TimeManager
-import com.jxd20072.automationapp.utils.findAndReplace
-import com.jxd20072.automationapp.utils.findAndTransform
+import com.jxd20072.automationapp.utils.findAndReplaceRecursive
+import com.jxd20072.automationapp.utils.findAndTransformRecursive
 import com.jxd20072.automationapp.utils.insertAt
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -161,31 +161,33 @@ class EditorSession @AssistedInject constructor(
     }
 
     fun getNode(id: String): NodeDef? {
-        return findNode(id)?.first
+        return findNodeWithDepth(id)?.first
     }
 
-    fun findNode(id: String, initialTree: List<NodeDef>? = null): Pair<NodeDef, Int>? {
+    fun findNodeWithDepth(
+        initialTree: List<NodeDef>? = null,
+        search: (nodeDef: NodeDef) -> Boolean,
+    ): Pair<NodeDef, Int>? {
         val tree = initialTree ?: (automationUiState.value as? AutomationUiState.Success)
-            .let { state ->
-                if (state == null) return@let null
-
-                state.automationDraft.topLevel
-
-            }
+            ?.automationDraft?.topLevel
         ?: emptyList()
 
-        val found = tree.firstOrNull { it.id == id }
+        return tree.firstOrNull(search)?.let { Pair(it, 0) }
+            ?: tree.flatMap { it.content }
+                .takeIf { it.isNotEmpty() }
+                ?.let { children ->
+                    findNodeWithDepth(children, search)?.let { (node, depth) ->
+                        Pair(node, depth + 1)
+                    }
+                }
+    }
 
-        return if (found != null) {
-            Pair(found, 0)
-        } else {
-            val foundInSubTree = findNode(id, tree.map { it.content }.flatten())
-            if (foundInSubTree != null) {
-                Pair(foundInSubTree.first, 1 + foundInSubTree.second)
-            } else {
-                null
-            }
-        }
+    fun findNodeWithDepth(id: String, initialTree: List<NodeDef>? = null): Pair<NodeDef, Int>? {
+        return findNodeWithDepth(initialTree) { it.id == id }
+    }
+
+    fun findNode(id: String, initialTree: List<NodeDef>? = null): NodeDef? {
+        return findNodeWithDepth(initialTree) { it.id == id }?.first
     }
 
     fun createNodeDef(nodeData: NodeData): NodeDef {
@@ -205,11 +207,15 @@ class EditorSession @AssistedInject constructor(
             when (node.nodeType) {
                 NodeType.ACTION -> state.copy(
                     automationDraft = state.automationDraft.copy(
-                        topLevel = state.automationDraft.topLevel.findAndTransform({ it.id == parentID }) {
-                            it.copy(
-                                content = it.content.insertAt(index, node)
+                        topLevel = state.automationDraft.topLevel
+                            .findAndTransformRecursive(
+                                { it.id == parentID },
+                                { parent ->
+                                    parent.copy(content = parent.content.insertAt(index, node))
+                                },
+                                { it.content },
+                                setContents = { node, contents -> node.copy(content = contents) }
                             )
-                        },
                     )
                 )
 
@@ -231,30 +237,33 @@ class EditorSession @AssistedInject constructor(
                 automationDraft = state.automationDraft.copy(
                     topLevel = state.automationDraft.topLevel
                         .filter { it.id != nodeID }
-                        .map { trigger ->
-                            trigger.copy(
-                                content = trigger.content.filter { it.id != nodeID }
-                            )
-                        }
+                        .findAndTransformRecursive(
+                            { node -> node.content.any { it.id == nodeID } },
+                            { node ->
+                                node.copy(content = node.content.filter { it.id != nodeID })
+                            },
+                            { it.content },
+                            setContents = { node, contents -> node.copy(content = contents) }
+                        )
                 )
             )
         }
     }
 
-    fun moveNode(nodeID: String, parentID: String? = "0", index: Int) {
+    fun moveNode(nodeId: String, parentID: String? = "0", index: Int) {
         val state = automationUiState.value
         if (state !is AutomationUiState.Success) return
 
-        val nodeDef = getNode(nodeID)!!
+        val nodeDef = getNode(nodeId)!!
         val previousParent =
-            state.automationDraft.topLevel.find { it.content.any { it.id == nodeID } }
+            findNodeWithDepth { node -> node.content.any { it.id == nodeId } }?.first
 
-        val previousIndex = previousParent?.content?.indexOfFirst { it.id == nodeID }
-            ?: state.automationDraft.topLevel.indexOfFirst { it.id == nodeID }
+        val previousIndex = previousParent?.content?.indexOfFirst { it.id == nodeId }
+            ?: state.automationDraft.topLevel.indexOfFirst { it.id == nodeId }
 
         val indexCorrection = if (parentID == previousParent?.id && previousIndex < index) -1 else 0
 
-        deleteNode(nodeID)
+        deleteNode(nodeId)
         addNode(nodeDef, parentID, index + indexCorrection)
     }
 
@@ -265,15 +274,12 @@ class EditorSession @AssistedInject constructor(
             data.copy(
                 automationDraft = data.automationDraft.copy(
                     topLevel = data.automationDraft.topLevel
-                        .findAndReplace({ it.id == nodeID }, newData)
-                        .map { function ->
-                            function.copy(
-                                content = function.content.findAndReplace(
-                                    { it.id == nodeID },
-                                    newData
-                                )
-                            )
-                        }
+                        .findAndReplaceRecursive(
+                            { it.id == nodeID },
+                            newData,
+                            { it.content },
+                            { node, contents -> node.copy(content = contents) }
+                        )
                 )
             )
         }

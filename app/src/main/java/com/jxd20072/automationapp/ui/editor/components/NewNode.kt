@@ -48,9 +48,15 @@ import com.jxd20072.automationapp.utils.getNodeData
 
 fun getBackgroundForDepth(depth: Int, theme: AppTheme): Color {
     return when {
-        depth % 3 == 0 -> theme.colorScheme.surface
-        depth % 3 == 1 -> theme.colorScheme.tertiary
-        else -> theme.colorScheme.background
+        depth % 2 == 0 -> theme.colorScheme.surface
+        else -> theme.colorScheme.tertiary
+    }
+}
+
+fun getSurfaceForDepth(depth: Int, theme: AppTheme): Color {
+    return when {
+        depth % 2 == 0 -> theme.colorScheme.background
+        else -> theme.colorScheme.surface
     }
 }
 
@@ -209,12 +215,7 @@ fun NewNode(
                                         LocalTheme,
                                         getNextNestedLevel(nestedLevel)
                                     )
-                                        .background(
-                                            getBackgroundForDepth(
-                                                depth - 1,
-                                                LocalTheme
-                                            )
-                                        )
+                                        .background(getSurfaceForDepth(depth, LocalTheme))
                                         .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
                                 })
                         )
@@ -225,8 +226,10 @@ fun NewNode(
 
         if (nodeDef.nodeType != NodeType.ACTION || nodeData?.canHaveContent != false) {
             EditorNodeDropTarget(
-                gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
+                gap = padding,
                 draggingData = dragState,
+                index = 0,
+                parentId = nodeDef.id,
                 dropScope = NodeDropScope.CONTENT,
                 onEnter = { onDropLineEnter(0, nodeDef.id) },
                 onExit = onDropLineExit
@@ -246,7 +249,9 @@ fun NewNode(
                 )
 
                 EditorNodeDropTarget(
-                    gap = LocalTheme.layoutSystem.spacing.paddingLevel2,
+                    gap = padding,
+                    index = index + 1,
+                    parentId = nodeDef.id,
                     draggingData = dragState,
                     dropScope = NodeDropScope.CONTENT,
                     onEnter = { onDropLineEnter(index + 1, nodeDef.id) },
