@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,10 +14,10 @@ import androidx.compose.ui.res.painterResource
 import com.jxd20072.automationapp.ui.home.components.getAutomationIconPainter
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
-import com.jxd20072.automationapp.ui.shared.modifiers.padding
+import com.jxd20072.automationapp.ui.shared.modifiers.getPaddingForNestedLevel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
-import com.jxd20072.automationapp.ui.theme.getPreviousNestedLevel
+import com.jxd20072.automationapp.ui.theme.getNextNestedLevel
 
 //@Composable
 //fun Button(
@@ -48,7 +49,7 @@ fun IconButton(
         modifier = modifier
             .borderWithShadow(LocalTheme, nestedLevel)
             .background(color)
-            .padding(LocalTheme, getPreviousNestedLevel(nestedLevel))
+            .padding(getPaddingForNestedLevel(LocalTheme, getNextNestedLevel(nestedLevel)))
             .clickableWithIndication { onClick() }
     ) {
         Image(
@@ -74,7 +75,7 @@ fun IconButton(
         modifier = modifier
             .borderWithShadow(LocalTheme, nestedLevel)
             .background(color)
-            .padding(LocalTheme, getPreviousNestedLevel(nestedLevel))
+            .padding(getPaddingForNestedLevel(LocalTheme, getNextNestedLevel(nestedLevel)))
             .clickableWithIndication { onClick() }
     ) {
         Icon(

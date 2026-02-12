@@ -4,9 +4,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,11 +23,12 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.NodeType
-import com.jxd20072.automationapp.core.nodes.actionNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
+import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
+import com.jxd20072.automationapp.ui.shared.modifiers.getPaddingForNestedLevel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
+import com.jxd20072.automationapp.ui.theme.getNextNestedLevel
 import kotlin.math.abs
 
 enum class NodeDropScope {
@@ -39,7 +42,7 @@ fun DraggingNode(
     modifier: Modifier = Modifier
 ) {
     if (draggingData is EditorNodeDragState.Dragging) {
-        val nodeType = draggingData.draggingNode.nodeType
+        val nestedLevel = getNestedLevelForDepth(draggingData.nodeDepth)
 
         Box(
             modifier = modifier
@@ -49,29 +52,14 @@ fun DraggingNode(
                     translationY = draggingData.nodePosition.y
                 }
         ) {
-            NodeContainer(
-                level = when (draggingData.draggingNode.nodeType) {
-                    NodeType.FUNCTION,
-                    NodeType.TRIGGER -> 1
-
-                    NodeType.ACTION -> 2
-                },
-                enabledByDragging = true,
-                onLayout = { _ -> },
-                editNode = { }
+            Row(
+                modifier = Modifier
+                    .borderWithShadow(LocalTheme, nestedLevel)
+                    .background(getBackgroundForDepth(draggingData.nodeDepth, LocalTheme))
+                    .padding(getPaddingForNestedLevel(LocalTheme, getNextNestedLevel(nestedLevel)))
             ) {
-                NodeHeaderIcons(
-                    icon = when {
-                        nodeType == NodeType.TRIGGER -> R.drawable.round_electric_bolt_24
-                        nodeType == NodeType.FUNCTION && draggingData.draggingNode.id == "0" ->
-                            R.drawable.round_play_arrow_24
-
-                        nodeType == NodeType.FUNCTION -> R.drawable.round_functions_24
-                        else -> actionNodes[draggingData.draggingNode.name]?.data?.icon
-                            ?: R.drawable.round_play_arrow_24
-                    },
-                    forceShowDragHandle = true
-                )
+                NodeDragHandle { }
+                NodeHeaderIcon(draggingData.draggingNode)
             }
         }
     }
@@ -90,7 +78,7 @@ fun EditorNodeDropTarget(
     if (draggingData is EditorNodeDragState.Dragging) {
         val checkHovering = { position: Offset ->
             val pos = draggingData.nodePosition.y
-            val offset = draggingData.inputOffset.y
+            val offset = draggingData.offset.y
             when (dropScope) {
                 NodeDropScope.ENTRY ->
                     draggingData.draggingNode.nodeType == NodeType.FUNCTION

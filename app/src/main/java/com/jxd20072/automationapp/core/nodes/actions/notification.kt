@@ -9,6 +9,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
@@ -55,7 +56,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         displayName = "Notification",
         name = "notification",
         description = "send a system notification",
-        category = "system",
+        category = NodeCategory.SYSTEM,
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Send notification: "),
@@ -78,7 +79,8 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
             )
         ),
         outputDefinitions = emptyMap(),
-        permissions = listOf("android.permission.POST_NOTIFICATIONS")
+        permissions = listOf("android.permission.POST_NOTIFICATIONS"),
+        canHaveContent = false
     ),
     factory = { NotificationAction(it) }
 )

@@ -176,8 +176,8 @@ fun DropdownHost(
 @Composable
 fun DropdownMenu(
     options: List<DropdownOption>,
-    longPress: Boolean = false,
     onNormalClick: (() -> Unit)? = null,
+    longPress: Boolean = false,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {

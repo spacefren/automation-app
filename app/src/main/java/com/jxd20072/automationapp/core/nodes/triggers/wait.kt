@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
@@ -32,7 +33,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         nodeType = NodeType.TRIGGER,
         displayName = "Wait",
         name = "wait",
-        category = "debug",
+        category = NodeCategory.FLOW,
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Wait"),
@@ -56,7 +57,8 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
             )
         ),
         outputDefinitions = emptyMap(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        canHaveContent = true
     ),
     factory = { WaitTrigger(it) }
 )

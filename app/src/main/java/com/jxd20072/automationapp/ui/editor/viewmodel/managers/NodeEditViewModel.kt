@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
-import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.repository.PermissionsRepository
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.triggerNodes
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
+import com.jxd20072.automationapp.utils.getNodeData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -62,11 +60,7 @@ class NodeEditViewModel @AssistedInject constructor(
                 val allNodes = automationDraft.topLevel +
                         automationDraft.topLevel.map { it.content }.flatten()
                 val nodeDef = allNodes.find { it.id == editingNodeId }
-                val nodeData = when (nodeDef?.nodeType) {
-                    NodeType.ACTION -> actionNodes[nodeDef.name]?.data
-                    NodeType.TRIGGER -> triggerNodes[nodeDef.name]?.data
-                    else -> null
-                }
+                val nodeData = if (nodeDef != null) getNodeData(nodeDef) else null
                 if (nodeDef == null || nodeData == null) return@collect
 
                 _nodeEditScreenState.update {
@@ -93,7 +87,7 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun resetDefaultConfig() {
-        val nodeDef = editorSession.findNode(editingNodeId) ?: return
+        val nodeDef = editorSession.getNode(editingNodeId) ?: return
 
         editorSession.editNode(
             nodeDef.id, nodeDef.copy(
@@ -104,7 +98,7 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun setNodeConfig(name: String, config: ConfigurationValue<*>) {
-        val nodeDef = editorSession.findNode(editingNodeId) ?: return
+        val nodeDef = editorSession.getNode(editingNodeId) ?: return
 
         editorSession.editNode(
             nodeDef.id, nodeDef.copy(

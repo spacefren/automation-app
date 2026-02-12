@@ -6,6 +6,7 @@ import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
@@ -51,7 +52,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         nodeType = NodeType.ACTION,
         displayName = "Log message",
         name = "log",
-        category = "debug",
+        category = NodeCategory.DEBUG,
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Log"),
@@ -95,6 +96,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
             )
         ),
         outputDefinitions = emptyMap(),
+        canHaveContent = false,
         permissions = emptyList()
     ),
     factory = { LoggerAction(it) }

@@ -60,7 +60,7 @@ fun NodeDropZone(
     @Composable
     fun checkHovering(): Boolean {
         return if (dragData is EditorNodeDragState.Dragging) {
-            val dragPos = dragData.nodePosition + dragData.inputOffset
+            val dragPos = dragData.nodePosition
 
             dragPos.y > positionInRoot.y && dragPos.y < positionInRoot.y + size.height
                     && dragPos.x > positionInRoot.x && dragPos.x < positionInRoot.x + size.width
@@ -81,27 +81,27 @@ fun NodeDropZone(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-			.graphicsLayer(scaleX = scale, scaleY = scale)
-			.fillMaxSize()
-			.onGloballyPositioned { layout ->
-				val rootPos = layout.positionInRoot()
-				positionInRoot = Offset(rootPos.x, rootPos.y)
-				size = layout.size
-			}
-			.shadow(
-				LocalTheme.layoutSystem.shadows.primary,
-				RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
-			)
-			.background(mainColor)
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-			.dashedBorder(
-				color = accentColor,
-				shape = RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3),
-				strokeWidth = 2.dp,
-				dashLength = 20.dp,
-				gapLength = 8.dp
-			)
-			.padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+            .graphicsLayer(scaleX = scale, scaleY = scale)
+            .fillMaxSize()
+            .onGloballyPositioned { layout ->
+                val rootPos = layout.positionInRoot()
+                positionInRoot = Offset(rootPos.x, rootPos.y)
+                size = layout.size
+            }
+            .shadow(
+                LocalTheme.layoutSystem.shadows.primary,
+                RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1)
+            )
+            .background(mainColor)
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+            .dashedBorder(
+                color = accentColor,
+                shape = RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel3),
+                strokeWidth = 2.dp,
+                dashLength = 20.dp,
+                gapLength = 8.dp
+            )
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
     ) {
         Image(
             painter = painterResource(icon),

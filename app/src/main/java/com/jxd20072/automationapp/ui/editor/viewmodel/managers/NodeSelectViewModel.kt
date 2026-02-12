@@ -66,7 +66,7 @@ class NodeSelectViewModel @AssistedInject constructor(
             .groupBy { it.data.category }
             .map { category ->
                 CategoryListEntry(
-                    categoryName = category.key,
+                    categoryName = category.key.displayName,
                     nodes = category.value
                         .map { node ->
                             NodeListEntry(
@@ -124,9 +124,9 @@ class NodeSelectViewModel @AssistedInject constructor(
             }
     }
 
-    fun onNodeCreateDrag(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
+    fun onNodeCreateDrag(nodeData: NodeData, nodePosition: Offset, offset: Offset) {
         editorSession.bottomSheetManager.navigateNodeDrop()
-        editorSession.dragManager.dragCreateNode(nodeData, nodePosition, pressedPosition)
+        editorSession.dragManager.dragCreateNode(nodeData, nodePosition, offset)
     }
 
     fun onCreateNodeClick(nodeData: NodeData) {

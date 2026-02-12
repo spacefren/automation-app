@@ -3,6 +3,7 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.nodes.NodeData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +14,10 @@ sealed interface EditorNodeDragState {
     data object NotDragging : EditorNodeDragState
     data class Dragging(
         val draggingNode: NodeDef,
+        val nodeDepth: Int,
         val isCreatingNode: Boolean = false,
         val nodePosition: Offset,
-        val inputOffset: Offset,
+        val offset: Offset,
         val dropData: EditorNodeDropData
     ) : EditorNodeDragState
 }
@@ -39,11 +41,15 @@ class DragManager(
         MutableStateFlow<EditorNodeDragState>(EditorNodeDragState.NotDragging)
     val editorNodeDragState = _editorNodeDragState.asStateFlow()
 
-    fun dragCreateNode(nodeData: NodeData, nodePosition: Offset, pressedPosition: Offset) {
+    fun dragCreateNode(nodeData: NodeData, nodePosition: Offset, offset: Offset) {
         _editorNodeDragState.update {
             EditorNodeDragState.Dragging(
                 nodePosition = nodePosition,
-                inputOffset = pressedPosition - nodePosition,
+                offset = offset,
+                nodeDepth = when (nodeData.nodeType) {
+                    NodeType.ACTION -> 1
+                    else -> 0
+                },
                 isCreatingNode = true,
                 draggingNode = editorSession.createNodeDef(nodeData),
                 dropData = EditorNodeDropData.NotDropping
@@ -51,14 +57,15 @@ class DragManager(
         }
     }
 
-    fun dragNode(id: String, nodePosition: Offset, pressedPosition: Offset) {
-        val nodeDef = editorSession.findNode(id) ?: return
+    fun dragNode(id: String, nodePosition: Offset, offset: Offset) {
+        val (node, depth) = editorSession.findNode(id) ?: return
 
         _editorNodeDragState.update {
             EditorNodeDragState.Dragging(
                 nodePosition = nodePosition,
-                inputOffset = pressedPosition - nodePosition,
-                draggingNode = nodeDef,
+                offset = offset,
+                draggingNode = node,
+                nodeDepth = depth,
                 dropData = EditorNodeDropData.NotDropping
             )
         }

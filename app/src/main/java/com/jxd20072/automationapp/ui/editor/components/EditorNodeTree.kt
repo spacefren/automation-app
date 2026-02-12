@@ -21,11 +21,11 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun EditorNodeTree(
     automationDraft: AutomationDef,
     editorProblems: Set<EditorProblem>,
-    draggingData: EditorNodeDragState,
+    dragState: EditorNodeDragState,
     onNodeDrag: (
         id: String,
         startedPosition: Offset,
-        startedOffset: Offset,
+        offset: Offset,
     ) -> Unit,
     onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
     onDropLineExit: () -> Unit,
@@ -45,28 +45,30 @@ fun EditorNodeTree(
 
             EditorNodeDropTarget(
                 gap = 20.dp,
-                draggingData = draggingData,
+                draggingData = dragState,
                 dropScope = NodeDropScope.ENTRY,
                 onEnter = { onDropLineEnter(index, null) },
                 onExit = onDropLineExit
             )
 
-            TopLevelNode(
-                editorProblems = editorProblems,
+            NewNode(
                 nodeDef = node,
-                automationVariables = automationDraft.variables,
-                onDragStart = onNodeDrag,
-                draggingData = draggingData,
-                onDropZoneEnter = onDropLineEnter,
-                onDropZoneExit = onDropLineExit,
-                editNode = editNode
+                variables = automationDraft.variables,
+                depth = 0,
+                problems = editorProblems.filter { it is EditorProblem.WithNode }
+                    .toSet() as Set<EditorProblem.WithNode>,
+                dragState = dragState,
+                editNode = editNode,
+                onDropLineEnter = onDropLineEnter,
+                onDropLineExit = onDropLineExit,
+                onDragStart = onNodeDrag
             )
         }
 
         item {
             EditorNodeDropTarget(
                 gap = LocalTheme.layoutSystem.spacing.paddingLevel1,
-                draggingData = draggingData,
+                draggingData = dragState,
                 dropScope = NodeDropScope.ENTRY,
                 onEnter = { onDropLineEnter(automationDraft.topLevel.size, null) },
                 onExit = onDropLineExit

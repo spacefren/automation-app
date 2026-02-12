@@ -48,8 +48,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.R
+import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.nodes.NodeData
-import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcons
+import com.jxd20072.automationapp.ui.editor.components.NodeDragHandle
+import com.jxd20072.automationapp.ui.editor.components.NodeHeaderIcon
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.CategoryListEntry
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.NodeSelectScreenType
@@ -64,7 +66,7 @@ import com.jxd20072.automationapp.ui.theme.LocalTheme
 fun NodeCard(
     nodeData: NodeData,
     modifier: Modifier = Modifier,
-    onDragStart: (startedPosition: Offset, startedOffset: Offset) -> Unit,
+    onDragStart: (startedPosition: Offset, offset: Offset) -> Unit,
     onClick: (nodeData: NodeData) -> Unit,
 ) {
     var rootPosition by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -89,12 +91,22 @@ fun NodeCard(
                     rootPosition = it.positionInRoot()
                 }
         ) {
-            NodeHeaderIcons(
-                onDragStart = {
-                    onDragStart(rootPosition, it)
-                },
-                icon = nodeData.icon
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NodeDragHandle { dragPosition ->
+                    onDragStart(
+                        rootPosition,
+                        dragPosition - rootPosition
+                    )
+                }
+                NodeHeaderIcon(
+                    NodeDef(
+                        name = nodeData.name,
+                        nodeType = nodeData.nodeType
+                    )
+                )
+            }
             Spacer(modifier = Modifier.width(LocalTheme.layoutSystem.spacing.paddingLevel2))
             Image(
                 painter = painterResource(R.drawable.round_info_24),
@@ -124,7 +136,7 @@ fun NodeCategoryContainer(
     onStartDrag: (
         nodeData: NodeData,
         startedPosition: Offset,
-        startedOffset: Offset,
+        offset: Offset,
     ) -> Unit,
     onClick: (nodeData: NodeData) -> Unit,
     modifier: Modifier = Modifier
@@ -198,7 +210,11 @@ fun NodeCategoryContainer(
                             NodeCard(
                                 nodeData = node.data,
                                 onDragStart = { startedPosition, offset ->
-                                    onStartDrag(node.data, startedPosition, offset)
+                                    onStartDrag(
+                                        node.data,
+                                        startedPosition,
+                                        offset
+                                    )
                                 },
                                 onClick = onClick,
                                 modifier = Modifier

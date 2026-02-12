@@ -38,8 +38,8 @@ class EditorViewModel @AssistedInject constructor(
         }
     }
 
-    fun onExistingNodeDrag(id: String, nodePosition: Offset, pressedPosition: Offset) {
-        editorSession.dragManager.dragNode(id, nodePosition, pressedPosition)
+    fun onExistingNodeDrag(id: String, nodePosition: Offset, offset: Offset) {
+        editorSession.dragManager.dragNode(id, nodePosition, offset)
         editorSession.bottomSheetManager.navigateNodeDrop()
     }
 

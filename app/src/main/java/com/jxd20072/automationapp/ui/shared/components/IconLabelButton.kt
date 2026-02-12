@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
-import com.jxd20072.automationapp.ui.shared.modifiers.padding
+import com.jxd20072.automationapp.ui.shared.modifiers.getPaddingForNestedLevel
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
-import com.jxd20072.automationapp.ui.theme.getPreviousNestedLevel
+import com.jxd20072.automationapp.ui.theme.getNextNestedLevel
 
 @Composable
 fun IconLabelButton(
@@ -39,7 +39,7 @@ fun IconLabelButton(
         modifier = modifier
             .borderWithShadow(LocalTheme, nestedLevel)
             .background(color)
-            .padding(LocalTheme, getPreviousNestedLevel(nestedLevel))
+            .padding(getPaddingForNestedLevel(LocalTheme, getNextNestedLevel(nestedLevel)))
             .clickableWithIndication { onClick() }
     ) {
         Row(

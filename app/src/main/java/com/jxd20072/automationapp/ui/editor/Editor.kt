@@ -86,7 +86,7 @@ fun AutomationEditor(
                         automationDraft = (automationState as AutomationUiState.Success).automationDraft,
                         editorProblems = (automationState as AutomationUiState.Success).problems,
                         onNodeDrag = editorViewModel::onExistingNodeDrag,
-                        draggingData = draggingData,
+                        dragState = draggingData,
                         onDropLineEnter = dragManager::enterDropLine,
                         onDropLineExit = dragManager::exitDropLine,
                         editNode = editorViewModel::startEditNode

@@ -4,6 +4,7 @@ import com.jxd20072.automationapp.R
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
@@ -28,7 +29,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         nodeType = NodeType.ACTION,
         displayName = "Wait",
         name = "wait",
-        category = "flow",
+        category = NodeCategory.FLOW,
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Wait"),
@@ -51,7 +52,8 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
             )
         ),
         outputDefinitions = emptyMap(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        canHaveContent = false
     ),
     factory = { WaitAction(it) }
 )

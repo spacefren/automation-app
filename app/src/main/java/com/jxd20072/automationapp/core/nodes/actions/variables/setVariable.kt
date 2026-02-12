@@ -5,6 +5,7 @@ import com.jxd20072.automationapp.core.data.LogLevel
 import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
@@ -51,7 +52,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
         nodeType = NodeType.ACTION,
         displayName = "Set Variable",
         name = "setVariable",
-        category = "variables",
+        category = NodeCategory.VARIABLES,
         editorActionDescription = { input, variables ->
             val variableId = (input["variable"] as? ConfigurationValue.VARIABLE)?.value ?: ""
             val variable = variables.find { it.id == variableId }
@@ -112,7 +113,8 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
             ),
         ),
         outputDefinitions = emptyMap(),
-        permissions = emptyList()
+        permissions = emptyList(),
+        canHaveContent = false
     ),
     factory = { SetVariable(it) }
 )

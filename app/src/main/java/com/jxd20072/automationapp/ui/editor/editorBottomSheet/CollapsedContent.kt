@@ -43,9 +43,10 @@ fun EditorNodeDropSheet(
     @Composable
     fun shouldExpand(): Boolean {
         return if (dragData is EditorNodeDragState.Dragging) {
-            val dragPos = dragData.nodePosition + dragData.inputOffset
+            val dragPos = dragData.nodePosition
+            val offset = dragData.offset
             val extraSpace = with(LocalDensity.current) { 25.dp.toPx() }
-            dragPos.y > edgePosition - extraSpace
+            dragPos.y + offset.y > edgePosition - extraSpace
         } else false
     }
 

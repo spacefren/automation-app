@@ -160,13 +160,32 @@ class EditorSession @AssistedInject constructor(
         }
     }
 
-    fun findNode(id: String): NodeDef? {
-        val state = automationUiState.value
-        if (state !is AutomationUiState.Success) return null
+    fun getNode(id: String): NodeDef? {
+        return findNode(id)?.first
+    }
 
-        return (state.automationDraft.topLevel
-                + state.automationDraft.topLevel.map { it.content }.flatten()
-                ).find { it.id == id }
+    fun findNode(id: String, initialTree: List<NodeDef>? = null): Pair<NodeDef, Int>? {
+        val tree = initialTree ?: (automationUiState.value as? AutomationUiState.Success)
+            .let { state ->
+                if (state == null) return@let null
+
+                state.automationDraft.topLevel
+
+            }
+        ?: emptyList()
+
+        val found = tree.firstOrNull { it.id == id }
+
+        return if (found != null) {
+            Pair(found, 0)
+        } else {
+            val foundInSubTree = findNode(id, tree.map { it.content }.flatten())
+            if (foundInSubTree != null) {
+                Pair(foundInSubTree.first, 1 + foundInSubTree.second)
+            } else {
+                null
+            }
+        }
     }
 
     fun createNodeDef(nodeData: NodeData): NodeDef {
@@ -226,7 +245,7 @@ class EditorSession @AssistedInject constructor(
         val state = automationUiState.value
         if (state !is AutomationUiState.Success) return
 
-        val nodeDef = findNode(nodeID)!!
+        val nodeDef = getNode(nodeID)!!
         val previousParent =
             state.automationDraft.topLevel.find { it.content.any { it.id == nodeID } }
 
