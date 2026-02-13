@@ -73,7 +73,7 @@ fun EditorNodeDropTarget(
     parentId: String?,
     dropScope: NodeDropScope,
     draggingData: EditorNodeDragState,
-    onEnter: () -> Unit,
+    onDetect: (distance: Float) -> Unit,
     onExit: () -> Unit,
 ) {
     Spacer(modifier = Modifier.height(gap / 2))
@@ -82,22 +82,23 @@ fun EditorNodeDropTarget(
         val checkHovering = { position: Offset ->
             val pos = draggingData.nodePosition.y
             val offset = draggingData.offset.y
-            when (dropScope) {
+            val distance = abs(pos + offset - position.y)
+            (when (dropScope) {
                 NodeDropScope.ENTRY ->
                     draggingData.draggingNode.nodeType == NodeType.FUNCTION
                             || draggingData.draggingNode.nodeType == NodeType.TRIGGER
 
                 NodeDropScope.CONTENT -> draggingData.draggingNode.nodeType == NodeType.ACTION
-            } && abs(pos + offset - position.y) < 40
+            } && distance < 40) to distance
         }
 
         var positionInRoot by remember { mutableStateOf(Offset(0f, 0f)) }
-        var previouslyShown by remember { mutableStateOf(false) }
-        val shouldShow = checkHovering(positionInRoot)
+        val (shouldShow, distance) = checkHovering(positionInRoot)
 
-        if (shouldShow != previouslyShown) {
-            if (shouldShow) onEnter() else onExit()
-            previouslyShown = shouldShow
+        if (shouldShow) {
+            onDetect(distance)
+        } else {
+            onExit()
         }
 
         val shouldShowFr = draggingData.dropData is EditorNodeDropData.Moving
@@ -107,6 +108,7 @@ fun EditorNodeDropTarget(
         val height by animateDpAsState(if (shouldShowFr) 4.dp else 0.dp)
         Box(
             modifier = Modifier
+                .padding(vertical = height / 2)
                 .height(height)
                 .fillMaxWidth(.8f)
                 .background(

@@ -128,8 +128,8 @@ fun Node(
     problems: Set<EditorProblem.WithNode>,
     dragState: EditorNodeDragState,
     editNode: (nodeId: String) -> Unit,
-    onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
-    onDropLineExit: () -> Unit,
+    onDropLineDetected: (targetIndex: Int, parentId: String?, distance: Float) -> Unit,
+    onDropLineExit: (targetIndex: Int, parentId: String?) -> Unit,
     onDragStart: ((
         nodeId: String,
         position: Offset,
@@ -232,8 +232,8 @@ fun Node(
                     index = 0,
                     parentId = nodeDef.id,
                     dropScope = NodeDropScope.CONTENT,
-                    onEnter = { onDropLineEnter(0, nodeDef.id) },
-                    onExit = onDropLineExit
+                    onDetect = { onDropLineDetected(0, nodeDef.id, it) },
+                    onExit = { onDropLineExit(0, nodeDef.id) }
                 )
 
                 nodeDef.content.forEachIndexed { index, node ->
@@ -244,7 +244,7 @@ fun Node(
                         problems = problems,
                         dragState = dragState,
                         editNode = editNode,
-                        onDropLineEnter = onDropLineEnter,
+                        onDropLineDetected = onDropLineDetected,
                         onDropLineExit = onDropLineExit,
                         onDragStart = onDragStart
                     )
@@ -255,8 +255,8 @@ fun Node(
                         parentId = nodeDef.id,
                         draggingData = dragState,
                         dropScope = NodeDropScope.CONTENT,
-                        onEnter = { onDropLineEnter(index + 1, nodeDef.id) },
-                        onExit = onDropLineExit
+                        onDetect = { onDropLineDetected(index + 1, nodeDef.id, it) },
+                        onExit = { onDropLineExit(index + 1, nodeDef.id) }
                     )
                 }
             } else {

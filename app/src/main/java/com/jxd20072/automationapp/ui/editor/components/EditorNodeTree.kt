@@ -27,8 +27,8 @@ fun EditorNodeTree(
         startedPosition: Offset,
         offset: Offset,
     ) -> Unit,
-    onDropLineEnter: (targetIndex: Int, parentId: String?) -> Unit,
-    onDropLineExit: () -> Unit,
+    onDropLineDetected: (targetIndex: Int, parentId: String?, distance: Float) -> Unit,
+    onDropLineExit: (targetIndex: Int, parentId: String?) -> Unit,
     editNode: (nodeId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,8 +49,8 @@ fun EditorNodeTree(
                 parentId = null,
                 draggingData = dragState,
                 dropScope = NodeDropScope.ENTRY,
-                onEnter = { onDropLineEnter(index, null) },
-                onExit = onDropLineExit
+                onDetect = { onDropLineDetected(index, null, it) },
+                onExit = { onDropLineExit(index, null) }
             )
 
             Node(
@@ -61,7 +61,7 @@ fun EditorNodeTree(
                     .toSet() as Set<EditorProblem.WithNode>,
                 dragState = dragState,
                 editNode = editNode,
-                onDropLineEnter = onDropLineEnter,
+                onDropLineDetected = onDropLineDetected,
                 onDropLineExit = onDropLineExit,
                 onDragStart = onNodeDrag
             )
@@ -74,8 +74,8 @@ fun EditorNodeTree(
                 index = automationDraft.topLevel.size,
                 parentId = null,
                 dropScope = NodeDropScope.ENTRY,
-                onEnter = { onDropLineEnter(automationDraft.topLevel.size, null) },
-                onExit = onDropLineExit
+                onDetect = { onDropLineDetected(automationDraft.topLevel.size, null, it) },
+                onExit = { onDropLineExit(automationDraft.topLevel.size, null) }
             )
         }
 

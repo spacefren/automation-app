@@ -34,10 +34,32 @@ class SetVariable(id: String) : ActionNode(id) {
             return
         }
 
-        val newVal = input["value_${getConfigValueName(variable.value)}"]
-        if (newVal == null) {
-            context.log(LogLevel.ERROR, "Could not find new value for ${variable.name}")
-            return
+        val suffix = getConfigValueName(variable.value)
+        val newVal = when (variable.value) {
+            is ConfigurationValue.TEXT -> getInput<ConfigurationValue.TEXT>(
+                "value_$suffix",
+                context
+            )
+
+            is ConfigurationValue.BOOL -> getInput<ConfigurationValue.BOOL>(
+                "value_$suffix",
+                context
+            )
+
+            is ConfigurationValue.NUMBER -> getInput<ConfigurationValue.NUMBER>(
+                "value_$suffix",
+                context
+            )
+
+            is ConfigurationValue.CHOOSE -> getInput<ConfigurationValue.CHOOSE>(
+                "value_$suffix",
+                context
+            )
+
+            is ConfigurationValue.VARIABLE -> {
+                context.log(LogLevel.ERROR, "Variables can't hold other variables as values")
+                return
+            }
         }
 
         if (newVal::class != variable.value::class) {

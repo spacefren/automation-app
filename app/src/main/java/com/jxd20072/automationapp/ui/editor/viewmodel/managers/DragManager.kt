@@ -41,6 +41,8 @@ class DragManager(
         MutableStateFlow<EditorNodeDragState>(EditorNodeDragState.NotDragging)
     val editorNodeDragState = _editorNodeDragState.asStateFlow()
 
+    val dropLineDistances = mutableMapOf<Pair<String?, Int>, Float>()
+
     fun dragCreateNode(nodeData: NodeData, nodePosition: Offset, offset: Offset) {
         _editorNodeDragState.update {
             EditorNodeDragState.Dragging(
@@ -118,45 +120,36 @@ class DragManager(
         _editorNodeDragState.update { state ->
             if (state !is EditorNodeDragState.Dragging) return@update state
 
+            val dropData = if (
+                state.dropData is EditorNodeDropData.Moving
+                || state.dropData is EditorNodeDropData.NotDropping
+            ) {
+                if (dropLineDistances.isEmpty()) {
+                    EditorNodeDropData.NotDropping
+                } else {
+                    val closestLine = dropLineDistances.minBy { it.value }
+
+                    EditorNodeDropData.Moving(
+                        parentId = closestLine.key.first,
+                        targetIndex = closestLine.key.second,
+                    )
+                }
+
+            } else state.dropData
+
             state.copy(
-                nodePosition = state.nodePosition + delta
+                nodePosition = state.nodePosition + delta,
+                dropData = dropData
             )
         }
     }
 
-    fun enterDropLine(index: Int, parentID: String?) {
-        _editorNodeDragState.update { state ->
-            if (
-                state !is EditorNodeDragState.Dragging
-                || (
-                        state.dropData !is EditorNodeDropData.Moving
-                                && state.dropData !is EditorNodeDropData.NotDropping
-                        )
-            ) return@update state
-
-            state.copy(
-                dropData = EditorNodeDropData.Moving(
-                    targetIndex = index,
-                    parentId = parentID
-                )
-            )
-        }
+    fun onDropLineDetected(index: Int, parentId: String?, distance: Float) {
+        dropLineDistances[parentId to index] = distance
     }
 
-    fun exitDropLine() {
-        _editorNodeDragState.update { state ->
-            if (
-                state !is EditorNodeDragState.Dragging
-                || (
-                        state.dropData !is EditorNodeDropData.Moving
-                                && state.dropData !is EditorNodeDropData.NotDropping
-                        )
-            ) return@update state
-
-            state.copy(
-                dropData = EditorNodeDropData.NotDropping
-            )
-        }
+    fun exitDropLine(index: Int, parentId: String?) {
+        dropLineDistances.remove(parentId to index)
     }
 
     fun enterNodeDropZone(dropData: EditorNodeDropData) {
