@@ -34,7 +34,7 @@ val RepeatActionNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Repeat"),
-                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["times"]),
+                getNodeInputPiece(variables, input["times"]),
                 NodeDescriptionPiece.Text("times")
             )
         },

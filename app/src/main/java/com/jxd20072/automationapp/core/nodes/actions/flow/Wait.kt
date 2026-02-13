@@ -36,7 +36,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Wait"),
-                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["duration"])
+                getNodeInputPiece(variables, input["duration"])
             )
         },
         description = "Pause the execution for a specified duration",

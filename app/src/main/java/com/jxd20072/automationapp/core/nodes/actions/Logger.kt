@@ -34,12 +34,11 @@ class LoggerAction(id: String) : ActionNode(id) {
     }
 }
 
-inline fun <reified T> getNodeInputPiece(
+fun getNodeInputPiece(
     variables: Set<VariableDef>,
     configValue: ConfigurationValue<*>?
-): NodeDescriptionPiece where T : ConfigurationValue<*> {
+): NodeDescriptionPiece {
     return when (configValue) {
-        is T -> NodeDescriptionPiece.Input(configValue.value.toString())
         is ConfigurationValue.VARIABLE -> NodeDescriptionPiece.VariableInput(
             variables.find { it.id == configValue.value }?.name ?: "Unknown Variable"
         )
@@ -57,7 +56,7 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Log"),
-                getNodeInputPiece<ConfigurationValue.TEXT>(variables, input["text"])
+                getNodeInputPiece(variables, input["text"])
             )
         },
         description = "Append a message to the logs screen",

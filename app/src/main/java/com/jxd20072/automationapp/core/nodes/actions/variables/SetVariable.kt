@@ -11,6 +11,7 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
+import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
 import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
 
 fun getConfigValueName(value: ConfigurationValue<*>): String {
@@ -63,12 +64,13 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                 )
 
             val valueType = getConfigValueName(variable.value)
+            val valueInput = getNodeInputPiece(variables, input["value_$valueType"])
 
             listOf(
                 NodeDescriptionPiece.Text("Set"),
-                NodeDescriptionPiece.VariableInput(variable.name),
+                getNodeInputPiece(variables, input["variable"]),
                 NodeDescriptionPiece.Text("to"),
-                NodeDescriptionPiece.Input(input["value_$valueType"]?.value.toString())
+                valueInput,
             )
         },
         description = "Pause the execution for a specified duration",

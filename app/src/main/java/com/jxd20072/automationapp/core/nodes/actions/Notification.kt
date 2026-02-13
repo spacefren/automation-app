@@ -61,7 +61,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Send notification: "),
-                getNodeInputPiece<ConfigurationValue.TEXT>(variables, input["title"])
+                getNodeInputPiece(variables, input["title"])
             )
         },
         icon = R.drawable.round_info_24,

@@ -37,7 +37,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         editorActionDescription = { input, variables ->
             listOf(
                 NodeDescriptionPiece.Text("Wait"),
-                getNodeInputPiece<ConfigurationValue.NUMBER>(variables, input["duration"])
+                getNodeInputPiece(variables, input["duration"])
             )
         },
         description = "Run selected actions after a specified duration",
