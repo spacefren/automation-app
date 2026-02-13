@@ -37,6 +37,7 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
+import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
 import com.jxd20072.automationapp.ui.shared.modifiers.getPaddingForNestedLevel
@@ -120,7 +121,7 @@ fun NodeHeaderIcon(
 }
 
 @Composable
-fun NewNode(
+fun Node(
     nodeDef: NodeDef,
     variables: Set<VariableDef>,
     depth: Int,
@@ -160,107 +161,107 @@ fun NewNode(
     val nestedLevel = getNestedLevelForDepth(depth)
     val padding = getPaddingForNestedLevel(LocalTheme, getNextNestedLevel(nestedLevel))
 
-//    DropdownMenu(
-//        onNormalClick = { editNode(nodeDef.id) },
-//        longPress = true,
-//        options = emptyList()
-//    ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .onGloballyPositioned { rootNodePosition = it.positionInRoot() }
-            .alpha(
-                if (nodeDef.id == (dragState as? EditorNodeDragState.Dragging)?.draggingNode?.id) .7f
-                else 1f
-            )
-            .fillMaxWidth()
-            .borderWithShadow(LocalTheme, nestedLevel)
-            .background(getBackgroundForDepth(depth, LocalTheme))
-            .padding(horizontal = padding)
-            .padding(top = padding)
+    DropdownMenu(
+        onNormalClick = { editNode(nodeDef.id) },
+        longPress = true,
+        options = emptyList()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .onGloballyPositioned { rootNodePosition = it.positionInRoot() }
+                .alpha(
+                    if (nodeDef.id == (dragState as? EditorNodeDragState.Dragging)?.draggingNode?.id) .7f
+                    else 1f
+                )
+                .fillMaxWidth()
+                .borderWithShadow(LocalTheme, nestedLevel)
+                .background(getBackgroundForDepth(depth, LocalTheme))
+                .padding(horizontal = padding)
+                .padding(top = padding)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                NodeDragHandle { dragPosition ->
-                    onDragStart(
-                        nodeDef.id,
-                        rootNodePosition,
-                        dragPosition - rootNodePosition
-                    )
-                }
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalArrangement = Arrangement.Top,
-                    itemVerticalAlignment = Alignment.CenterVertically
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    NodeHeaderIcon(nodeDef)
-                    displayName.forEach {
-                        Text(
-                            text = it.value,
-                            style = when (it) {
-                                is NodeDescriptionPiece.Text -> LocalTheme.typography.header
-                                else -> LocalTheme.typography.body
-                            },
-                            color = LocalTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .conditional(it !is NodeDescriptionPiece.Text, {
-                                    borderWithShadow(
-                                        LocalTheme,
-                                        getNextNestedLevel(nestedLevel)
-                                    )
-                                        .background(getSurfaceForDepth(depth, LocalTheme))
-                                        .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
-                                })
+                    NodeDragHandle { dragPosition ->
+                        onDragStart(
+                            nodeDef.id,
+                            rootNodePosition,
+                            dragPosition - rootNodePosition
                         )
+                    }
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel3),
+                        itemVerticalAlignment = Alignment.CenterVertically
+                    ) {
+                        NodeHeaderIcon(nodeDef)
+                        displayName.forEach {
+                            Text(
+                                text = it.value,
+                                style = when (it) {
+                                    is NodeDescriptionPiece.Text -> LocalTheme.typography.header
+                                    else -> LocalTheme.typography.body
+                                },
+                                color = LocalTheme.colorScheme.onBackground,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .conditional(it !is NodeDescriptionPiece.Text, {
+                                        borderWithShadow(
+                                            LocalTheme,
+                                            getNextNestedLevel(nestedLevel)
+                                        )
+                                            .background(getSurfaceForDepth(depth, LocalTheme))
+                                            .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
+                                    })
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        if (nodeDef.nodeType != NodeType.ACTION || nodeData?.canHaveContent != false) {
-            EditorNodeDropTarget(
-                gap = padding,
-                draggingData = dragState,
-                index = 0,
-                parentId = nodeDef.id,
-                dropScope = NodeDropScope.CONTENT,
-                onEnter = { onDropLineEnter(0, nodeDef.id) },
-                onExit = onDropLineExit
-            )
-
-            nodeDef.content.forEachIndexed { index, node ->
-                NewNode(
-                    nodeDef = node,
-                    variables = variables,
-                    depth = depth + 1,
-                    problems = problems,
-                    dragState = dragState,
-                    editNode = editNode,
-                    onDropLineEnter = onDropLineEnter,
-                    onDropLineExit = onDropLineExit,
-                    onDragStart = onDragStart
-                )
-
+            if (nodeDef.nodeType != NodeType.ACTION || nodeData?.canHaveContent != false) {
                 EditorNodeDropTarget(
                     gap = padding,
-                    index = index + 1,
-                    parentId = nodeDef.id,
                     draggingData = dragState,
+                    index = 0,
+                    parentId = nodeDef.id,
                     dropScope = NodeDropScope.CONTENT,
-                    onEnter = { onDropLineEnter(index + 1, nodeDef.id) },
+                    onEnter = { onDropLineEnter(0, nodeDef.id) },
                     onExit = onDropLineExit
                 )
+
+                nodeDef.content.forEachIndexed { index, node ->
+                    Node(
+                        nodeDef = node,
+                        variables = variables,
+                        depth = depth + 1,
+                        problems = problems,
+                        dragState = dragState,
+                        editNode = editNode,
+                        onDropLineEnter = onDropLineEnter,
+                        onDropLineExit = onDropLineExit,
+                        onDragStart = onDragStart
+                    )
+
+                    EditorNodeDropTarget(
+                        gap = padding,
+                        index = index + 1,
+                        parentId = nodeDef.id,
+                        draggingData = dragState,
+                        dropScope = NodeDropScope.CONTENT,
+                        onEnter = { onDropLineEnter(index + 1, nodeDef.id) },
+                        onExit = onDropLineExit
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(padding))
             }
-        } else {
-            Spacer(modifier = Modifier.height(padding))
         }
     }
-//    }
 }

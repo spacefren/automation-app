@@ -53,7 +53,7 @@ fun EditorNodeTree(
                 onExit = onDropLineExit
             )
 
-            NewNode(
+            Node(
                 nodeDef = node,
                 variables = automationDraft.variables,
                 depth = 0,
