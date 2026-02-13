@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -52,12 +53,14 @@ fun VariableEditScreen(
     if (variableEditUiState !is VariableEditUiState.Success) return
     val variableDef = (variableEditUiState as VariableEditUiState.Success).variableDef
 
-    AppScreen {
+    AppScreen(
+        modifier = Modifier
+            .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .imePadding()
+    ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-            modifier = Modifier
-                .padding(LocalTheme.layoutSystem.spacing.paddingLevel1)
-                .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             Text(
                 text = "${if (isCreating) "New" else "Edit"} variable",

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -112,11 +113,13 @@ fun HomeScreen(
     val settingsUiState by settingsViewModel.userSettingsUiState.collectAsState()
     val currentTime by homeViewModel.currentTime.collectAsState()
 
-    AppScreen {
+    AppScreen(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .imePadding()
+    ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
             TopBar(
                 openSettings = openSettings,
@@ -150,35 +153,35 @@ fun HomeScreen(
             )
         }
 
-        AddAutomationDrawer(
-            drawerUiState = homeUiState.addAutomationDrawerState,
-            autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
-                    && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
-            onDismissRequest = {
-                homeViewModel.changeAddAutomationDrawerVisibility(false)
-                homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
-            },
-            validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
-            onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
-            onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
-            onNameChanged = homeViewModel::changeAddAutomationDrawerName,
-            onIconSearch = homeViewModel::changeIconSelectorSearchQuery,
-        ) {
-            homeViewModel.addAutomation(
-                name = homeUiState.addAutomationDrawerState.selectedName,
-                icon = homeUiState.addAutomationDrawerState.selectedIcon
-            ) { id ->
-                homeViewModel.changeAddAutomationDrawerVisibility(false)
-                homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
-                editAutomation(id)
-            }
-        }
-
         Box(modifier = Modifier.fillMaxSize()) {
             FloatingNewButton(modifier = Modifier.align(Alignment.BottomEnd)) {
                 homeViewModel.changeAddAutomationDrawerVisibility(true)
                 homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.AUTOMATION_ADD)
             }
+        }
+    }
+
+    AddAutomationDrawer(
+        drawerUiState = homeUiState.addAutomationDrawerState,
+        autoOpenKeyboard = settingsUiState is UserSettingsUiState.Success
+                && (settingsUiState as UserSettingsUiState.Success).settings.autoOpenKeyboard.value,
+        onDismissRequest = {
+            homeViewModel.changeAddAutomationDrawerVisibility(false)
+            homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
+        },
+        validateAutomationName = homeViewModel::validateAddAutomationDrawerName,
+        onScreenChanged = homeViewModel::changeAddAutomationDrawerScreen,
+        onIconChanged = homeViewModel::changeAddAutomationDrawerIcon,
+        onNameChanged = homeViewModel::changeAddAutomationDrawerName,
+        onIconSearch = homeViewModel::changeIconSelectorSearchQuery,
+    ) {
+        homeViewModel.addAutomation(
+            name = homeUiState.addAutomationDrawerState.selectedName,
+            icon = homeUiState.addAutomationDrawerState.selectedIcon
+        ) { id ->
+            homeViewModel.changeAddAutomationDrawerVisibility(false)
+            homeViewModel.changeAddAutomationDrawerScreen(AddAutomationDrawerScreen.BLANK)
+            editAutomation(id)
         }
     }
 }

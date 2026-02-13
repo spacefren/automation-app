@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -62,7 +63,8 @@ fun EditorVariableEntry(
         longPress = true,
         onNormalClick = onClick,
         options = listOf(),
-        modifier = modifier.padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1),
+        modifier = modifier
+            .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
     ) {
         SwipeableContainer(
             icon1 = R.drawable.round_delete_24,
@@ -159,7 +161,9 @@ fun EditorVariablesScreen(
 ) {
     val variablesScreenState by variablesViewModel.variablesUiState.collectAsState()
 
-    AppScreen {
+    AppScreen(
+        modifier = Modifier.imePadding()
+    ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
         ) {

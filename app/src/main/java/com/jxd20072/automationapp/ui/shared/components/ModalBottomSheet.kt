@@ -215,7 +215,8 @@ fun ModalBottomSheet(
             ) {
                 Box(
                     content = content,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             }
         }

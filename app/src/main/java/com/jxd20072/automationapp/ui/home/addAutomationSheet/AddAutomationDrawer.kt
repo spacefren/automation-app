@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
-import com.jxd20072.automationapp.ui.shared.components.Layer
+import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
 
@@ -37,7 +37,7 @@ fun AddAutomationDrawer(
             true
         },
     ) {
-        Layer(
+        AppScreen(
             modifier = modifier
         ) {
             AnimatedContent(
