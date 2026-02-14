@@ -3,13 +3,14 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.utils
 import android.util.Log
 import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.InputAcceptedValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.NodeInputSchema
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.nodes.actionNodes
-import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.core.nodes.triggerNodes
 
 @Immutable
@@ -46,45 +47,25 @@ sealed interface EditorProblem {
     ) : WithNode
 }
 
-fun getResultFromInputDef(
-    inputEntry: ConfigurationValue<*>,
-    inputDef: NodeInputDefinition<*>,
+fun getResultFromInputSchema(
+    inputEntry: NodeInputSchema,
+    input: Value,
     automationVariables: Set<VariableDef>
 ): Pair<ProblemSeverity, String>? {
-    val isSameClass = inputEntry::class == inputDef.defaultValue::class
+    val acceptedValue = inputEntry.accepts.find { it.defaultValue::class == input::class }
 
-    if (!isSameClass) {
-        if (inputEntry is ConfigurationValue.VARIABLE) {
-            val variable = automationVariables.find { it.id == inputEntry.value }
-                ?: return Pair(
-                    ProblemSeverity.ERROR,
-                    "Variable ${inputEntry.value} not found"
-                )
+    if (acceptedValue == null) return Pair(ProblemSeverity.ERROR, "Input of unsupported value type")
+    else if (acceptedValue is InputAcceptedValue.VARIABLE) {
+        val variable = automationVariables.find { it.id == (input as Value.VARIABLE).id }
+            ?: return Pair(ProblemSeverity.ERROR, "Variable not found")
 
-            if (variable.value::class != inputDef.defaultValue::class) {
-                return Pair(
-                    ProblemSeverity.ERROR,
-                    "Variable used as input should be of type ${
-                        inputDef.defaultValue::class.simpleName
-                    }"
-                )
-            }
-
-            return null
-        } else {
-            return Pair(
-                ProblemSeverity.ERROR,
-                "Input should be of type ${
-                    inputDef.defaultValue::class.simpleName
-                }"
-            )
-        }
+        return if (!acceptedValue.acceptedTypes.contains(variable.value::class)) {
+            Pair(ProblemSeverity.ERROR, "Variable used as input of unsupported value type")
+        } else null
     } else {
-        val result = (inputDef as NodeInputDefinition<Any?>).validate(inputEntry)
-
-        return when (result) {
+        return when (val result = (acceptedValue.validate as (Value) -> ValidationResult)(input)) {
             is ValidationResult.Success -> null
-            is ValidationResult.Error -> Pair(result.severity, result.message)
+            is ValidationResult.Error -> Pair(ProblemSeverity.ERROR, result.message)
         }
     }
 }
@@ -106,18 +87,18 @@ fun getProblemsFromNode(
                 message = "Could not find node data for ${nodeDef.name}",
             )
         } else {
-            problems += nodeData.inputDefinitions.map { inputDef ->
-                val inputEntry = nodeDef.input[inputDef.key] ?: return@map null
-                val result = getResultFromInputDef(
-                    inputEntry,
-                    inputDef.value,
+            problems += nodeData.inputSchemas.map { (name, schema) ->
+                val value = nodeDef.input[name] ?: return@map null
+                val result = getResultFromInputSchema(
+                    schema,
+                    value,
                     automationVariables
                 )
 
                 if (result != null) {
                     return@map EditorProblem.NodeInputProblem(
                         nodeId = nodeDef.id,
-                        originatingInput = inputDef.key,
+                        originatingInput = name,
                         severity = result.first,
                         message = result.second
                     )

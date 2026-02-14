@@ -16,9 +16,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
 import com.jxd20072.automationapp.ui.theme.LocalTheme
@@ -26,19 +26,19 @@ import com.jxd20072.automationapp.ui.theme.NestedLevel
 
 @Composable
 fun SettingsItem(
-    item: ConfigurationValue.VARIABLE,
+    item: Value.VARIABLE,
     variablesList: Set<VariableDef>,
     displayName: String,
     description: String = "",
     modifier: Modifier = Modifier,
-    validate: ((ConfigurationValue.VARIABLE) -> ValidationResult)? = null,
-    onValueChanged: (ConfigurationValue.VARIABLE) -> Unit,
+    validate: ((Value.VARIABLE) -> ValidationResult)? = null,
+    onValueChanged: (Value.VARIABLE) -> Unit,
     promptVariableSelect: (
             (variableId: String) -> Unit
     ) -> Unit,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val selectedVariable = variablesList.find { it.id == item.value }
+    val selectedVariable = variablesList.find { it.id == item.id }
 
     val iconSize = with(LocalDensity.current) {
         LocalTheme.typography.body.fontSize.toDp()
@@ -57,7 +57,7 @@ fun SettingsItem(
             modifier = Modifier
                 .clickableWithIndication {
                     promptVariableSelect {
-                        onValueChanged(ConfigurationValue.VARIABLE(it))
+                        onValueChanged(Value.VARIABLE(it))
                     }
                 }
                 .fillMaxHeight()
@@ -69,9 +69,9 @@ fun SettingsItem(
                 // TODO: Duplicated code
                 painter = painterResource(
                     when (selectedVariable?.value) {
-                        is ConfigurationValue.BOOL -> R.drawable.round_bool_24
-                        is ConfigurationValue.TEXT -> R.drawable.round_text_24
-                        is ConfigurationValue.NUMBER -> R.drawable.round_number_24
+                        is Value.BOOL -> R.drawable.round_bool_24
+                        is Value.TEXT -> R.drawable.round_text_24
+                        is Value.FLOAT -> R.drawable.round_number_24
                         else -> R.drawable.round_error_24
                     }
                 ),

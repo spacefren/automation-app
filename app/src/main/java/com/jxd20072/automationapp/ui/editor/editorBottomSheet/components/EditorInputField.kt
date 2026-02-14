@@ -7,10 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.InputAcceptedValue
+import com.jxd20072.automationapp.core.data.model.NodeInputSchema
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
@@ -19,14 +20,17 @@ import com.jxd20072.automationapp.ui.theme.NestedLevel
 import kotlin.reflect.KClass
 
 @Composable
-fun VariableSwitchButton(
-    icon: Int,
+fun TypeSwitchButton(
+    currentType: KClass<out Value>,
     onSwitch: () -> Unit,
 ) {
     IconButton(
         color = LocalTheme.colorScheme.surface,
         iconColor = LocalTheme.colorScheme.onSurface,
-        drawableRes = icon,
+        drawableRes = when (currentType) {
+            Value.TEXT::class -> R.drawable.round_text_24
+            else -> R.drawable.round_number_24
+        },
         nestedLevel = NestedLevel.ONE,
         onClick = onSwitch,
         modifier = Modifier
@@ -36,28 +40,36 @@ fun VariableSwitchButton(
 }
 
 @Composable
-inline fun <T> EditorInputField(
-    currentValue: ConfigurationValue<*>,
+fun EditorInputField(
+    currentValue: Value,
     variablesList: Set<VariableDef>,
-    inputDefinition: NodeInputDefinition<T>,
+    inputSchema: NodeInputSchema,
     problem: EditorProblem.NodeInputProblem?,
-    noinline promptVariableSelect: (
-        variableType: KClass<ConfigurationValue<*>>?,
+    promptVariableSelect: (
+        variableTypes: Set<KClass<out Value>>,
         (variableId: String) -> Unit
     ) -> Unit,
-    crossinline onValueChanged: (ConfigurationValue<*>) -> Unit,
-) where T : ConfigurationValue<*> {
+    onValueChanged: (Value) -> Unit,
+) {
     AnimatedContent(
         targetState = currentValue,
         contentKey = { it::class }
     ) { targetState ->
+        val currentIndex = when (
+            val index =
+                inputSchema.accepts.indexOfFirst { it.defaultValue::class == targetState::class }
+        ) {
+            -1 -> 0
+            else -> index
+        }
+
         when (targetState) {
-            is ConfigurationValue.VARIABLE -> {
+            is Value.VARIABLE -> {
                 SettingsItem(
                     item = targetState,
                     variablesList = variablesList,
-                    displayName = inputDefinition.displayName,
-                    description = inputDefinition.description,
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
                     validate = {
                         if (problem != null) ValidationResult.Error(
                             problem.severity,
@@ -68,88 +80,94 @@ inline fun <T> EditorInputField(
                     onValueChanged = { onValueChanged(it) },
                     promptVariableSelect = {
                         promptVariableSelect(
-                            (if (inputDefinition.defaultValue is ConfigurationValue.VARIABLE) null
-                            else inputDefinition.defaultValue::class) as KClass<ConfigurationValue<*>>?,
-                            it
-                        )
+                            (inputSchema.accepts
+                                .firstOrNull { it is InputAcceptedValue.VARIABLE } as? InputAcceptedValue.VARIABLE)
+                                ?.acceptedTypes
+                                ?: emptySet()
+                        ) { id ->
+                            onValueChanged(Value.VARIABLE(id))
+                        }
                     }
                 ) {
-                    if (inputDefinition.defaultValue !is ConfigurationValue.VARIABLE) {
-                        VariableSwitchButton(R.drawable.round_text_24) {
-                            onValueChanged(inputDefinition.defaultValue)
-                        }
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
+
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
                     }
                 }
             }
 
-            else -> {
-                when (inputDefinition.defaultValue) {
-                    is ConfigurationValue.TEXT -> {
-                        SettingsItem(
-                            item = targetState as? ConfigurationValue.TEXT
-                                ?: inputDefinition.defaultValue,
-                            displayName = inputDefinition.displayName,
-                            description = inputDefinition.description,
-                            validate = {
-                                if (problem != null) ValidationResult.Error(
-                                    problem.severity,
-                                    problem.message
-                                )
-                                else ValidationResult.Success
-                            },
-                            onValueChanged = { onValueChanged(it) },
-                        ) {
-                            VariableSwitchButton(R.drawable.round_data_object_24) {
-                                onValueChanged(ConfigurationValue.VARIABLE(""))
-                            }
-                        }
-                    }
+            is Value.TEXT -> {
+                SettingsItem(
+                    item = targetState,
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
+                    validate = {
+                        if (problem != null) ValidationResult.Error(
+                            problem.severity,
+                            problem.message
+                        )
+                        else ValidationResult.Success
+                    },
+                    onValueChanged = { onValueChanged(it) },
+                ) {
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
 
-                    is ConfigurationValue.BOOL -> {
-                        SettingsItem(
-                            item = targetState as? ConfigurationValue.BOOL
-                                ?: inputDefinition.defaultValue,
-                            displayName = inputDefinition.displayName,
-                            description = inputDefinition.description,
-                            validate = {
-                                if (problem != null) ValidationResult.Error(
-                                    problem.severity,
-                                    problem.message
-                                )
-                                else ValidationResult.Success
-                            },
-                            onValueChanged = { onValueChanged(it) },
-                        ) {
-                            VariableSwitchButton(R.drawable.round_data_object_24) {
-                                onValueChanged(ConfigurationValue.VARIABLE(""))
-                            }
-                        }
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
                     }
-
-                    is ConfigurationValue.NUMBER -> {
-                        SettingsItem(
-                            item = targetState as? ConfigurationValue.NUMBER
-                                ?: inputDefinition.defaultValue,
-                            displayName = inputDefinition.displayName,
-                            description = inputDefinition.description,
-                            validate = {
-                                if (problem != null) ValidationResult.Error(
-                                    problem.severity,
-                                    problem.message
-                                )
-                                else ValidationResult.Success
-                            },
-                            onValueChanged = { onValueChanged(it) },
-                        ) {
-                            VariableSwitchButton(R.drawable.round_data_object_24) {
-                                onValueChanged(ConfigurationValue.VARIABLE(""))
-                            }
-                        }
-                    }
-
-                    else -> {}
                 }
             }
+
+            is Value.BOOL -> {
+                SettingsItem(
+                    item = targetState,
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
+                    validate = {
+                        if (problem != null) ValidationResult.Error(
+                            problem.severity,
+                            problem.message
+                        )
+                        else ValidationResult.Success
+                    },
+                    onValueChanged = { onValueChanged(it) },
+                ) {
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
+
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
+                    }
+                }
+            }
+
+            is Value.FLOAT -> {
+                SettingsItem(
+                    item = targetState,
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
+                    validate = {
+                        if (problem != null) ValidationResult.Error(
+                            problem.severity,
+                            problem.message
+                        )
+                        else ValidationResult.Success
+                    },
+                    onValueChanged = { onValueChanged(it) },
+                ) {
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
+
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
+                    }
+                }
+            }
+
+            is Value.CHOICE -> {}
         }
     }
 }

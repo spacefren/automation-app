@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 

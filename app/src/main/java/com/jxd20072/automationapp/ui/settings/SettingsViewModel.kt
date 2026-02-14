@@ -3,7 +3,7 @@ package com.jxd20072.automationapp.ui.settings
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +18,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @Immutable
 data class UserEditableSettings(
-    val autoSave: ConfigurationValue.BOOL,
-    val autoOpenKeyboard: ConfigurationValue.BOOL,
+    val autoSave: Value.BOOL,
+    val autoOpenKeyboard: Value.BOOL,
 )
 
 @Immutable
@@ -57,13 +57,13 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setAutoSaveEnabled(enabled: ConfigurationValue.BOOL) {
+    fun setAutoSaveEnabled(enabled: Value.BOOL) {
         viewModelScope.launch {
             userSettingsRepository.setAutoSaveEnabled(enabled.value)
         }
     }
 
-    fun setAutoOpenKeyboard(enabled: ConfigurationValue.BOOL) {
+    fun setAutoOpenKeyboard(enabled: Value.BOOL) {
         viewModelScope.launch {
             userSettingsRepository.setAutoOpenKeyboard(enabled.value)
         }

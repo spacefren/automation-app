@@ -2,7 +2,7 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.Value
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +20,7 @@ sealed class EditorBottomSheetScreen {
     ) : NavKey
 
     data class Variables(
-        val initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+        val initialTypeFilters: Set<KClass<out Value>> = emptySet(),
         val onVariableSelect: ((variableId: String) -> Unit)? = null
     ) : NavKey
 
@@ -87,7 +87,7 @@ class BottomSheetManager {
     }
 
     fun navigateVariables(
-        initialFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+        initialFilters: Set<KClass<out Value>> = emptySet(),
         onSelectVariable: ((variableId: String) -> Unit)? = null
     ) {
         navigateTo(

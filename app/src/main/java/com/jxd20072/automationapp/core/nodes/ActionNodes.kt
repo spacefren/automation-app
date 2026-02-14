@@ -2,17 +2,18 @@ package com.jxd20072.automationapp.core.nodes
 
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
 import com.jxd20072.automationapp.core.nodes.actions.LoggerNode
-import com.jxd20072.automationapp.core.nodes.actions.NotificationNode
-import com.jxd20072.automationapp.core.nodes.actions.flow.RepeatActionNode
-import com.jxd20072.automationapp.core.nodes.actions.flow.WaitActionNode
-import com.jxd20072.automationapp.core.nodes.actions.variables.SetVariableActionNode
+
+//import com.jxd20072.automationapp.core.nodes.actions.NotificationNode
+//import com.jxd20072.automationapp.core.nodes.actions.flow.RepeatActionNode
+//import com.jxd20072.automationapp.core.nodes.actions.flow.WaitActionNode
+//import com.jxd20072.automationapp.core.nodes.actions.variables.SetVariableActionNode
 
 val actionNodes: Map<String, NodeRegistryEntry<ActionNode>> = listOf(
     LoggerNode,
-    RepeatActionNode,
-    WaitActionNode,
-    NotificationNode,
-    SetVariableActionNode,
+//    RepeatActionNode,
+//    WaitActionNode,
+//    NotificationNode,
+//    SetVariableActionNode,
 ).associateBy { it.data.name }
 
 /*

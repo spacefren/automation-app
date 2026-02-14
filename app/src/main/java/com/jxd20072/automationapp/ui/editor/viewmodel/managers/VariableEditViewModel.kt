@@ -2,9 +2,9 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -73,7 +73,7 @@ class VariableEditViewModel @AssistedInject constructor(
         editorSession.renameVariable(variableId, newName)
     }
 
-    fun changeValue(newValue: ConfigurationValue<*>) {
+    fun changeValue(newValue: Value) {
         editorSession.changeVariableValue(variableId, newValue)
     }
 }

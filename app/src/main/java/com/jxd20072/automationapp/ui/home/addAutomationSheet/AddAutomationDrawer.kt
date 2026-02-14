@@ -7,7 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerScreen
 import com.jxd20072.automationapp.ui.home.AddAutomationDrawerUiState
 import com.jxd20072.automationapp.ui.shared.components.AppScreen

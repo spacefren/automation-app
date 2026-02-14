@@ -146,7 +146,7 @@ fun Node(
 
         if (nodeData != null) {
             nodeData.editorActionDescription(
-                nodeData.inputDefinitions.mapValues { it.value.defaultValue } + nodeDef.input,
+                nodeData.inputSchemas.mapValues { it.value.accepts.first().defaultValue } + nodeDef.input,
                 variables
             )
         } else {

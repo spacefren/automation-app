@@ -3,8 +3,8 @@ package com.jxd20072.automationapp.ui.editor.viewmodel.managers
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.repository.PermissionsRepository
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.EditorProblem
@@ -66,8 +66,8 @@ class NodeEditViewModel @AssistedInject constructor(
                         nodeId = editingNodeId,
                         nodeDef = nodeDef,
                         nodeData = nodeData.copy(
-                            inputDefinitions = nodeData.inputDefinitions.filter { (name, inputDef) ->
-                                inputDef.shouldShow(nodeDef.input, automationDraft)
+                            inputSchemas = nodeData.inputSchemas.filter { (name, schema) ->
+                                schema.shouldShow(nodeDef.input, automationDraft)
                             }
                         ),
                         nodeProblems = automationUiState.problems
@@ -95,7 +95,7 @@ class NodeEditViewModel @AssistedInject constructor(
         )
     }
 
-    fun setNodeConfig(name: String, config: ConfigurationValue<*>) {
+    fun setNodeConfig(name: String, config: Value) {
         val nodeDef = editorSession.getNode(editingNodeId) ?: return
 
         editorSession.editNode(
@@ -106,13 +106,10 @@ class NodeEditViewModel @AssistedInject constructor(
     }
 
     fun promptSelectVariable(
-        variableType: KClass<ConfigurationValue<*>>?,
+        variableTypes: Set<KClass<out Value>>,
         onSelect: (String) -> Unit,
     ) {
-        editorSession.bottomSheetManager.navigateVariables(
-            if (variableType != null) setOf(variableType)
-            else emptySet()
-        ) {
+        editorSession.bottomSheetManager.navigateVariables(variableTypes) {
             onSelect(it)
             editorSession.bottomSheetManager.navigateBack()
         }

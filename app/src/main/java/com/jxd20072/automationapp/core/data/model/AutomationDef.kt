@@ -12,7 +12,7 @@ data class AutomationDefMetadata(
 data class VariableDef(
     val name: String,
     val id: String = UUID.randomUUID().toString(),
-    val value: ConfigurationValue<*>
+    val value: Value
 )
 
 @Serializable
@@ -32,7 +32,7 @@ data class NodeDef(
     val name: String,
     val nodeType: NodeType,
     val id: String = UUID.randomUUID().toString(),
-    val input: Map<String, ConfigurationValue<*>> = emptyMap(),
-    val output: Map<String, ConfigurationValue<*>> = emptyMap(),
+    val input: Map<String, Value> = emptyMap(),
+    val output: Map<String, Value> = emptyMap(),
     val content: List<NodeDef> = emptyList(),
 )

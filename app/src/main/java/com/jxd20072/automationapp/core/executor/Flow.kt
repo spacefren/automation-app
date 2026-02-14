@@ -23,8 +23,8 @@ class ExecutionFlow(
     private fun <T : BaseNode> buildNode(nodeDef: NodeDef, registryEntry: NodeRegistryEntry<T>): T {
         val node = registryEntry.factory.invoke(nodeDef.id)
 
-        val input = registryEntry.data.inputDefinitions.mapValues { inputEntry ->
-            nodeDef.input[inputEntry.key] ?: inputEntry.value.defaultValue
+        val input = registryEntry.data.inputSchemas.mapValues { (name, entry) ->
+            nodeDef.input[name] ?: entry.accepts.first().defaultValue
         }
         node.input = input
         node.content = nodeDef.content

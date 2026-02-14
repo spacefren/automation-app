@@ -7,7 +7,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.ui.settings.UserSettingsUiState
 import com.jxd20072.automationapp.ui.shared.components.LocalSnackbarState
 import com.jxd20072.automationapp.ui.shared.components.SnackbarData
@@ -18,8 +18,8 @@ import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 @Composable
 fun GeneralSettingsCategory(
     userSettingsUiState: UserSettingsUiState.Success,
-    onAutoSaveChanged: (newVal: ConfigurationValue.BOOL) -> Unit,
-    onAutoOpenKeyboardChanged: (newVal: ConfigurationValue.BOOL) -> Unit,
+    onAutoSaveChanged: (newVal: Value.BOOL) -> Unit,
+    onAutoOpenKeyboardChanged: (newVal: Value.BOOL) -> Unit,
 ) {
     val context = LocalContext.current
 

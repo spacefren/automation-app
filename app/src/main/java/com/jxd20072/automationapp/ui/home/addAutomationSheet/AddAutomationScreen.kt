@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.ui.shared.components.BaseTextInput
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.ValidationMessage

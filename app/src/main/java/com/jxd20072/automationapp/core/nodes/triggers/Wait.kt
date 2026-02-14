@@ -1,25 +1,25 @@
 package com.jxd20072.automationapp.core.nodes.triggers
 
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.InputAcceptedValue
+import com.jxd20072.automationapp.core.data.model.NodeInputSchema
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
-import com.jxd20072.automationapp.core.nodes.props.NodeInputDefinition
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 class WaitTrigger(id: String) : TriggerNode(id) {
     override fun startListening(
         context: ExecutionContext,
-        trigger: (output: Map<String, ConfigurationValue<*>>) -> Unit
+        trigger: (output: Map<String, Value>) -> Unit
     ) {
-        val duration = getInput<ConfigurationValue.NUMBER>("duration", context).value
+        val duration = getInput<Value.FLOAT>("duration", context).value
 
         runBlocking {
             delay(duration.toLong())
@@ -42,19 +42,12 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         },
         description = "Run selected actions after a specified duration",
         icon = R.drawable.round_electric_bolt_24,
-        inputDefinitions = mapOf(
-            "duration" to NodeInputDefinition(
+        inputSchemas = mapOf(
+            "duration" to NodeInputSchema(
                 displayName = "Duration",
                 description = "The duration of the delay, in milliseconds",
-                defaultValue = ConfigurationValue.NUMBER("1000"),
-                validate = { ValidationResult.Success }
+                accepts = listOf(InputAcceptedValue.NUMBER(Value.FLOAT(1000.0)))
             ),
-            "isThisWorking" to NodeInputDefinition(
-                displayName = "IsThisWorking",
-                description = "if you see this, yes",
-                defaultValue = ConfigurationValue.BOOL(true),
-                validate = { ValidationResult.Success }
-            )
         ),
         outputDefinitions = emptyMap(),
         permissions = emptyList(),

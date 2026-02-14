@@ -14,9 +14,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.nodes.actions.variables.getConfigValueName
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
@@ -24,11 +24,11 @@ import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
-fun getVariableDefaultValue(name: String): ConfigurationValue<*>? {
+fun getVariableDefaultValue(name: String): Value? {
     return when (name) {
-        "text" -> ConfigurationValue.TEXT("")
-        "boolean" -> ConfigurationValue.BOOL(true)
-        "number" -> ConfigurationValue.NUMBER("0")
+        "text" -> Value.TEXT("")
+        "boolean" -> Value.BOOL(true)
+        "number" -> Value.FLOAT(0.0)
         else -> null
     }
 }
@@ -71,7 +71,7 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Name",
                 description = "A unique identifier for your variable. Great names are short and descriptive!",
-                item = ConfigurationValue.TEXT(variableDef.name),
+                item = Value.TEXT(variableDef.name),
                 validate = { variableEditViewModel.validateVariableName(it.value) },
                 onValueChanged = { newVal ->
                     variableEditViewModel.changeName(newVal.value)
@@ -81,14 +81,14 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Variable type",
                 description = "The type of data that the variable will hold.",
-                item = ConfigurationValue.CHOOSE(getConfigValueName(variableDef.value)),
+                item = Value.CHOICE(getConfigValueName(variableDef.value)),
                 options = listOf(
-                    ConfigurationValue.CHOOSE("text"),
-                    ConfigurationValue.CHOOSE("boolean"),
-                    ConfigurationValue.CHOOSE("number"),
+                    Value.CHOICE("text"),
+                    Value.CHOICE("boolean"),
+                    Value.CHOICE("number"),
                 ),
                 onValueChanged = {
-                    val newValue = getVariableDefaultValue(it.value)
+                    val newValue = getVariableDefaultValue(it.selected)
                     if (newValue != null) variableEditViewModel.changeValue(newValue)
                 }
             )
@@ -98,11 +98,11 @@ fun VariableEditScreen(
                 contentKey = { it::class }
             ) { value ->
                 when (value) {
-                    is ConfigurationValue.TEXT -> {
+                    is Value.TEXT -> {
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = ConfigurationValue.TEXT(value.value),
+                            item = Value.TEXT(value.value),
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal ->
                                 variableEditViewModel.changeValue(newVal)
@@ -110,11 +110,11 @@ fun VariableEditScreen(
                         )
                     }
 
-                    is ConfigurationValue.BOOL -> {
+                    is Value.BOOL -> {
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = ConfigurationValue.BOOL(value.value),
+                            item = Value.BOOL(value.value),
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal ->
                                 variableEditViewModel.changeValue(newVal)
@@ -122,13 +122,13 @@ fun VariableEditScreen(
                         )
                     }
 
-                    is ConfigurationValue.NUMBER -> {
+                    is Value.FLOAT -> {
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = ConfigurationValue.NUMBER(value.value),
+                            item = Value.FLOAT(value.value),
                             validate = { ValidationResult.Success },
-                            onValueChanged = { newVal: ConfigurationValue.NUMBER ->
+                            onValueChanged = { newVal: Value.FLOAT ->
                                 variableEditViewModel.changeValue(newVal)
                             }
                         )

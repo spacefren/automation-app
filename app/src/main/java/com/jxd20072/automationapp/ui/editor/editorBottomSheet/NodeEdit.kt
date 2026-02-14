@@ -94,13 +94,13 @@ fun EditorNodeEditScreen(
             )
 
             // Spacing already handled below
-            nodeData.inputDefinitions.forEach { (name, inputDef) ->
-                val currentValue = nodeDef.input[name] ?: inputDef.defaultValue
+            nodeData.inputSchemas.forEach { (name, schema) ->
+                val currentValue = nodeDef.input[name] ?: schema.accepts.first().defaultValue
 
                 Spacer(modifier = Modifier.height(LocalTheme.layoutSystem.spacing.paddingLevel1))
 
                 EditorInputField(
-                    inputDefinition = inputDef,
+                    inputSchema = schema,
                     variablesList = automation.variables,
                     problem = problems.firstOrNull {
                         if (it !is EditorProblem.NodeInputProblem) return@firstOrNull false

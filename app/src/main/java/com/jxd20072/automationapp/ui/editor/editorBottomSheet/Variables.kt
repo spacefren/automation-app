@@ -35,7 +35,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import com.jxd20072.automationapp.R
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariablesViewModel
@@ -101,9 +101,9 @@ fun EditorVariableEntry(
                         Icon(
                             painter = painterResource(
                                 when (variableDef.value) {
-                                    is ConfigurationValue.BOOL -> R.drawable.round_bool_24
-                                    is ConfigurationValue.TEXT -> R.drawable.round_text_24
-                                    is ConfigurationValue.NUMBER -> R.drawable.round_number_24
+                                    is Value.BOOL -> R.drawable.round_bool_24
+                                    is Value.TEXT -> R.drawable.round_text_24
+                                    is Value.FLOAT -> R.drawable.round_number_24
                                     else -> TODO()
                                 }
                             ),
@@ -126,7 +126,7 @@ fun EditorVariableEntry(
                 )
                 Box(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = variableDef.value.value.toString(),
+                        text = variableDef.value.valueAsString(),
                         style = LocalTheme.typography.body.copy(
                             textAlign = TextAlign.End
                         ),
@@ -147,7 +147,7 @@ fun EditorVariableEntry(
 @Composable
 fun EditorVariablesScreen(
     editorSession: EditorSession,
-    initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+    initialTypeFilters: Set<KClass<out Value>> = emptySet(),
     onVariableSelect: ((variableId: String) -> Unit)? = null,
     variablesViewModel: VariablesViewModel = hiltViewModel<VariablesViewModel, VariablesViewModel.Factory>(
         creationCallback = { factory ->

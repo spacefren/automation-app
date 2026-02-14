@@ -14,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.ui.shared.components.ValidationMessage
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 

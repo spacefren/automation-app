@@ -4,9 +4,9 @@ import androidx.compose.runtime.Immutable
 import com.jxd20072.automationapp.core.data.AutomationLogEntry
 import com.jxd20072.automationapp.core.data.AutomationsMapEntry
 import com.jxd20072.automationapp.core.data.model.AutomationDef
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
 import com.jxd20072.automationapp.core.data.model.NodeDef
 import com.jxd20072.automationapp.core.data.model.NodeType
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.data.repository.AppSettingsRepository
 import com.jxd20072.automationapp.core.data.repository.AutomationsRepository
@@ -333,7 +333,7 @@ class EditorSession @AssistedInject constructor(
         addVariable(variable.copy(name = newName))
     }
 
-    fun changeVariableValue(id: String, newValue: ConfigurationValue<*>) {
+    fun changeVariableValue(id: String, newValue: Value) {
         val data = automationUiState.value
         if (data !is AutomationUiState.Success) return
         val variable = findVariable(id) ?: return

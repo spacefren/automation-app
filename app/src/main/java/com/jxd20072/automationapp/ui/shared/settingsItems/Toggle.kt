@@ -27,18 +27,18 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
-import com.jxd20072.automationapp.core.nodes.props.ValidationResult
+import com.jxd20072.automationapp.core.data.model.ValidationResult
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable
 fun SettingsItem(
-    item: ConfigurationValue.BOOL,
+    item: Value.BOOL,
     displayName: String,
     description: String = "",
     modifier: Modifier = Modifier,
-    validate: ((ConfigurationValue.BOOL) -> ValidationResult)? = null,
-    onValueChanged: (ConfigurationValue.BOOL) -> Unit,
+    validate: ((Value.BOOL) -> ValidationResult)? = null,
+    onValueChanged: (Value.BOOL) -> Unit,
     trailingContent: (@Composable RowScope.() -> Unit)? = null
 ) {
     val enabled = item.value
@@ -82,7 +82,7 @@ fun SettingsItem(
                 .pointerInput(enabled) {
                     detectTapGestures(
                         onTap = {
-                            onValueChanged(ConfigurationValue.BOOL(!enabled))
+                            onValueChanged(Value.BOOL(!enabled))
                         },
                         onPress = {
                             isPressed = true

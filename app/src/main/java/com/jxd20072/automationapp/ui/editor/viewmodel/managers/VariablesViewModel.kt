@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jxd20072.automationapp.core.data.model.ConfigurationValue
+import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -23,13 +23,13 @@ import kotlin.reflect.KClass
 data class VariablesScreenState(
     val searchQuery: String = "",
     val isSelecting: Boolean = false,
-    val variableTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+    val variableTypeFilters: Set<KClass<out Value>> = emptySet(),
     val filteredVariables: Set<VariableDef> = emptySet()
 )
 
 @HiltViewModel(assistedFactory = VariablesViewModel.Factory::class)
 class VariablesViewModel @AssistedInject constructor(
-    @Assisted private val initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+    @Assisted private val initialTypeFilters: Set<KClass<out Value>> = emptySet(),
     @Assisted private val onVariableSelected: ((variableId: String) -> Unit)? = null,
     @Assisted private val editorSession: EditorSession,
 ) : ViewModel() {
@@ -38,7 +38,7 @@ class VariablesViewModel @AssistedInject constructor(
     interface Factory {
         fun create(
             editorSession: EditorSession,
-            initialTypeFilters: Set<KClass<ConfigurationValue<*>>> = emptySet(),
+            initialTypeFilters: Set<KClass<out Value>> = emptySet(),
             onVariableSelected: ((variableId: String) -> Unit)? = null
         ): VariablesViewModel
     }
@@ -76,7 +76,7 @@ class VariablesViewModel @AssistedInject constructor(
     fun getFilteredVariables(
         allVariables: Set<VariableDef>,
         searchQuery: String,
-        typeFilters: Set<KClass<ConfigurationValue<*>>>,
+        typeFilters: Set<KClass<out Value>>,
     ): Set<VariableDef> {
         return allVariables
             .filter { variable ->
@@ -108,7 +108,7 @@ class VariablesViewModel @AssistedInject constructor(
         }
     }
 
-    fun addVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
+    fun addVariableTypeFilter(configType: KClass<out Value>) {
         val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
@@ -125,7 +125,7 @@ class VariablesViewModel @AssistedInject constructor(
         }
     }
 
-    fun removeVariableTypeFilter(configType: KClass<ConfigurationValue<*>>) {
+    fun removeVariableTypeFilter(configType: KClass<out Value>) {
         val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
@@ -142,7 +142,7 @@ class VariablesViewModel @AssistedInject constructor(
         }
     }
 
-    fun setVariableTypeFilters(filters: Set<KClass<ConfigurationValue<*>>>) {
+    fun setVariableTypeFilters(filters: Set<KClass<out Value>>) {
         val allVariables = editorSession.getVariables() ?: return
 
         _variablesUiState.update { state ->
@@ -156,7 +156,7 @@ class VariablesViewModel @AssistedInject constructor(
     fun onCreateVariable() {
         val newVariable = VariableDef(
             name = "Unnamed variable",
-            value = ConfigurationValue.NUMBER("0"),
+            value = Value.FLOAT(0.0),
         )
         editorSession.addVariable(newVariable)
         editorSession.bottomSheetManager.navigateTo(
