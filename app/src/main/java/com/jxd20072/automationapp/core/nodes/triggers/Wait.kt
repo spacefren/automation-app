@@ -19,7 +19,7 @@ class WaitTrigger(id: String) : TriggerNode(id) {
         context: ExecutionContext,
         trigger: (output: Map<String, Value>) -> Unit
     ) {
-        val duration = getInput<Value.FLOAT>("duration", context).value
+        val duration = getInput<Value.INT>("duration", context).value
 
         runBlocking {
             delay(duration.toLong())
@@ -46,7 +46,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
             "duration" to NodeInputSchema(
                 displayName = "Duration",
                 description = "The duration of the delay, in milliseconds",
-                accepts = listOf(InputAcceptedValue.NUMBER(Value.FLOAT(1000.0)))
+                accepts = listOf(InputAcceptedValue.INT(Value.INT(1000)))
             ),
         ),
         outputDefinitions = emptyMap(),

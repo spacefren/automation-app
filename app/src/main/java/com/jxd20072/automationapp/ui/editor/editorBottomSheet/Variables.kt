@@ -104,6 +104,7 @@ fun EditorVariableEntry(
                                     is Value.BOOL -> R.drawable.round_bool_24
                                     is Value.TEXT -> R.drawable.round_text_24
                                     is Value.FLOAT -> R.drawable.round_number_24
+                                    is Value.INT -> R.drawable.round_number_24
                                     else -> TODO()
                                 }
                             ),

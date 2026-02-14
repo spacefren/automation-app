@@ -2,6 +2,7 @@ package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,17 +26,30 @@ fun SettingsItem(
     onValueChanged: (Value.FLOAT) -> Unit,
     trailingContent: (@Composable RowScope.() -> Unit)? = null
 ) {
+    Text("TO DO")
+}
+
+@Composable
+fun SettingsItem(
+    item: Value.INT,
+    displayName: String,
+    description: String = "",
+    validate: ((Value.INT) -> ValidationResult)?,
+    modifier: Modifier = Modifier,
+    onValueChanged: (Value.INT) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null
+) {
     var textValue by remember { mutableStateOf(item.valueAsString()) }
 
     fun validationFunction(text: String): ValidationResult {
-        val number = Value.FLOAT.fromString(text)?.value
+        val number = Value.INT.fromString(text)?.value
         return if (number == null) {
             ValidationResult.Error(
                 severity = ProblemSeverity.ERROR,
                 message = "Only numbers allowed"
             )
         } else {
-            validate?.invoke(Value.FLOAT(number)) ?: ValidationResult.Success
+            validate?.invoke(Value.INT(number)) ?: ValidationResult.Success
         }
     }
 
@@ -54,7 +68,7 @@ fun SettingsItem(
             imeAction = ImeAction.Done,
             onTextChanged = {
                 textValue = it
-                val doubleValue = Value.FLOAT.fromString(it)
+                val doubleValue = Value.INT.fromString(it)
                 if (doubleValue != null) {
                     onValueChanged(doubleValue)
                 }

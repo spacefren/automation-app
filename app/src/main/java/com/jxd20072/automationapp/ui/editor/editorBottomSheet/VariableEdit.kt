@@ -28,7 +28,8 @@ fun getVariableDefaultValue(name: String): Value? {
     return when (name) {
         "text" -> Value.TEXT("")
         "boolean" -> Value.BOOL(true)
-        "number" -> Value.FLOAT(0.0)
+        "float" -> Value.FLOAT(0f)
+        "int" -> Value.INT(0)
         else -> null
     }
 }
@@ -85,7 +86,8 @@ fun VariableEditScreen(
                 options = listOf(
                     Value.CHOICE("text"),
                     Value.CHOICE("boolean"),
-                    Value.CHOICE("number"),
+                    Value.CHOICE("int"),
+                    Value.CHOICE("float"),
                 ),
                 onValueChanged = {
                     val newValue = getVariableDefaultValue(it.selected)
@@ -102,7 +104,7 @@ fun VariableEditScreen(
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = Value.TEXT(value.value),
+                            item = value,
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal ->
                                 variableEditViewModel.changeValue(newVal)
@@ -114,7 +116,7 @@ fun VariableEditScreen(
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = Value.BOOL(value.value),
+                            item = value,
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal ->
                                 variableEditViewModel.changeValue(newVal)
@@ -126,9 +128,21 @@ fun VariableEditScreen(
                         SettingsItem(
                             displayName = "Value",
                             description = "The starting value of your variable.",
-                            item = Value.FLOAT(value.value),
+                            item = value,
                             validate = { ValidationResult.Success },
                             onValueChanged = { newVal: Value.FLOAT ->
+                                variableEditViewModel.changeValue(newVal)
+                            }
+                        )
+                    }
+
+                    is Value.INT -> {
+                        SettingsItem(
+                            displayName = "Value",
+                            description = "The starting value of your variable.",
+                            item = value,
+                            validate = { ValidationResult.Success },
+                            onValueChanged = { newVal: Value.INT ->
                                 variableEditViewModel.changeValue(newVal)
                             }
                         )

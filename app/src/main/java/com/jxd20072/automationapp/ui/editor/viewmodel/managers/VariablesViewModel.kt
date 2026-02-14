@@ -156,7 +156,7 @@ class VariablesViewModel @AssistedInject constructor(
     fun onCreateVariable() {
         val newVariable = VariableDef(
             name = "Unnamed variable",
-            value = Value.FLOAT(0.0),
+            value = Value.FLOAT(0f),
         )
         editorSession.addVariable(newVariable)
         editorSession.bottomSheetManager.navigateTo(

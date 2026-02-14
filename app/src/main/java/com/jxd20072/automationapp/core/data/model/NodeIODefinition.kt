@@ -10,11 +10,21 @@ sealed interface Value {
     data class TEXT(val value: String) : Value
 
     @Serializable
-    data class FLOAT(val value: Double) : Value {
+    data class FLOAT(val value: Float) : Value {
         companion object {
             fun fromString(stringValue: String): Value.FLOAT? {
-                val number = stringValue.toDoubleOrNull()
+                val number = stringValue.toFloatOrNull()
                 return if (number != null) Value.FLOAT(number) else null
+            }
+        }
+    }
+
+    @Serializable
+    data class INT(val value: Int) : Value {
+        companion object {
+            fun fromString(stringValue: String): Value.INT? {
+                val number = stringValue.toIntOrNull()
+                return if (number != null) Value.INT(number) else null
             }
         }
     }
@@ -32,6 +42,7 @@ sealed interface Value {
         return when (this) {
             is Value.TEXT -> value
             is Value.FLOAT -> value.toString()
+            is Value.INT -> value.toString()
             is Value.BOOL -> value.toString()
             is Value.VARIABLE -> id
             is Value.CHOICE -> selected
@@ -48,7 +59,12 @@ sealed interface InputAcceptedValue<T : Value> {
         override val validate: (value: Value.TEXT) -> ValidationResult = { ValidationResult.Success },
     ) : InputAcceptedValue<Value.TEXT>
 
-    data class NUMBER(
+    data class INT(
+        override val defaultValue: Value.INT,
+        override val validate: (value: Value.INT) -> ValidationResult = { ValidationResult.Success },
+    ) : InputAcceptedValue<Value.INT>
+
+    data class FLOAT(
         override val defaultValue: Value.FLOAT,
         override val validate: (value: Value.FLOAT) -> ValidationResult = { ValidationResult.Success },
     ) : InputAcceptedValue<Value.FLOAT>
@@ -94,14 +110,13 @@ data class NodeInputSchema(
                 displayName = displayName,
                 description = description,
                 shouldShow = shouldShow,
-                accepts = accepts + accepts
-                    .filter { it !is InputAcceptedValue.VARIABLE }
-                    .map {
-                        InputAcceptedValue.VARIABLE(
-                            acceptedTypes = setOf(it.defaultValue::class),
-                            defaultValue = Value.VARIABLE("")
-                        )
-                    }
+                accepts = accepts + InputAcceptedValue.VARIABLE(
+                    defaultValue = Value.VARIABLE(""),
+                    acceptedTypes = accepts.mapNotNull {
+                        if (it is InputAcceptedValue.VARIABLE) return@mapNotNull null
+                        it.defaultValue::class
+                    }.toSet()
+                )
             )
         }
     }

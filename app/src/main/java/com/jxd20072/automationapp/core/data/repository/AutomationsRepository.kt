@@ -28,14 +28,14 @@ class AutomationsRepository @Inject constructor(
         ),
         variables = setOf(
             VariableDef(name = "firstVar", value = Value.TEXT("textVariableValue")),
-            VariableDef(name = "secondVar", value = Value.FLOAT(10.0)),
+            VariableDef(name = "secondVar", value = Value.FLOAT(10f)),
             VariableDef(name = "justThird", value = Value.BOOL(true))
         ),
         topLevel = listOf(
             NodeDef(
                 name = "wait",
                 nodeType = NodeType.TRIGGER,
-                input = mapOf("Duration" to Value.FLOAT(3000.0)),
+                input = mapOf("Duration" to Value.FLOAT(3000f)),
                 content = listOf(
                     NodeDef(
                         name = "log",

@@ -167,6 +167,29 @@ fun EditorInputField(
                 }
             }
 
+            is Value.INT -> {
+                SettingsItem(
+                    item = targetState,
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
+                    validate = {
+                        if (problem != null) ValidationResult.Error(
+                            problem.severity,
+                            problem.message
+                        )
+                        else ValidationResult.Success
+                    },
+                    onValueChanged = { onValueChanged(it) },
+                ) {
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
+
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
+                    }
+                }
+            }
+
             is Value.CHOICE -> {}
         }
     }
