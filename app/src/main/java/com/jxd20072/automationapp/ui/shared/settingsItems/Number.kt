@@ -2,7 +2,6 @@ package com.jxd20072.automationapp.ui.shared.settingsItems
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,39 +16,29 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.shared.components.BaseTextInput
 
 @Composable
-fun SettingsItem(
-    item: Value.FLOAT,
+fun <T> GenericTextSettingsItem(
+    item: T,
     displayName: String,
-    description: String = "",
-    validate: ((Value.FLOAT) -> ValidationResult)?,
+    description: String,
+    valueToString: (T) -> String,
+    stringToValue: (String) -> T?,
+    validate: ((T) -> ValidationResult)?,
+    failedConversionMessage: String,
     modifier: Modifier = Modifier,
-    onValueChanged: (Value.FLOAT) -> Unit,
+    onValueChanged: (T) -> Unit,
     trailingContent: (@Composable RowScope.() -> Unit)? = null
 ) {
-    Text("TO DO")
-}
-
-@Composable
-fun SettingsItem(
-    item: Value.INT,
-    displayName: String,
-    description: String = "",
-    validate: ((Value.INT) -> ValidationResult)?,
-    modifier: Modifier = Modifier,
-    onValueChanged: (Value.INT) -> Unit,
-    trailingContent: (@Composable RowScope.() -> Unit)? = null
-) {
-    var textValue by remember { mutableStateOf(item.valueAsString()) }
+    var textValue by remember { mutableStateOf(valueToString(item)) }
 
     fun validationFunction(text: String): ValidationResult {
-        val number = Value.INT.fromString(text)?.value
-        return if (number == null) {
+        val newItem = stringToValue(text)
+        return if (newItem == null) {
             ValidationResult.Error(
                 severity = ProblemSeverity.ERROR,
-                message = "Only numbers allowed"
+                message = failedConversionMessage
             )
         } else {
-            validate?.invoke(Value.INT(number)) ?: ValidationResult.Success
+            validate?.invoke(newItem) ?: ValidationResult.Success
         }
     }
 
@@ -68,11 +57,59 @@ fun SettingsItem(
             imeAction = ImeAction.Done,
             onTextChanged = {
                 textValue = it
-                val doubleValue = Value.INT.fromString(it)
-                if (doubleValue != null) {
-                    onValueChanged(doubleValue)
+                val newValue = stringToValue(it)
+                if (newValue != null) {
+                    onValueChanged(newValue)
                 }
             }
         )
     }
+}
+
+@Composable
+fun SettingsItem(
+    item: Value.FLOAT,
+    displayName: String,
+    description: String = "",
+    validate: ((Value.FLOAT) -> ValidationResult)?,
+    modifier: Modifier = Modifier,
+    onValueChanged: (Value.FLOAT) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null
+) {
+    GenericTextSettingsItem(
+        item = item.value,
+        displayName = displayName,
+        description = description,
+        validate = { validate?.invoke(Value.FLOAT(it)) ?: ValidationResult.Success },
+        valueToString = { Value.FLOAT(it).valueAsString() },
+        stringToValue = { Value.FLOAT.fromString(it)?.value },
+        failedConversionMessage = "Only numbers allowed",
+        onValueChanged = { onValueChanged(Value.FLOAT(it)) },
+        trailingContent = trailingContent,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SettingsItem(
+    item: Value.INT,
+    displayName: String,
+    description: String = "",
+    validate: ((Value.INT) -> ValidationResult)?,
+    modifier: Modifier = Modifier,
+    onValueChanged: (Value.INT) -> Unit,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null
+) {
+    GenericTextSettingsItem(
+        item = item.value,
+        displayName = displayName,
+        description = description,
+        validate = { validate?.invoke(Value.INT(it)) ?: ValidationResult.Success },
+        valueToString = { Value.INT(it).valueAsString() },
+        stringToValue = { Value.INT.fromString(it)?.value },
+        failedConversionMessage = "Only integers allowed",
+        onValueChanged = { onValueChanged(Value.INT(it)) },
+        trailingContent = trailingContent,
+        modifier = modifier
+    )
 }
