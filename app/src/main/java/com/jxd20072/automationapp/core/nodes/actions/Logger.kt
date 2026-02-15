@@ -7,7 +7,6 @@ import com.jxd20072.automationapp.core.data.model.NodeInputSchema
 import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.core.data.model.Value
-import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
 import com.jxd20072.automationapp.core.executor.ExecutionFlow
 import com.jxd20072.automationapp.core.nodes.NodeCategory
@@ -18,6 +17,7 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
 import com.jxd20072.automationapp.ui.shared.components.LocalSnackbarState
 import com.jxd20072.automationapp.ui.shared.components.SnackbarData
 import com.jxd20072.automationapp.ui.shared.components.SnackbarType
+import com.jxd20072.automationapp.utils.getNodeInputPiece
 
 class LoggerAction(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext, flow: ExecutionFlow) {
@@ -32,19 +32,6 @@ class LoggerAction(id: String) : ActionNode(id) {
                 icon = R.drawable.round_align_left_24
             )
         )
-    }
-}
-
-fun getNodeInputPiece(
-    variables: Set<VariableDef>,
-    value: Value?
-): NodeDescriptionPiece {
-    return when (value) {
-        is Value.VARIABLE -> NodeDescriptionPiece.VariableInput(
-            variables.find { it.id == value.id }?.name ?: "Unknown Variable"
-        )
-
-        else -> NodeDescriptionPiece.Input(value?.valueAsString() ?: "")
     }
 }
 

@@ -16,9 +16,9 @@ import com.jxd20072.automationapp.ui.home.HomeScreen
 import com.jxd20072.automationapp.ui.home.HomeViewModel
 import com.jxd20072.automationapp.ui.settings.SettingsScreen
 import com.jxd20072.automationapp.ui.settings.SettingsViewModel
-import com.jxd20072.automationapp.ui.shared.navPopPredictiveTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navPopTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.navPopPredictiveTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.navPopTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.navTransitionSpec
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import kotlinx.serialization.Serializable
 

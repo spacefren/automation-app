@@ -10,7 +10,7 @@ import com.jxd20072.automationapp.core.nodes.NodeCategory
 import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
-import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
+import com.jxd20072.automationapp.utils.getNodeInputPiece
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 

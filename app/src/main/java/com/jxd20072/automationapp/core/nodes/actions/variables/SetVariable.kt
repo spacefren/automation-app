@@ -13,18 +13,8 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
-import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
-
-fun getConfigValueName(value: Value): String {
-    return when (value) {
-        is Value.BOOL -> "bool"
-        is Value.TEXT -> "text"
-        is Value.FLOAT -> "float"
-        is Value.INT -> "int"
-        is Value.VARIABLE -> "variable"
-        is Value.CHOICE -> "choose"
-    }
-}
+import com.jxd20072.automationapp.utils.getNodeInputPiece
+import com.jxd20072.automationapp.utils.specs.getValueName
 
 class SetVariable(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext, flow: ExecutionFlow) {
@@ -36,7 +26,7 @@ class SetVariable(id: String) : ActionNode(id) {
             return
         }
 
-        val suffix = getConfigValueName(variable.value)
+        val suffix = getValueName(variable.value)
         val newVal = when (variable.value) {
             is Value.TEXT -> getInput<Value.TEXT>(
                 "value_$suffix",
@@ -87,7 +77,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                     NodeDescriptionPiece.VariableInput("Unknown Variable"),
                 )
 
-            val valueType = getConfigValueName(variable.value)
+            val valueType = getValueName(variable.value)
             val valueInput = getNodeInputPiece(variables, input["value_$valueType"])
 
             listOf(

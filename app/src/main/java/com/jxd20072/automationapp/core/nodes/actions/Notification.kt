@@ -17,6 +17,7 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.system.createNotificationChannel
+import com.jxd20072.automationapp.utils.getNodeInputPiece
 
 class NotificationAction(id: String) : ActionNode(id) {
     private val CHANNEL_ID = "automationApp_notificationNode"

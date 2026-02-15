@@ -16,23 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jxd20072.automationapp.core.data.model.ValidationResult
 import com.jxd20072.automationapp.core.data.model.Value
-import com.jxd20072.automationapp.core.nodes.actions.variables.getConfigValueName
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditUiState
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.VariableEditViewModel
 import com.jxd20072.automationapp.ui.shared.components.AppScreen
 import com.jxd20072.automationapp.ui.shared.settingsItems.SettingsItem
 import com.jxd20072.automationapp.ui.theme.LocalTheme
-
-fun getVariableDefaultValue(name: String): Value? {
-    return when (name) {
-        "text" -> Value.TEXT("")
-        "boolean" -> Value.BOOL(true)
-        "float" -> Value.FLOAT(0f)
-        "int" -> Value.INT(0)
-        else -> null
-    }
-}
+import com.jxd20072.automationapp.utils.specs.getValueName
+import com.jxd20072.automationapp.utils.specs.getVariableDefaultValue
 
 @Composable
 fun VariableEditScreen(
@@ -82,10 +73,10 @@ fun VariableEditScreen(
             SettingsItem(
                 displayName = "Variable type",
                 description = "The type of data that the variable will hold.",
-                item = Value.CHOICE(getConfigValueName(variableDef.value)),
+                item = Value.CHOICE(getValueName(variableDef.value)),
                 options = listOf(
                     Value.CHOICE("text"),
-                    Value.CHOICE("boolean"),
+                    Value.CHOICE("bool"),
                     Value.CHOICE("int"),
                     Value.CHOICE("float"),
                 ),

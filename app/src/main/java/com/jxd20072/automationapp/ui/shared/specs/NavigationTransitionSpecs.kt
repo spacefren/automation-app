@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.shared
+package com.jxd20072.automationapp.ui.shared.specs
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform

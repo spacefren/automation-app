@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.utils
+package com.jxd20072.automationapp.ui.shared.utils
 
 import android.content.Context
 import coil3.ImageLoader

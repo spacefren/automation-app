@@ -1,4 +1,4 @@
-package com.jxd20072.automationapp.ui.shared
+package com.jxd20072.automationapp.ui.shared.utils
 
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult

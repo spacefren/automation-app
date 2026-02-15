@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDragState
-import com.jxd20072.automationapp.ui.shared.getTextSize
 import com.jxd20072.automationapp.ui.shared.modifiers.conditional
 import com.jxd20072.automationapp.ui.shared.modifiers.dashedBorder
+import com.jxd20072.automationapp.ui.shared.utils.getTextSize
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 
 @Composable

@@ -21,6 +21,7 @@ import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.ui.shared.modifiers.borderWithShadow
 import com.jxd20072.automationapp.ui.shared.modifiers.clickableWithIndication
+import com.jxd20072.automationapp.ui.shared.specs.getImageForValueType
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
 
@@ -66,14 +67,9 @@ fun SettingsItem(
                 .padding(LocalTheme.layoutSystem.spacing.paddingLevel2)
         ) {
             Icon(
-                // TODO: Duplicated code
                 painter = painterResource(
-                    when (selectedVariable?.value) {
-                        is Value.BOOL -> R.drawable.round_bool_24
-                        is Value.TEXT -> R.drawable.round_text_24
-                        is Value.FLOAT -> R.drawable.round_number_24
-                        else -> R.drawable.round_error_24
-                    }
+                    if (selectedVariable != null) getImageForValueType(selectedVariable.value)
+                    else R.drawable.round_error_24
                 ),
                 contentDescription = "",
                 modifier = Modifier

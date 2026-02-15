@@ -13,8 +13,8 @@ import com.jxd20072.automationapp.core.nodes.NodeData
 import com.jxd20072.automationapp.core.nodes.NodeDescriptionPiece
 import com.jxd20072.automationapp.core.nodes.NodeRegistryEntry
 import com.jxd20072.automationapp.core.nodes.actions.ActionNode
-import com.jxd20072.automationapp.core.nodes.actions.getNodeInputPiece
 import com.jxd20072.automationapp.ui.editor.viewmodel.utils.ProblemSeverity
+import com.jxd20072.automationapp.utils.getNodeInputPiece
 
 class RepeatAction(id: String) : ActionNode(id) {
     override fun execute(context: ExecutionContext, flow: ExecutionFlow) {

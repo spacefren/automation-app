@@ -44,6 +44,7 @@ import com.jxd20072.automationapp.ui.shared.components.DropdownMenu
 import com.jxd20072.automationapp.ui.shared.components.IconButton
 import com.jxd20072.automationapp.ui.shared.components.SearchBar
 import com.jxd20072.automationapp.ui.shared.components.SwipeableContainer
+import com.jxd20072.automationapp.ui.shared.specs.getImageForValueType
 import com.jxd20072.automationapp.ui.theme.LocalTheme
 import com.jxd20072.automationapp.ui.theme.NestedLevel
 import kotlin.reflect.KClass
@@ -99,15 +100,7 @@ fun EditorVariableEntry(
                             .padding(LocalTheme.layoutSystem.spacing.paddingLevel3)
                     ) {
                         Icon(
-                            painter = painterResource(
-                                when (variableDef.value) {
-                                    is Value.BOOL -> R.drawable.round_bool_24
-                                    is Value.TEXT -> R.drawable.round_text_24
-                                    is Value.FLOAT -> R.drawable.round_number_24
-                                    is Value.INT -> R.drawable.round_number_24
-                                    else -> TODO()
-                                }
-                            ),
+                            painter = painterResource(getImageForValueType(variableDef.value)),
                             contentDescription = "",
                             modifier = Modifier
                                 .size(iconSize)

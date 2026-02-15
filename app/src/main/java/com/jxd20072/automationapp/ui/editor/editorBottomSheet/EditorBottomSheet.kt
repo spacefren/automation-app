@@ -18,10 +18,10 @@ import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorNodeDropDat
 import com.jxd20072.automationapp.ui.editor.viewmodel.managers.EditorSession
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheet
 import com.jxd20072.automationapp.ui.shared.components.ModalBottomSheetState
-import com.jxd20072.automationapp.ui.shared.navSheetPopPredictiveTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navSheetPopTransitionSpec
-import com.jxd20072.automationapp.ui.shared.navSheetTransitionSpec
-import com.jxd20072.automationapp.ui.shared.sizeAnimSpec
+import com.jxd20072.automationapp.ui.shared.specs.navSheetPopPredictiveTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.navSheetPopTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.navSheetTransitionSpec
+import com.jxd20072.automationapp.ui.shared.specs.sizeAnimSpec
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
