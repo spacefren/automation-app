@@ -29,7 +29,12 @@ fun TypeSwitchButton(
         iconColor = LocalTheme.colorScheme.onSurface,
         drawableRes = when (currentType) {
             Value.TEXT::class -> R.drawable.round_text_24
-            else -> R.drawable.round_number_24
+            Value.INT::class -> R.drawable.round_number_24
+            Value.BOOL::class -> R.drawable.round_bool_24
+            Value.VARIABLE::class -> R.drawable.round_data_object_24
+            Value.EXPRESSION::class -> R.drawable.round_functions_24
+            Value.CHOICE::class -> R.drawable.round_equal_24
+            else -> R.drawable.round_error_24
         },
         nestedLevel = NestedLevel.ONE,
         onClick = onSwitch,
@@ -180,6 +185,29 @@ fun EditorInputField(
                         else ValidationResult.Success
                     },
                     onValueChanged = { onValueChanged(it) },
+                ) {
+                    if (inputSchema.accepts.size == 1) return@SettingsItem
+                    val nextIndex = (currentIndex + 1) % inputSchema.accepts.size
+
+                    TypeSwitchButton(inputSchema.accepts[nextIndex].defaultValue::class) {
+                        onValueChanged(inputSchema.accepts[nextIndex].defaultValue)
+                    }
+                }
+            }
+
+            is Value.EXPRESSION -> {
+                SettingsItem(
+                    item = Value.TEXT(targetState.value),
+                    displayName = inputSchema.displayName,
+                    description = inputSchema.description,
+                    validate = {
+                        if (problem != null) ValidationResult.Error(
+                            problem.severity,
+                            problem.message
+                        )
+                        else ValidationResult.Success
+                    },
+                    onValueChanged = { onValueChanged(Value.EXPRESSION(it.value)) },
                 ) {
                     if (inputSchema.accepts.size == 1) return@SettingsItem
                     val nextIndex = (currentIndex + 1) % inputSchema.accepts.size

@@ -10,6 +10,7 @@ fun getValueName(value: Value): String {
         is Value.INT -> "int"
         is Value.VARIABLE -> "variable"
         is Value.CHOICE -> "choice"
+        is Value.EXPRESSION -> "expression"
     }
 }
 
@@ -19,6 +20,7 @@ fun getVariableDefaultValue(name: String): Value? {
         "bool" -> Value.BOOL(true)
         "float" -> Value.FLOAT(0f)
         "int" -> Value.INT(0)
+        "expression" -> Value.EXPRESSION("")
         else -> null
     }
 }

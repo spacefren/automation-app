@@ -37,6 +37,10 @@ class ExecutionContext(
         return variables.find { it.id == id }
     }
 
+    fun getVariables(): Set<VariableDef> {
+        return variables
+    }
+
     val logs = MutableSharedFlow<AutomationLogEntry>()
 
     fun log(level: LogLevel, message: String) {

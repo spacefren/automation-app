@@ -90,7 +90,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
         description = "Pause the execution for a specified duration",
         icon = R.drawable.round_data_object_24,
         inputSchemas = mapOf(
-            "variable" to NodeInputSchema(
+            "variable" to NodeInputSchema.create(
                 displayName = "Variable",
                 description = "The variable to change",
                 accepts = listOf(
@@ -104,8 +104,10 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                         defaultValue = Value.VARIABLE("")
                     )
                 ),
+                acceptsVariables = false,
+                acceptsExpressions = false,
             ),
-            "value_bool" to NodeInputSchema.withVariables(
+            "value_bool" to NodeInputSchema.create(
                 displayName = "Value",
                 description = "",
                 accepts = listOf(
@@ -115,12 +117,12 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                 ),
                 shouldShow = { input, automationDef ->
                     val variable = input["variable"]
-                    if (variable !is Value.VARIABLE) return@withVariables false
+                    if (variable !is Value.VARIABLE) return@create false
 
                     automationDef.variables.find { it.id == variable.id }?.value is Value.BOOL
                 },
             ),
-            "value_float" to NodeInputSchema.withVariables(
+            "value_float" to NodeInputSchema.create(
                 displayName = "Value",
                 description = "",
                 accepts = listOf(
@@ -130,12 +132,27 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                 ),
                 shouldShow = { input, automationDef ->
                     val variable = input["variable"]
-                    if (variable !is Value.VARIABLE) return@withVariables false
+                    if (variable !is Value.VARIABLE) return@create false
 
                     automationDef.variables.find { it.id == variable.id }?.value is Value.FLOAT
                 },
             ),
-            "value_text" to NodeInputSchema.withVariables(
+            "value_int" to NodeInputSchema.create(
+                displayName = "Value",
+                description = "",
+                accepts = listOf(
+                    InputAcceptedValue.INT(
+                        defaultValue = Value.INT(0)
+                    )
+                ),
+                shouldShow = { input, automationDef ->
+                    val variable = input["variable"]
+                    if (variable !is Value.VARIABLE) return@create false
+
+                    automationDef.variables.find { it.id == variable.id }?.value is Value.INT
+                },
+            ),
+            "value_text" to NodeInputSchema.create(
                 displayName = "Value",
                 description = "",
                 accepts = listOf(
@@ -145,7 +162,7 @@ val SetVariableActionNode = NodeRegistryEntry<ActionNode>(
                 ),
                 shouldShow = { input, automationDef ->
                     val variable = input["variable"]
-                    if (variable !is Value.VARIABLE) return@withVariables false
+                    if (variable !is Value.VARIABLE) return@create false
 
                     automationDef.variables.find { it.id == variable.id }?.value is Value.TEXT
                 },

@@ -50,12 +50,12 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
         description = "Append a message to the logs screen",
         icon = R.drawable.round_align_left_24,
         inputSchemas = mapOf(
-            "text" to NodeInputSchema.withVariables(
+            "text" to NodeInputSchema.create(
                 displayName = "Text",
                 description = "Description goes here",
                 accepts = listOf(InputAcceptedValue.TEXT(Value.TEXT("Default Value")))
             ),
-            "validatedText" to NodeInputSchema(
+            "validatedText" to NodeInputSchema.create(
                 displayName = "Validated Text",
                 description = "Description goes here as well",
                 accepts = listOf(
@@ -77,9 +77,11 @@ val LoggerNode = NodeRegistryEntry<ActionNode>(
                             }
                         }
                     )
-                )
+                ),
+                acceptsVariables = false,
+                acceptsExpressions = false
             ),
-            "otherOption" to NodeInputSchema(
+            "otherOption" to NodeInputSchema.create(
                 displayName = "Other option",
                 description = "Hi",
                 accepts = listOf(

@@ -43,7 +43,7 @@ val WaitTriggerNode = NodeRegistryEntry<TriggerNode>(
         description = "Run selected actions after a specified duration",
         icon = R.drawable.round_electric_bolt_24,
         inputSchemas = mapOf(
-            "duration" to NodeInputSchema(
+            "duration" to NodeInputSchema.create(
                 displayName = "Duration",
                 description = "The duration of the delay, in milliseconds",
                 accepts = listOf(InputAcceptedValue.INT(Value.INT(1000)))

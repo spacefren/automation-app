@@ -8,6 +8,7 @@ import com.jxd20072.automationapp.core.data.model.NodeType
 import com.jxd20072.automationapp.core.data.model.Value
 import com.jxd20072.automationapp.core.data.model.VariableDef
 import com.jxd20072.automationapp.core.executor.ExecutionContext
+import com.jxd20072.automationapp.core.executor.parseTextAsValue
 
 enum class NodeCategory(
     val displayName: String,
@@ -75,6 +76,9 @@ abstract class BaseNode(id: String) {
             return variable.value
         } else if (entry is T) {
             return entry
+        } else if (entry is Value.EXPRESSION) {
+            return parseTextAsValue<T>(entry.value, context.getVariables())
+                ?: error("Could not parse expression: ${entry.value}")
         } else {
             error("${entry::class.simpleName} could not be converted to type ${T::class}")
         }

@@ -67,7 +67,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
         },
         icon = R.drawable.round_info_24,
         inputSchemas = mapOf(
-            "title" to NodeInputSchema.withVariables(
+            "title" to NodeInputSchema.create(
                 displayName = "Title",
                 description = "The notification's title",
                 accepts = listOf(
@@ -76,7 +76,7 @@ val NotificationNode = NodeRegistryEntry<ActionNode>(
                     )
                 ),
             ),
-            "body" to NodeInputSchema.withVariables(
+            "body" to NodeInputSchema.create(
                 displayName = "Body",
                 description = "The notification's text body",
                 accepts = listOf(

@@ -43,7 +43,7 @@ val WaitActionNode = NodeRegistryEntry<ActionNode>(
         description = "Pause the execution for a specified duration",
         icon = R.drawable.round_play_arrow_24,
         inputSchemas = mapOf(
-            "duration" to NodeInputSchema.withVariables(
+            "duration" to NodeInputSchema.create(
                 displayName = "Duration",
                 description = "The duration of the pause, in milliseconds",
                 accepts = listOf(

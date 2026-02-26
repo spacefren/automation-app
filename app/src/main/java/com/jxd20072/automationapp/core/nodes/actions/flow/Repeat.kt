@@ -42,7 +42,7 @@ val RepeatActionNode = NodeRegistryEntry<ActionNode>(
         description = "Execute the node's contents the specified amount of times",
         icon = R.drawable.round_play_arrow_24,
         inputSchemas = mapOf(
-            "times" to NodeInputSchema.withVariables(
+            "times" to NodeInputSchema.create(
                 displayName = "Times",
                 description = "How many times to repeat",
                 accepts = listOf(

@@ -7,6 +7,10 @@ import kotlin.reflect.KClass
 @Serializable
 sealed interface Value {
     @Serializable
+    data class EXPRESSION(val value: String) : Value {
+    }
+
+    @Serializable
     data class TEXT(val value: String) : Value
 
     @Serializable
@@ -46,6 +50,7 @@ sealed interface Value {
             is Value.BOOL -> value.toString()
             is Value.VARIABLE -> id
             is Value.CHOICE -> selected
+            is Value.EXPRESSION -> value
         }
     }
 }
@@ -74,6 +79,11 @@ sealed interface InputAcceptedValue<T : Value> {
         override val validate: (value: Value.BOOL) -> ValidationResult = { ValidationResult.Success },
     ) : InputAcceptedValue<Value.BOOL>
 
+    data class EXPRESSION(
+        override val defaultValue: Value.EXPRESSION,
+        override val validate: (value: Value.EXPRESSION) -> ValidationResult = { ValidationResult.Success },
+    ) : InputAcceptedValue<Value.EXPRESSION>
+
     data class CHOICE(
         val options: List<String>,
         override val defaultValue: Value.CHOICE,
@@ -87,7 +97,8 @@ sealed interface InputAcceptedValue<T : Value> {
     ) : InputAcceptedValue<Value.VARIABLE>
 }
 
-data class NodeInputSchema(
+@ConsistentCopyVisibility
+data class NodeInputSchema private constructor(
     val displayName: String,
     val description: String,
     val shouldShow: ((
@@ -97,7 +108,7 @@ data class NodeInputSchema(
     val accepts: List<InputAcceptedValue<*>>,
 ) {
     companion object {
-        fun withVariables(
+        fun create(
             displayName: String,
             description: String,
             shouldShow: ((
@@ -105,18 +116,35 @@ data class NodeInputSchema(
                 automationDef: AutomationDef
             ) -> Boolean) = { _, _ -> true },
             accepts: List<InputAcceptedValue<*>>,
+            acceptsVariables: Boolean = true,
+            acceptsExpressions: Boolean = true,
         ): NodeInputSchema {
             return NodeInputSchema(
                 displayName = displayName,
                 description = description,
                 shouldShow = shouldShow,
-                accepts = accepts + InputAcceptedValue.VARIABLE(
-                    defaultValue = Value.VARIABLE(""),
-                    acceptedTypes = accepts.mapNotNull {
-                        if (it is InputAcceptedValue.VARIABLE) return@mapNotNull null
-                        it.defaultValue::class
-                    }.toSet()
-                )
+                accepts = buildList {
+                    addAll(accepts)
+                    if (acceptsVariables) {
+                        add(
+                            InputAcceptedValue.VARIABLE(
+                                defaultValue = Value.VARIABLE(""),
+                                acceptedTypes = accepts.mapNotNull {
+                                    if (it is InputAcceptedValue.VARIABLE) return@mapNotNull null
+                                    it.defaultValue::class
+                                }.toSet()
+                            )
+                        )
+                    }
+                    if (acceptsExpressions) {
+                        add(
+                            InputAcceptedValue.EXPRESSION(
+                                defaultValue = Value.EXPRESSION("")
+                                // TODO: Validate expression
+                            )
+                        )
+                    }
+                }
             )
         }
     }

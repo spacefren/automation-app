@@ -45,7 +45,7 @@ fun EditorNodeDropSheet(
         return if (dragData is EditorNodeDragState.Dragging) {
             val dragPos = dragData.nodePosition
             val offset = dragData.offset
-            val extraSpace = with(LocalDensity.current) { 25.dp.toPx() }
+            val extraSpace = with(LocalDensity.current) { 35.dp.toPx() }
             dragPos.y + offset.y > edgePosition - extraSpace
         } else false
     }
@@ -57,6 +57,7 @@ fun EditorNodeDropSheet(
             horizontalArrangement = Arrangement.spacedBy(LocalTheme.layoutSystem.spacing.paddingLevel1),
             modifier = Modifier
                 .padding(horizontal = LocalTheme.layoutSystem.spacing.paddingLevel1)
+                .padding(bottom = LocalTheme.layoutSystem.spacing.paddingLevel2)
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .clip(RoundedCornerShape(LocalTheme.layoutSystem.shapes.cornerRadiusLevel1))
                 .onGloballyPositioned {
